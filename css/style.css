@@ -1,18 +1,10 @@
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
 
 html{
+    font-family: 'Pretendard', sans-serif;
+    letter-spacing: -0.02em; /* 살짝 간격 조정 (Pretendard 권장값) */
     font-size: 16px;
-}
-
-
-@media (max-width: 768px) {
-    /* 태블릿 이하 */
-    html {font-size: 14px;}
-}
-
-@media (max-width: 480px) { 
-    /* 모바일 */
-    html {font-size: 12px;} 
 }
 
 
@@ -35,17 +27,18 @@ body{
 
 
 .list-pool > * {
-    margin-bottom: 7px;
+    margin-bottom: 2px;
+    line-height: 1.5;
+    margin-bottom: 4px;
 }
 
 .list-pool{
     padding: 18px 15px;
     border-bottom: 1px solid #A9A9A9;
 }
-
+/* 
 .short-address{
-    font-size: 0.875rem;
-}
+} */
 
 .title-group{
     display: flex;
@@ -54,7 +47,8 @@ body{
 
 
 .pool-title{
- font-size: 1.5rem;
+ font-size: 1.25rem;
+ font-weight: 500;
  margin-right: 7px;
 }
 
@@ -62,7 +56,7 @@ body{
     background-color: #c5cee9;
     border-radius: 6px;
     width: 2.3rem;
-    padding: 0.2rem 0 ;
+    padding: 0.125rem 0 ;
     font-size: 0.75rem;
     font-weight: 500;
     text-align: center;
@@ -74,20 +68,12 @@ body{
 }
 
 .off-noti{
-    font-size: 10px;
-    background-color: #f6f6f6;
-    border-radius: 2px;
-    padding: 3px 5px;
-    line-height: 10px;
-    display: inline-block;
-    vertical-align: top;
+    font-size: 0.88rem;
+    color: #555555;
 }
 
-.time-table{
-    font-size: 12px;
-}
-.session{
-    margin-bottom: 5px;
+.time-table > * {
+    margin-bottom: 2px;
 }
 
 .session-num{

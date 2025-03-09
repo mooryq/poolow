@@ -14,7 +14,7 @@
         }
     </style>
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -23,45 +23,12 @@
         <p>리스트 페이지~</p>
     </header>
     <main>
+        <input type="text" id="searchInput" placeholder="수영장 이름 검색..." onkeyup="searchPools()">
         <div id="list-container"></div>   
     </main>
 </div><!--container-->
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        fetch("data/pools.json") // JSON 데이터 불러오기
-            .then(response => response.json())
-            .then(data => {
-                const listContainer = document.getElementById("list-container");
-
-                data.forEach(pool => {
-                    const poolDiv = document.createElement("div");
-                    poolDiv.classList.add("list-pool");
-
-                    poolDiv.innerHTML = `
-                        <div class="short-address">${pool.address}</div>
-                        <div class="title-group">
-                            <div class="pool-title">${pool.name}</div>
-                            ${pool.tags.map(tag => `<div class="tag-mini">${tag}</div>`).join('')}
-                            <div class="fav-icon"><i class="fa-regular fa-heart"></i></div>
-                        </div>
-                        <div class="off-noti">${pool.off_day}</div>
-                        <div class="time-table">
-                            ${pool.sessions.map(session => `
-                                <div class="session">
-                                    <span class="session-num">${session.num}</span>
-                                    <span class="session-time">${session.time}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-
-                    listContainer.appendChild(poolDiv);
-                });
-            })
-            .catch(error => console.error("데이터 불러오기 오류:", error));
-    });
-</script>
+<script src="/js/list.js"></script>
 
 </body>
 </html>
