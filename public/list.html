@@ -20,12 +20,22 @@
 <body>
     <div class="container">
     <header>
-        <p>리스트 페이지~</p>
+        <div class="search-console">
+            <i class="fa-solid fa-arrow-left"></i>
+            <div class="search">
+                <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" onkeyup="searchPools()">
+            </div>
+        </div>
+        <div class="main-filter">
+            <div class="schedule-filter active" data-schedule="weekend"> 주말/공휴일</div>
+            <div class="schedule-filter" data-schedule="weekday"> 평일</div>
+        </div>
     </header>
+    
     <main>
-        <input type="text" id="searchInput" placeholder="수영장 이름 검색..." onkeyup="searchPools()">
-        <div id="list-container"></div>   
+        <div id="list-container"></div>
     </main>
+
 </div><!--container-->
 
 <script src="js/list.js"></script>
