@@ -42,16 +42,17 @@ main{
     display: flex;
     align-items: center;
     padding: 5px 15px;
+    margin-top: 10px;
 }
 
 
 .search{
     display: flex;
+    align-items: center;
     width: 85%;
     margin: auto;
     align-items: center;
     height: 2.5rem;
-    margin-top: 10px;
     border-radius: 0.5rem;
     transition: all .2sease-out;
     border: 1px solid #A9A9A9;
@@ -85,6 +86,7 @@ input:focus {
     font-size: 1.2rem;
     height: 100%;
     padding-bottom: 1.12rem;
+    border-bottom: 2px solid transparent;
 }
 
 .schedule-filter.active{

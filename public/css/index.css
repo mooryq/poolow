@@ -1,0 +1,49 @@
+#map {
+    width: 460px;
+    height: 100vh;
+    margin: auto;
+}
+
+header{
+    display: block;
+    background-color: aqua !important;
+}
+
+main{
+    margin-top: 35px !important;
+}
+
+button{
+    display: block;
+}
+
+
+#bottomSheet {
+    position: fixed;
+
+    bottom: 0;
+    width: 95%;
+    height: calc(100vh - 50px); /* 초기 높이 (절반 크기) */
+    background: white;
+    border-radius: 20px 20px 0 0;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(50%); /* 기본적으로 절반만 보이게 설정 */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    touch-action: none; /* ✅ 터치 동작 최적화 */
+    z-index: 99;
+}
+
+#handle {
+    width: 50px;
+    height: 5px;
+    background: gray;
+    border-radius: 5px;
+    margin: 10px auto;
+    cursor: grab;
+}
+
+#poolList {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
