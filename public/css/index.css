@@ -6,11 +6,11 @@
 
 header{
     display: block;
-    background-color: aqua !important;
+    
 }
-
+ 
 main{
-    margin-top: 35px !important;
+    margin-top: 0 !important;
 }
 
 button{
@@ -20,10 +20,10 @@ button{
 
 #bottomSheet {
     position: fixed;
-
     bottom: 0;
     width: 95%;
-    height: calc(100vh - 50px); /* 초기 높이 (절반 크기) */
+    max-width: 460px;
+    height: calc(100dvh - 35px); /* 초기 높이 (절반 크기) */
     background: white;
     border-radius: 20px 20px 0 0;
     transition: transform 0.3s ease-in-out;
@@ -34,12 +34,19 @@ button{
 }
 
 #handle {
-    width: 50px;
-    height: 5px;
-    background: gray;
+    width: 100%;
+    height: 50px;
     border-radius: 5px;
-    margin: 10px auto;
     cursor: grab;
+}
+
+.handle-bar{
+    margin: auto;
+    height: 5px;
+    width: 100px;
+    background-color: #a9a9a9;
+    margin-top: 23px;
+    border-radius: 50px;
 }
 
 #poolList {
@@ -47,3 +54,11 @@ button{
     max-height: 60vh;
     overflow-y: auto;
 }
+
+
+.search-console{
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+}
+

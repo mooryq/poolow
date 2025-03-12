@@ -11,19 +11,31 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
     <header>
-        <a href="./list.html">풀로우~</p></a>
+        
+        <div class="search-console">
+            <a href="./list.html"> <i class="fa-solid fa-arrow-left"></i></a>
+            <div class="search">
+                <div class="inside-search">
+                    <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" onkeyup="searchPools()">
+                </div>
+            </div>
+        </div>
     </header>
     <main>
-        <button onclick="moveToCustomLocation()">현재 위치로 이동</button>
+        <!-- <button onclick="moveToCustomLocation()">현재 위치로 이동</button> -->
         <div id="map"></div>
 
         <div id="bottomSheet">
 
-            <div id="handle"></div>
+            <div id="handle">
+                <div class="handle-bar"></div>
+            </div>
+
             <div id="poolList">
                 
             </div>

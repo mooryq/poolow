@@ -36,23 +36,25 @@ window.onload = initMap;
 
 
 //bottomSheet 확장 클릭 이벤트const bottomSheet = document.getElementById("bottomSheet");
+const bottomSheet = document.getElementById("bottomSheet");
 const handle = document.getElementById("handle");
 
-let startY = 0; // 터치/마우스 시작 위치
-let currentY = 0; // 현재 위치
+let startY = 0; // 터치 시작 위치
+let currentY = 0; // 현재 터치 위치
 let isDragging = false; // 드래그 중인지 여부
 let isExpanded = false; // 현재 bottomSheet 상태
 
-// ✅ 공통 이벤트 핸들러 (터치 & 마우스 이벤트를 처리)
-function startDrag(event) {
-    startY = event.touches ? event.touches[0].clientY : event.clientY; // 터치 or 마우스 Y 좌표 저장
+// ✅ 터치 시작 시 (손가락을 화면에 댐)
+handle.addEventListener("touchstart", (event) => {
+    startY = event.touches[0].clientY; // 터치 시작 위치 저장
     isDragging = true;
-}
+});
 
-function moveDrag(event) {
+// ✅ 터치 중 (손가락을 움직임)
+handle.addEventListener("touchmove", (event) => {
     if (!isDragging) return;
 
-    currentY = event.touches ? event.touches[0].clientY : event.clientY; // 현재 터치 or 마우스 위치
+    currentY = event.touches[0].clientY; // 현재 터치 위치
     let diff = currentY - startY; // 이동 거리 계산
 
     if (isExpanded && diff > 0) {
@@ -60,29 +62,22 @@ function moveDrag(event) {
     } else if (!isExpanded && diff < 0) {
         bottomSheet.style.transform = `translateY(${50 + diff}%)`;
     }
-}
+});
 
-function endDrag() {
+// ✅ 터치 끝났을 때 (손가락을 뗌)
+handle.addEventListener("touchend", () => {
     isDragging = false;
+    
+    const dragDistance = currentY - startY; // 드래그 거리 계산
 
-    // ✅ 위로 드래그 → 전체 확장
-    if (isExpanded || startY - currentY > 50) {
-        bottomSheet.style.transform = "translateY(5%)";
+    // ✅ 위로 드래그한 경우 (올리기)
+    if (dragDistance < -50 || !isExpanded) {
+        bottomSheet.style.transform = "translateY(35px)"; // 최상단으로 이동
         isExpanded = true;
-    } 
-    // ✅ 아래로 드래그 → 축소
-    else if (!isExpanded || currentY - startY > 50) {
-        bottomSheet.style.transform = "translateY(50%)";
+    }
+    // ✅ 아래로 드래그한 경우 (내리기)
+    else if (dragDistance > 50 || isExpanded) {
+        bottomSheet.style.transform = "translateY(50%)"; // 원래 위치로 이동
         isExpanded = false;
     }
-}
-
-// ✅ 터치 이벤트 추가 (모바일)
-handle.addEventListener("touchstart", startDrag);
-handle.addEventListener("touchmove", moveDrag);
-handle.addEventListener("touchend", endDrag);
-
-// ✅ 마우스 이벤트 추가 (데스크톱)
-handle.addEventListener("mousedown", startDrag);
-document.addEventListener("mousemove", moveDrag);
-document.addEventListener("mouseup", endDrag);
+});
