@@ -35,7 +35,14 @@ function initMap() {
 window.onload = initMap;
 
 
-//bottomSheet 확장 클릭 이벤트const bottomSheet = document.getElementById("bottomSheet");
+// ✅ `DOMContentLoaded` 이벤트 추가
+document.addEventListener("DOMContentLoaded", () => {
+    loadPools();
+});
+
+
+
+//bottomSheet 확장 클릭 이벤트
 const bottomSheet = document.getElementById("bottomSheet");
 const handle = document.getElementById("handle");
 
@@ -81,3 +88,75 @@ handle.addEventListener("touchend", () => {
         isExpanded = false;
     }
 });
+
+async function loadPools() {
+    try {
+        console.log("🔍 loadPools() 함수 실행됨!");  // 🚀 실행 여부 확인
+
+        const response = await fetch("data/pools.json");
+        const pools = await response.json();
+
+        // console.log("✅ JSON 데이터 불러오기 성공:", pools); // 🚀 JSON 데이터 확인
+
+        displayPools(pools);
+        displayMarkers(pools);
+    } catch (error) {
+        console.error("❌ 데이터 불러오기 오류:", error);
+    }
+}
+
+
+
+function displayPools(pools) {
+    const poolList = document.getElementById("poolList");
+    poolList.innerHTML = ""; // 기존 리스트 초기화
+
+    // console.log("✅ 리스트에 추가할 데이터:", pools); // 🚀 리스트 데이터 확인
+
+    pools.forEach(pool => {
+        const poolItem = document.createElement("div");
+        poolItem.classList.add("pool-item");
+        poolItem.innerHTML = `
+            <h3>${pool.name}</h3>
+            <p>${pool.address}</p>
+            <button onclick="moveToPool(${pool.lat}, ${pool.lng})">위치 보기</button>
+        `;
+
+        poolList.appendChild(poolItem);
+    });
+}
+
+
+
+function displayMarkers(pools) {
+    pools.forEach(pool => {
+        // console.log("✅ 마커 추가됨:", pool.name, pool.lat, pool.lng); // 🚀 마커 추가 확인
+        console.log("마커 이미지 경로:", "images/marker.png");
+
+        const marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(pool.lat, pool.lng),
+            map: map,
+            title: pool.name,
+            icon: {
+                url: "images/marker.png", // 마커 이미지 파일 경로
+                size: new naver.maps.Size(23, 23), // 마커 크기 (픽셀 단위)
+                origin: new naver.maps.Point(0, 0), // 이미지 원본의 시작 위치
+                anchor: new naver.maps.Point(11, 20), // 마커 기준점 (하단 중앙)
+                scaledSize: new naver.maps.Size(23, 23) // 이미지를 축소된 크기로 표시
+            }
+
+        });
+
+        // ✅ 마커 클릭 이벤트 추가
+        naver.maps.Event.addListener(marker, "click", function () {
+            map.setCenter(marker.getPosition());
+            map.setZoom(16);
+        });
+
+    });
+}
+
+function moveToPool(lat, lng) {
+    map.setCenter(new naver.maps.LatLng(lat, lng));
+    map.setZoom(16);
+}
