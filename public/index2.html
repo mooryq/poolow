@@ -9,7 +9,6 @@
     </script>
 
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/indexCard.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -22,38 +21,31 @@
             <a href="./list.html"> <i class="fa-solid fa-arrow-left"></i></a>
             <div class="search">
                 <div class="inside-search">
-                    <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" onkeyup="executeSearch()">
-                    <i class="fa-solid fa-xmark" id="clearSearch"></i>
+                    <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" onkeyup="searchPools()">
                 </div>
             </div>
         </div>
-        
     </header>
     <main>
         <!-- <button onclick="moveToCustomLocation()">현재 위치로 이동</button> -->
         <div id="map"></div>
         
-    <!-- ✅ 바텀시트 (초기 상태: 지도 안에서 리스트 표시) -->
+
         <div id="bottomSheet">
-            <div id="handle"><div class="handle-bar"></div></div>
+
+            <div id="handle">
+                <div class="handle-bar"></div>
+            </div>
+
             <div id="poolList">
+                
             </div>
         </div>
-
-    <!-- ✅ 검색 결과 컨테이너 (초기 상태: 숨김) -->
-    <div id="resultContainer" style="display: none;">
-        <p id="resultCount"></p>
-        <div id="cardWrapper" class="horizontal-scroll"></div>
-    </div>
-
     
     
     </main>
 </div><!--container-->
-<script src="js/bottomSheetCard.js"></script>
-<script src="js/search.js"></script>
-<script src="js/indexCard.js"></script>
-
-
+<script src="js/index.js"></script>
+<script src="js/bottomSheet.js"></script>
 </body>
 </html>

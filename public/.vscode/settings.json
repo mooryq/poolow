@@ -1,0 +1,12 @@
+{
+    "liveServer.settings.port": 5501,
+    "liveServer.settings.root": "/",
+    "liveServer.settings.CustomBrowser": "chrome",
+    "liveServer.settings.https": {
+      "enable": true,
+      "cert": "/Users/naeun/Documents/GitHub/poolow/poolow/public/ssl/cert.pem",
+      "key": "/Users/naeun/Documents/GitHub/poolow/poolow/public/ssl/key.pem",
+    "passphrase": ""
+    }
+  }
+  

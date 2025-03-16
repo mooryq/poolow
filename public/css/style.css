@@ -5,6 +5,7 @@ html{
     font-family: 'Pretendard', sans-serif;
     letter-spacing: -0.02em; /* 살짝 간격 조정 (Pretendard 권장값) */
     font-size: 16px;
+    
 }
 
 body{
@@ -12,6 +13,7 @@ body{
     justify-content: center;
     height: 100vh;
     color: #222222;
+    overflow: hidden;
 }
 
 .container {
@@ -65,6 +67,8 @@ main{
 .inside-search{
     padding: 2px 10px;
     width: 100%;
+    display: flex;
+    align-items: center;
 }
 
 #searchInput{
