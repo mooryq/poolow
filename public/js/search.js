@@ -1,4 +1,3 @@
-console.log("✅ search.js 실행됨!");
 
 window.moveToSearchArea = moveToSearchArea;
 
@@ -20,24 +19,20 @@ async function loadDistrictCenters() {
 document.addEventListener("DOMContentLoaded", () => {
     loadDistrictCenters();
 });
+
+
 function moveToSearchArea(filteredPools, keyword) {
+
+    if (!event || event.key !== "Enter") {
+        console.warn("⚠️ moveToSearchArea 실행 조건 불충분 (Enter 입력 없음)");
+        return;
+    }
+
     if (filteredPools.length === 0) {
         console.log(`❌ 검색 결과 없음: ${keyword}`);
         
         // ✅ 지역 데이터에서 검색어가 포함된 지역 찾기
         let targetLocation = null;
-
-        // Object.keys(districtCenters["서울특별시"]).forEach(district => {
-        //     if (keyword.includes(district.replace("구", ""))) {  // ✅ "동대문" -> "동대문구" 변환
-        //         targetLocation = districtCenters["서울특별시"][district];
-        //     }
-        // });
-
-        // Object.keys(districtCenters["경기도"]).forEach(city => {
-        //     if (keyword.includes(city.replace("시", ""))) {  // ✅ "수원" -> "수원시" 변환
-        //         targetLocation = districtCenters["경기도"][city];
-        //     }
-        // });
 
 
         Object.keys(districtCenters["서울특별시"]).forEach(district => {
@@ -57,7 +52,6 @@ function moveToSearchArea(filteredPools, keyword) {
         });
 
 
-
         if (targetLocation) {
             // ✅ 해당 구나 시 중심으로 지도 이동
             map.setCenter(new naver.maps.LatLng(targetLocation.lat, targetLocation.lng));
@@ -69,10 +63,6 @@ function moveToSearchArea(filteredPools, keyword) {
             updateSearchResultsWithNoPools(keyword);
         } 
 
-        // else {
-        //     alert("검색된 지역에 수영장이 없습니다.");
-        //     console.warn("❌ 검색된 지역 데이터 없음");
-        // }
         return;
     }
 

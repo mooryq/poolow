@@ -58,38 +58,3 @@ button{
     box-sizing: border-box;
 }
 
-
-/* ✅ 검색 결과 컨테이너 */
-#resultContainer {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-/* ✅ 카드 리스트 (가로 스크롤) */
-#cardWrapper {
-    display: flex;
-    gap: 15px;
-    overflow: auto;
-    overflow-x: scroll;
-    white-space: nowrap;
-    padding: 10px;
-    scroll-snap-type: x mandatory;
-}
-
-/* ✅ 개별 카드 */
-.pool-card {
-    flex: 0 0 85%;
-    max-width: 85%;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    scroll-snap-align: center;
-}

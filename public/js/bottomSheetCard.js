@@ -50,6 +50,18 @@ function stopDrag(event) {
     document.removeEventListener(event.touches ? "touchend" : "mouseup", stopDrag);
 }
 
+// ✅ 마우스 휠(스크롤) 이벤트 추가 (핸들에서만 작동)
+handle.addEventListener("wheel", (event) => {
+    if (event.deltaY > 0) {
+        // 🔼 휠 위로 → BottomSheet 확장
+        toggleBottomSheet(true);
+    } else if (event.deltaY < 0 && isExpanded) {
+        // 🔽 휠 아래로 → BottomSheet 축소
+        toggleBottomSheet(false);
+    }
+    event.preventDefault(); // 기본 스크롤 동작 방지
+});
+
 // ✅ 이벤트 리스너 추가
 handle.addEventListener("mousedown", startDrag);
 handle.addEventListener("touchstart", startDrag);
