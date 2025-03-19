@@ -5,45 +5,52 @@ let pools = [];
 let poolsInView = [];
 
 let clickedMarker = false; // 🔹 마커 클릭 여부를 저장하는 변수
+let swiper;
 
 
 const searchInput = document.getElementById("searchInput");
-// const resultContainer = document.getElementById("resultContainer");
-// const resultCount = document.getElementById("resultCount");
-// const cardWrapper = document.getElementById("cardWrapper");
+const resultContainer = document.getElementById("resultContainer");
+const resultCount = document.getElementById("resultCount");
+const cardWrapper = document.getElementById("cardWrapper");
+// const searchAgainBtn = document.getElementById("searchAgainBtn");
 const clearSearchBtn = document.getElementById("clearSearch");
-const swiperContainer = document.querySelector('.cardUI');
 
 
 
 
 // ✅ 초기 실행
 document.addEventListener("DOMContentLoaded", () => {
-
     initMap();
     loadPools().then(() => {
         updateMarkersAndList(); // ✅ 초기 리스트 표시
-        
     });
-    
+    initializeSwiper(); // Swiper 초기화
 });
 
-const swiper = new Swiper('.cardUI', {
-    slidesPerView: 1,
-    centeredSlides: true,
-    spaceBetween: 30,
-    grabCursor: true,
-    loop: false,
-    on: {
-        slideChange: function () {
-            updateFocusFromActiveSlide();
-        }
+
+// ✅ Swiper 초기화 함수
+
+function initSwiper() {
+    if (swiper) {
+        swiper.destroy(true, true); // 기존 Swiper 제거
     }
-  });
-  
+
+    swiper = new Swiper('.cardUI', {
+        slidesPerView: 1,
+        centeredSlides: true,
+        spaceBetween: 30,
+        grabCursor: true,
+        loop: false, // 무한 루프 방지
+        on: {
+            slideChange: function () {
+                updateFocusFromActiveSlide();  // 🔥 활성 슬라이드 변경될 때 자동 실행
+            }
+        }
+    });
+}
+
 
   
-
 
 // ✅ 네이버 지도 초기화
 function initMap() {
@@ -118,19 +125,66 @@ async function loadPools() {
     const response = await fetch("data/pools.json");
     pools = await response.json();
     updateMarkersAndList();
-    // updateSwiperSlides(pools);
-    // updateMarkers(pools);
+    updateSwiperSlides(pools);
+    updateMarkers(pools);
     displayPools(pools);
 }
 
 
-// ✅ 지도에 마커&리스트 업데이트
+// // ✅ 지도에 마커&리스트 업데이트
+// function updateMarkersAndList() {
+//     console.log("🔄 updateMarkersAndList() 실행됨");
+
+//     const bounds = map.getBounds();
+//     poolsInView = pools.filter(pool => bounds.hasLatLng(new naver.maps.LatLng(pool.lat, pool.lng)));
+
+
+//     // 기존 마커 제거
+//     markers.forEach(marker => marker.setMap(null));
+//     markers = [];
+
+//     poolsInView.forEach(pool => {
+//         const marker = new naver.maps.Marker({
+//             position: new naver.maps.LatLng(pool.lat, pool.lng),
+//             map: map,
+//             title: pool.name,
+//             icon: {
+//                 url: "images/marker.png",
+//                 size: new naver.maps.Size(23, 23),
+//                 origin: new naver.maps.Point(0, 0),
+//                 anchor: new naver.maps.Point(11, 20),
+//                 scaledSize: new naver.maps.Size(23, 23)
+//             }
+//         });
+//         console.log(`📍 생성된 마커: ${pool.name}`);
+
+//         // ✅ 마커 클릭 또는 터치 시 이벤트 추가
+//         ["click", "touchstart"].forEach(eventType => {
+//             naver.maps.Event.addListener(marker, eventType, function () {
+//                 console.log(`✅ 마커 ${eventType} 이벤트 감지됨 - ${pool.name}`);
+
+//                 // ✅ 키보드 닫기
+//                 searchInput.blur();
+//                 console.log("✅ 키보드 내리기 실행됨");
+
+//                 // ✅ 마커 포커스 및 카드 UI 갱신
+//                 moveToPool(pool.lat, pool.lng, pool.name);
+//                 showCardUI(poolsInView, pool.name); // ✅ 선택된 수영장을 리스트 맨 앞으로 이동
+//             });
+//         });
+
+//         markers.push(marker);
+//     });
+        
+// //  updateMarkers(poolsInView);
+//     displayPools(poolsInView);
+// }
+
 function updateMarkersAndList() {
     console.log("🔄 updateMarkersAndList() 실행됨");
 
     const bounds = map.getBounds();
     poolsInView = pools.filter(pool => bounds.hasLatLng(new naver.maps.LatLng(pool.lat, pool.lng)));
-
 
     // 기존 마커 제거
     markers.forEach(marker => marker.setMap(null));
@@ -149,30 +203,26 @@ function updateMarkersAndList() {
                 scaledSize: new naver.maps.Size(23, 23)
             }
         });
-        console.log(`📍 생성된 마커: ${pool.name}`);
-
-        // ✅ 마커 클릭 또는 터치 시 이벤트 추가
+        // ✅ 마커 클릭 시 이벤트 추가
         ["click", "touchstart"].forEach(eventType => {
             naver.maps.Event.addListener(marker, eventType, function () {
                 console.log(`✅ 마커 ${eventType} 이벤트 감지됨 - ${pool.name}`);
 
-                // ✅ 키보드 닫기
-                searchInput.blur();
-                console.log("✅ 키보드 내리기 실행됨");
 
-                // ✅ 마커 포커스 및 카드 UI 갱신
-                moveToPool(pool.lat, pool.lng, pool.name);
-                showCardUI(poolsInView, pool.name); // ✅ 선택된 수영장을 리스트 맨 앞으로 이동
+        console.log(`📍 생성된 마커: ${pool.name}`);
+    
+        // ✅ 지도 중심 이동 및 마커 강조
+        moveToPool(pool.lat, pool.lng, pool.name);    
+        // ✅ 카드 UI 갱신 및 Swiper 첫 번째 슬라이드로 이동        
+        handleMarkerClick(pool.name);
             });
         });
-
+        
         markers.push(marker);
     });
-        
-//  updateMarkers(poolsInView);
+
     displayPools(poolsInView);
 }
-
 
 
 
@@ -210,62 +260,108 @@ function displayPools(poolsToShow) {
     });
 }
 
+//📌 현재 보이는 Swiper 슬라이드 정보를 가져와 지도 & 마커 업데이트
+function updateFocusFromActiveSlide() {
+    const activeSlide = swiper.slides[swiper.activeIndex]; // 현재 활성화된 슬라이드 가져오기
+    if (!activeSlide) return;
 
-// ✅ 검색 실행 함수
-function executeSearch(event = null) {
-    const keyword = searchInput.value.trim().toLowerCase(); 
-    if (keyword.length === 0) return;
-    console.log(`🚀 executeSearch 실행됨 (검색어: ${keyword})`);
+    const poolName = activeSlide.getAttribute("data-name");
+    const lat = parseFloat(activeSlide.getAttribute("data-lat"));
+    const lng = parseFloat(activeSlide.getAttribute("data-lng"));
 
-    const filteredPools = pools.filter(pool =>
-        pool.name.toLowerCase().includes(keyword) ||
-        pool.address.toLowerCase().includes(keyword)
-    );
-    console.log("📌 검색 결과:", filteredPools);
-
-
-    showCardUI(filteredPools);
-     {console.log("✅ showCardUI 실행됨");}
-
-    // ✅ moveToSearchArea가 검색 입력 중 자동 실행되지 않도록 보장
-    if (event && event.key === "Enter" && typeof moveToSearchArea === "function") {
-        moveToSearchArea(filteredPools, keyword);
-    } else if (!event) {
-        console.warn("⚠️ moveToSearchArea 실행 조건 불충분 (event 없음 또는 Enter 입력 없음)");
+    if (poolName && lat && lng) {
+        console.log(`🎯 [Swiper] 활성 슬라이드 변경: ${poolName}`);
+        moveToPool(lat, lng, poolName);  // 🔥 자동으로 지도 & 마커 업데이트
     }
+}
+
+//📌 마커 클릭 시 Swiper 첫 번째 카드로 이동
+
+function handleMarkerClick(poolName) {
+    const selectedPool = pools.find(pool => pool.name === poolName);
+    if (!selectedPool) return;
+
+    console.log(`📍 마커 클릭 - ${poolName}`);
+
+    // ✅ 해당 수영장을 첫 번째 카드로 설정한 뒤 Swiper 초기화
+    showCardUI([selectedPool, ...poolsInView.filter(pool => pool.name !== poolName)], poolName);
+
+    // ✅ Swiper를 첫 번째 슬라이드로 이동
+    setTimeout(() => {
+        console.log("🔄 [Swiper] 첫 번째 슬라이드로 이동");
+        swiper.slideTo(0); // Swiper 첫 번째 카드로 이동
+    }, 300);
 }
 
 
 
+// ✅ Swiper 컨테이너를 한 번만 선택하여 재사용
+const swiperContainer = document.querySelector('.cardUI');
 
 
-// ✅ 바텀시트 숨기고 카드 UI 표시 (지도 위 마커에서 선택한 수영장을 리스트 맨 앞에 정렬)
 function showCardUI(filteredPools, selectedPoolName = null) {
-console.log("✅ showCardUI 실행됨");
-console.log("📌 전달된 filteredPools:", filteredPools);
-
+    console.log("✅ showCardUI 실행됨");
+    console.log("📌 전달된 filteredPools:", filteredPools);
 
     bottomSheet.style.display = "none"; // 바텀시트 숨김
     swiperContainer.style.display = "block"; // Swiper 표시
     swiperContainer.innerHTML = ''; // 기존 슬라이드 초기화
 
-console.log("✅ cardUI 표시됨");
+    console.log("✅ [Swiper] 카드 UI 표시됨");
 
-// ✅ 선택된 수영장을 리스트 맨 앞으로 정렬
-    if (selectedPoolName) {
-        const selectedIndex = filteredPools.findIndex(pool => pool.name === selectedPoolName);
-        if (selectedIndex > -1) {
-            const [selectedPool] = filteredPools.splice(selectedIndex, 1); // 기존 배열에서 제거
-            filteredPools.unshift(selectedPool); // 맨 앞에 추가
-        }
-    }
-    console.log("📌 최종 filteredPools:", filteredPools);
-    
-    updateSearchResults(filteredPools);
+    // ✅ Swiper 슬라이드 생성
+    filteredPools.forEach(pool => {
+        console.log(`🆕 카드 추가됨: ${pool.name}`);
+        const slide = document.createElement("swiper-slide");
 
-    console.log(`📌 Swiper 카드 리스트 업데이트 완료, 선택된 수영장 맨 앞으로 이동: ${filteredPools[0]?.name || "없음"}`);
-    console.log("✅ showCardUI 실행종료");
+        slide.setAttribute("data-name", pool.name);
+        slide.setAttribute("data-lat", pool.lat);
+        slide.setAttribute("data-lng", pool.lng);
+
+        slide.innerHTML = `
+            <div class="short-address">${pool.address.split(" ").slice(0, 4).join(" ")}</div>
+            <div class="poolTitle">
+                <div class="pool-name">${pool.name}</div>
+                ${pool.tags.map(tag => `<div class="tag">${tag}</div>`).join('')}
+            </div>
+            <div class="noti">${pool.off_day || ""}</div>
+        `;
+
+        swiperContainer.appendChild(slide);
+    });
+
+    // ✅ Swiper 다시 초기화
+    initSwiper();
+    console.log(`📌 [Swiper] 카드 리스트 업데이트 완료, 첫 번째 수영장: ${filteredPools[0]?.name || "없음"}`);
 }
+
+
+// // ✅ 바텀시트 숨기고 카드 UI 표시 (지도 위 마커에서 선택한 수영장을 리스트 맨 앞에 정렬)
+// function showCardUI(filteredPools, selectedPoolName = null) {
+// console.log("✅ showCardUI 실행됨");
+// console.log("📌 전달된 filteredPools:", filteredPools);
+
+//     bottomSheet.style.display = "none"; // 바텀시트 숨김
+//     swiperContainer.style.display = "block"; // Swiper 표시
+//     swiperContainer.innerHTML = ''; // 기존 슬라이드 초기화
+
+// console.log("✅ cardUI 표시됨");
+
+// // ✅ 선택된 수영장을 리스트 맨 앞으로 정렬
+//     if (selectedPoolName) {
+//         const selectedIndex = filteredPools.findIndex(pool => pool.name === selectedPoolName);
+//         if (selectedIndex > -1) {
+//             const [selectedPool] = filteredPools.splice(selectedIndex, 1); // 기존 배열에서 제거
+//             filteredPools.unshift(selectedPool); // 맨 앞에 추가
+//         }
+//     }
+//     console.log("📌 최종 filteredPools:", filteredPools);
+    
+//     updateSearchResults(filteredPools);
+
+//     console.log(`📌 Swiper 카드 리스트 업데이트 완료, 선택된 수영장 맨 앞으로 이동: ${filteredPools[0]?.name || "없음"}`);
+//     console.log("✅ showCardUI 실행종료");
+// }
     
     
  // ✅ 마커 선택시 or 검색결과 Swiper를 사용하여 UI 업데이트 (카드 형태)
@@ -283,9 +379,7 @@ console.log("✅ cardUI 표시됨");
  
     filteredPools.forEach(pool => {
         console.log(`🆕 카드 추가됨: ${pool.name}`);
-
-        const slide = document.createElement('swiper-slide'); 
-         slide.setAttribute("data-name", pool.name); // ✅ Swiper Slide에 pool 이름 저장
+         const slide = document.createElement("swiper-slide");
  
          slide.innerHTML = `
              <div class="short-address">${pool.address.split(" ").slice(0, 4).join(" ")}</div>
@@ -305,8 +399,12 @@ console.log("✅ cardUI 표시됨");
  
          swiperContainer.appendChild(slide);
      });
-
+ 
+     // Swiper 다시 초기화
+     initSwiper();
+     console.log(`📌 Swiper 카드 리스트 업데이트 완료, 첫 번째 수영장: ${filteredPools[0]?.name || "없음"}`);
  }
+
 
 
 
@@ -350,7 +448,35 @@ function moveToPool(lat, lng, poolName) {
     } else {
         console.warn(`⚠️ 해당하는 마커를 찾을 수 없음: ${poolName}`);
     }
+}
 
+
+
+
+
+
+// ✅ 검색 실행 함수
+function executeSearch(event = null) {
+    const keyword = searchInput.value.trim().toLowerCase(); 
+    if (keyword.length === 0) return;
+    console.log(`🚀 executeSearch 실행됨 (검색어: ${keyword})`);
+
+    const filteredPools = pools.filter(pool =>
+        pool.name.toLowerCase().includes(keyword) ||
+        pool.address.toLowerCase().includes(keyword)
+    );
+    console.log("📌 검색 결과:", filteredPools);
+
+
+    showCardUI(filteredPools);
+     {console.log("✅ showCardUI 실행됨");}
+
+    // ✅ moveToSearchArea가 검색 입력 중 자동 실행되지 않도록 보장
+    if (event && event.key === "Enter" && typeof moveToSearchArea === "function") {
+        moveToSearchArea(filteredPools, keyword);
+    } else if (!event) {
+        console.warn("⚠️ moveToSearchArea 실행 조건 불충분 (event 없음 또는 Enter 입력 없음)");
+    }
 }
 
 

@@ -9,10 +9,14 @@
         src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2c569m0l5t">
     </script>
 
+
+
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    
 </head>
 <body>
     <div class="container">
@@ -38,18 +42,36 @@
             <div id="handle"><div class="handle-bar"></div></div>
             <div id="poolList"></div>
         </div>
-
-    <!-- ✅ 검색 결과 컨테이너 (초기 상태: 숨김) -->
+<!-- 
+ ✅ 검색 결과 컨테이너 (초기 상태: 숨김) 
     <div id="resultContainer" style="display: none;">
         <p id="resultCount"></p>
         <div id="cardWrapper" class="horizontal-scroll"></div>
-    </div>
+    </div> -->
+<!-- 
+
+    ✅ 검색 결과 컨테이너 (초기 상태: 숨김) 
+    <swiper-container class="cardUI" slides-per-view="1" centered-slides="true" space-between="30" grab-cursor="true" style="display:none">
+        <swiper-slide data-name="">Slide 1</swiper-slide>
+    </swiper-container>     -->
+
+            <!-- Slider main container -->
+    <swiper-container class="swiper swiper-horizontal cardUI" slides-per-view="1" centered-slides="true" space-between="30" grab-cursor="true" style="display:none">
+        <!-- Additional required wrapper -->
+        <!-- <div class="swiper-wrapper"> -->
+            <!-- Slides -->
+            <div data-name="" class="swiper-slide">Slide 1</div>
+        <!-- </div> -->
+    </swiper-container> 
+  
+    
 
     
     
     </main>
 </div><!--container-->
-
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 <script src="js/bottomSheetCard.js"></script>
 <script src="js/search.js"></script>
 <script src="js/index.js"></script>
