@@ -2,68 +2,63 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no,viewport-fit=cover">
+
     <title>poolow</title>
     <script type="text/javascript" 
         src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2c569m0l5t">
     </script>
-    <style>
-        #map {
-            width: 100%;
-            height: 100vh;
-        }
-    </style>
-    <link rel="stylesheet" href="style.css">
+
+    
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
 </head>
 <body>
     <div class="container">
-    <header>
-        <a href="./list.html">풀로우~</p>
-    </header>
-    <main>
-        <div id="map"></div>
-        <button onclick="moveToCustomLocation()">현재 위치로 이동</button>
-
+        <header>
+            
+            <div class="search-console">
+                <div class="search">
+                    <div class="inside-search">
+                        <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" >
+                        <i class="fa-solid fa-xmark" id="clearSearch"></i>
+                    </div>
+                </div>
+            </div>
+            
+        </header>
         
-    <script>
-        var map;
+        <main>
+            <div id="map"></div>
 
-        function initMap() {
-            map = new naver.maps.Map("map", {
-                center: new naver.maps.LatLng(37.5665, 126.9780), // 기본 위치 (서울)
-                zoom: 15
-            });
+            <!-- ✅ 바텀시트 (초기 상태: 지도 안에서 리스트 표시) -->
+            <div id="bottomSheet">
+                <div id="handle"><div class="handle-bar"></div></div>
+                <div id="poolList"></div>
+            </div>
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        var userLat = position.coords.latitude;
-                        var userLng = position.coords.longitude;
+            <!-- Slider main container -->
+            <div class="swiper-container cardUI hidden">
+                <!-- Additional required wrapper -->
+                <div class="swiper-wrapper">
+                    <p id="resultCount"></p>
+                </div>
+            </div>     
+        </main>
+    </div><!--container-->
 
-                        var userLocation = new naver.maps.LatLng(userLat, userLng);
-                        map.setCenter(userLocation); // 지도 중심 변경
-                        
-                        // 사용자 위치 마커 추가
-                        var marker = new naver.maps.Marker({
-                            position: userLocation,
-                            map: map,
-                            title: "현재 위치"
-                        });
-                    },
-                    function(error) {
-                        console.error("위치를 가져올 수 없습니다.", error);
-                    }
-                );
-            } else {
-                alert("이 브라우저에서는 위치 정보를 지원하지 않습니다.");
-            }
-        }
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="js/bottomSheetCard.js"></script>
+<script src="js/search.js"></script>
+<script src="js/index.js"></script>
+<script src="js/global.js"></script>
 
-        window.onload = initMap;
-    </script>
-    
-    </main>
-</div><!--container-->
 </body>
 </html>
