@@ -2,49 +2,63 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no,viewport-fit=cover">
+
     <title>poolow</title>
     <script type="text/javascript" 
         src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2c569m0l5t">
     </script>
 
+    
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
 </head>
 <body>
     <div class="container">
-    <header>
-        
-        <div class="search-console">
-            <a href="./list.html"> <i class="fa-solid fa-arrow-left"></i></a>
-            <div class="search">
-                <div class="inside-search">
-                    <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" onkeyup="searchPools()">
+        <header>
+            
+            <div class="search-console">
+                <div class="search">
+                    <div class="inside-search">
+                        <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" >
+                        <i class="fa-solid fa-xmark" id="clearSearch"></i>
+                    </div>
                 </div>
             </div>
-        </div>
-    </header>
-    <main>
-        <!-- <button onclick="moveToCustomLocation()">현재 위치로 이동</button> -->
-        <div id="map"></div>
+            
+        </header>
         
+        <main>
+            <div id="map"></div>
 
-        <div id="bottomSheet">
-
-            <div id="handle">
-                <div class="handle-bar"></div>
+            <!-- ✅ 바텀시트 (초기 상태: 지도 안에서 리스트 표시) -->
+            <div id="bottomSheet">
+                <div id="handle"><div class="handle-bar"></div></div>
+                <div id="poolList"></div>
             </div>
 
-            <div id="poolList">
-                
-            </div>
-        </div>
-    
-    
-    </main>
-</div><!--container-->
+            <!-- Slider main container -->
+            <div class="swiper-container cardUI hidden">
+                <!-- Additional required wrapper -->
+                <div class="swiper-wrapper">
+                    <p id="resultCount"></p>
+                </div>
+            </div>     
+        </main>
+    </div><!--container-->
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="js/bottomSheetCard.js"></script>
+<script src="js/search.js"></script>
 <script src="js/index.js"></script>
+<script src="js/global.js"></script>
+
 </body>
 </html>
