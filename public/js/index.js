@@ -232,15 +232,15 @@ function updateMarkersAndList() {
                 // ✅ 마커 포커스 및 카드 UI 갱신
                 moveToPool(pool.lat, pool.lng, pool.name);
                 
-                // showCardUI(poolsInView, pool.name); 
-                // ✅ 검색 결과가 없거나 바텀시트가 닫힌 상태에서도 작동하도록 전체 풀에서 해당 풀만 찾아서 전달
-                const matchedPools = pools.filter(p => p.name === pool.name);
-                if (matchedPools.length > 0) {
-                    showCardUI(matchedPools, pool.name);
-                } else {
-                    console.warn("❗ 마커 클릭했지만 해당하는 수영장을 리스트에서 찾지 못함");
-                }
-                    });
+                showCardUI(poolsInView, pool.name); 
+                // // ✅ 검색 결과가 없거나 바텀시트가 닫힌 상태에서도 작동하도록 전체 풀에서 해당 풀만 찾아서 전달
+                // const matchedPools = pools.filter(p => p.name === pool.name);
+                // if (matchedPools.length > 0) {
+                //     showCardUI(matchedPools, pool.name);
+                // } else {
+                //     console.warn("❗ 마커 클릭했지만 해당하는 수영장을 리스트에서 찾지 못함");
+                // }
+             });
         });
         markers.push(marker);
     });
