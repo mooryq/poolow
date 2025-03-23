@@ -1,12 +1,22 @@
 #map {
     width: 460px;
-    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
     margin: auto;
 }
 
-
 button{
     display: block;
+}
+
+
+.container {
+    width: 460px;  /* 아이폰 */
+    max-width: 100%;
+    height: calc(var(--vh, 1vh) * 100); /* 💡 100% → 안전하게 바꿈 */
+    margin: auto;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: auto; 
 }
 
 #bottomSheet {
@@ -14,7 +24,7 @@ button{
     bottom: 0;
     width: 100%;
     max-width: 460px;
-    height: 20vh; /* ✅ 초기 높이 (화면의 하단 20% 정도) */
+    height: 20dvh; /* ✅ 초기 높이 (화면의 하단 20% 정도) */
     background: white;
     border-radius: 20px 20px 0 0;
     transition: height 0.3s ease-in-out; /* ✅ 부드러운 변화를 위한 애니메이션 */
@@ -24,10 +34,10 @@ button{
 
 #handle {
     width: 100%;
-    height: 30px;
+    height: 15px;
     border-radius: 5px;
     cursor: grab;
-    padding-top:23px;
+    padding-top:20px;
 }
 
 .handle-bar{
@@ -80,28 +90,28 @@ button{
 
 
 /*스와이퍼*/
+
 .cardUI {
-    left: 50%;
-    transform: translateX(-50%);
-    width: 460px;
+    position: relative;
+    margin: auto;
     height: 8rem;
-    position: fixed;
-    bottom: 8rem;
-    background-color: #fff;
+    bottom: 10rem;
+    background-color: transparent;
+    margin-bottom: 1rem;
   }
 
   .swiper-slide {
+    position: relative;
     text-align: center;
-    font-size: 18px;
-    background: #fff;
-    display: flex;
-    justify-content: center;
     align-items: center;
+    background-color: #fff;
+    width: 68% !important;
+    padding: 1rem 1rem  0 1rem;
+    border-radius: 1rem;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 2px 12px 0px;
   }
-/* 
-  swiper-slide img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  } */
+
+
+  .hidden{
+    display:none;
+  }

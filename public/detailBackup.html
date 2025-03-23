@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>poolow</title>
+    <script type="text/javascript" 
+        src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2c569m0l5t">
+    </script>
+
+    <link rel="stylesheet" href="css/index.css"><link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+</head>
+<body>
+    <div class="containerDetail">
+    <header>
+        <div class="header flex-between">
+            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fa-regular fa-heart"></i>
+        </div>
+    </header>
+    <main>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="flex-between">
+                <div class="flex">
+                    <div class="tag">50m</div>
+                    <div class="tag">잠수풀</div>
+                </div>
+                <div class="web-link">사이트 바로가기</div>
+            </div>
+            <div class="flex-column">
+                <div class="short-adress">경기도 성남시 중원구 성남동</div>
+                <div class="pool-name">성남종합운동장</div>
+            </div>
+        </div>
+
+        <div class="gap"></div>
+
+        
+        <div class="detailMenu flex-between">
+            <div class="menu active"> 홈</div>
+            <div class="menu"> 일일수영 </div>
+            <div class="menu"> 위치 </div>
+            <div class="menu"> 후기 </div>
+            <div class="menu"> 상세정보 </div>
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="flex">
+                <div class="detailTitle"> 자유수영 시간표</div>
+                <div class="flex">
+                    <div class="timeTab acitve" data-type="weekday">평일</div>
+                    <div class="timeTab" data-type="weekend">주말/공휴일</div>
+                </div>
+            </div>
+            <div class="noti">매월 둘째주 일요일과 넷째주 일요일 정기휴장</div>
+            <div class="time-table">
+                    <div class="flex">
+                        <span class="session-num">①</span>
+                        <span class="session-time">09:00-13:00</span>
+                    </div>
+                    <div class="flex">
+                        <span class="session-num">②</span>
+                        <span class="session-time">14:00-16:00</span>
+                    </div>
+            </div>
+        </div>
+        
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="detailTitle"> 이용 요금</div>
+            <div class="flex">
+                <div class="charge">일반 3,600원</div>
+                <div class="charge">청소년 3,000원</div>
+                <div class="charge">어린이 2,400원</div>
+            </div>
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="detailTitle"> 주차 </div>
+            <div class="flex">
+                <span style="font-weight: bold;"> 4시간 무료</span>
+                <span> 일일회원 자동발매기에서 주차할인 등록</span>
+            </div>
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="detailTitle"> 위치 </div>
+            <div class="detailMap"></div>
+            
+            <div class="flex-between flex-top">
+            <div class="flex">
+                <i class="fa-solid fa-map-pin"></i>
+                <div class="flex-column">              
+                    <div class="adress">경기도 성남시 중원구 제일로 60 (성남동 3110번지)</div>
+                    <div class="wayTo">
+                        <div> 8 수인분당 모란역 2번출구 도보 10분 </div>
+                        <div> 8 수진역 2번출구 도보10분 </div>
+                        <div> 버스 중원구청 </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex"> <i class="fa-regular fa-copy"></i> 복사 </div>
+            </div>
+            <div class="flex-between g">
+                <div class="bigBtn">로드뷰</div>
+                <div class="bigBtn">길찾기</div>
+            </div>
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="detailTitle"> 상세정보 </div>
+            <div class="flex">
+                <span style="font-weight: bold;"> 일일수영 </span>
+                <span> https://spo.isdc.co.kr/sns_programGuide.do#tabs-2 </span>
+            </div>
+            <div class="flex">
+                <span style="font-weight: bold;"> 전화번호 </span>
+                <span> 031-739-6711 </span>
+            </div>
+        </div>
+        
+    
+
+    
+    
+    </main>
+</div><!--container-->
+
+<script src="js/search.js"></script>
+<script src="js/global.js"></script>
+<script src="js/detail.js"></script>
+
+</body>
+</html>

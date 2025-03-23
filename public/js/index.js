@@ -3,93 +3,163 @@ let map;
 let markers = [];
 let pools = [];
 let poolsInView = [];
+let swiper;
 
 let clickedMarker = false; // 🔹 마커 클릭 여부를 저장하는 변수
 
 
 const searchInput = document.getElementById("searchInput");
-// const resultContainer = document.getElementById("resultContainer");
-// const resultCount = document.getElementById("resultCount");
-// const cardWrapper = document.getElementById("cardWrapper");
 const clearSearchBtn = document.getElementById("clearSearch");
 const swiperContainer = document.querySelector('.cardUI');
 
 
 
 
-// ✅ 초기 실행
-document.addEventListener("DOMContentLoaded", () => {
-
-    initMap();
-    loadPools().then(() => {
-        updateMarkersAndList(); // ✅ 초기 리스트 표시
-        
-    });
-    
-});
-
-const swiper = new Swiper('.cardUI', {
-    slidesPerView: 1,
-    centeredSlides: true,
-    spaceBetween: 30,
-    grabCursor: true,
-    loop: false,
-    on: {
-        slideChange: function () {
-            updateFocusFromActiveSlide();
-        }
-    }
-  });
-  
-
-  
-
 
 // ✅ 네이버 지도 초기화
 function initMap() {
-    map = new naver.maps.Map("map", {
-        center: new naver.maps.LatLng(37.5665, 126.9780),
-        zoom: 13
-    });
-
+    return new Promise ((resolve, reject) => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
             const userLatLng = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            map.setCenter(userLatLng);
-            updateMarkersAndList();
+
+            map = new naver.maps.Map("map", {
+                center: userLatLng,
+                zoom: 13
+            });
+            registerMapEvents();
+            resolve();
+        }, error => {
+            console.error("Geolocation error:",error);
+            defaultCenter().then(resolve);
         });
+    }else {
+        defaultCenter().then(resolve);
+    }
+});
+}
+
+// 네이버지도: 사용자 위치 못찾으면 디폴트 센터 가져옴
+function defaultCenter() {
+    return new Promise((resolve, reject) => {
+    const defaultLatLng = new naver.maps.LatLng(37.5665, 126.9780);
+    map = new naver.maps.Map("map", {
+        center: defaultLatLng,
+        zoom: 13
+    });
+    registerMapEvents();
+    resolve();
+});
+}
+
+
+// 📍 지도 이동or지도 클릭 시 
+//  1️⃣ 마커 & 리스트 업데이트
+//  2️⃣ (모바일에서) 키보드 닫기, (PC) 검색창에서 커서 빼앗기
+// To do ! 지도 클릭에 더불어 터치시도 포함 시켜야 할지 모바일에서 테스트 하기
+//setTimeout: idle 이벤트가 없이 일정 시간이 지나면 fallback이 실행
+// 사용자 의도한 idle 발생시 중복호출을 피하기 위해, 플래그를 사용해 idle 이벤트 후에는 호출을 방지 : idle event true/false
+// 이 코드는 해당 함수 내에서 로컬변수로 설정
+
+function registerMapEvents() {
+    let idleCalled = false; // idle 이벤트가 발생했는지 여부를 판단하는 flag
+
+    naver.maps.Event.addListener(map, "idle", () => {
+        if (clickedMarker) {
+            console.log("idle 이벤트: 마커 클릭으로 인해 updateMarkersAndList 호출 건너뜀");
+            // flag 초기화
+            clickedMarker = false;
+        } else {
+            idleCalled = true; //idle 이벤트 의도적 발생시
+            updateMarkersAndList();
+            searchInput.blur();
+        }
+   });
+
+    naver.maps.Event.addListener(map, "click", () => {
+         searchInput.blur();
+    });
+    registerKeyboardEvents();
+
+        // fallback: 500ms 내에 idle 이벤트가 발생하지 않으면 updateMarkersAndList() 호출
+        setTimeout(() => {
+            if (!idleCalled && !clickedMarker) {
+                updateMarkersAndList();
+            }
+        }, 500);
+    
+}
+
+
+
+function initSwiper() {
+    if (!window.Swiper) {
+        return;
     }
 
+    if (swiper) {
+        swiper.destroy(true, true); // 기존 Swiper 제거
+    }
 
-    // 이 코드에 지도이동 뿐 아니라, 마커클릭시에도 리스트 업데이트 하도록 수정해야함
-        // // ✅ 지도 이동 후 마커 & 리스트 자동 업데이트
-        // naver.maps.Event.addListener(map, "idle", () => {
-        //     if (!clickedMarker) updateMarkersAndList();
-        // });
-    
-    // ✅ 1️⃣ 지도 이동 후 마커&리스트 자동 업데이트
-    naver.maps.Event.addListener(map, "idle", updateMarkersAndList);
-    
-
-    // ✅ 2️⃣ 지도 클릭 또는 이동 시 키보드 닫기
-    ["idle", "click"].forEach(eventType => {
-        naver.maps.Event.addListener(map, eventType, function () {
-            searchInput.blur();
-            console.log(`✅ ${eventType} 이벤트 발생 - 키보드 내림`);
-        });
+    swiper = new Swiper(".swiper-container", {
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        spaceBetween: 20,
+        grabCursor: true,
+        preventClicks: true,
+        preventClicksPropagation: true,      
+        // loop: false, // 무한 루프 방지
+        on: {
+            slideChange: function () {
+                const activeSlide = this.slides[this.activeIndex];
+                if (activeSlide) {
+                    const name = activeSlide.getAttribute("data-name");
+                    const lat = activeSlide.getAttribute("data-lat");
+                    const lng = activeSlide.getAttribute("data-lng");
+                    if (lat && lng && name) {
+                        moveToPool(parseFloat(lat), parseFloat(lng), name);
+                    } else {
+                        console.warn("활성 슬라이드의 데이터 속성이 부족합니다.");
+                    }
+                }
+            },
+            tap: (swiper, e) => {
+                const slide = e.target.closest('.swiper-slide');
+                if (!slide) return;
+          
+                const url = slide.dataset.link;
+                if (url) {
+                  console.log("📍 탭 → 이동!", url);
+                  window.location.href = url;
+                }
+              }
+        }
     });
-
-    // // ✅ 3️⃣ 마커 클릭 시 리스트 업데이트
-    // markers.forEach(marker => {
-    //     naver.maps.Event.addListener(marker, "click", () => {
-    //         updateMarkersAndList();
-    //     });
-    // });
-
-
-    // ✅ 키보드 관련 이벤트 리스너 별도 함수로 등록 - 코드 뒤쪽
-    registerKeyboardEvents();
+    console.log("✅ Swiper 초기화 완료 - swiperContainer display:", swiperContainer.style.display);
 }
+
+
+// // ✅ Swiper 초기화 이후에 카드들 선택해서 이벤트 걸기
+// document.querySelectorAll('.swiper-slide').forEach(card => {
+//     let startX = 0;
+//     let endX = 0;
+  
+//     card.addEventListener('touchstart', (e) => {
+//       startX = e.touches[0].clientX;
+//     });
+  
+//     card.addEventListener('touchend', (e) => {
+//       endX = e.changedTouches[0].clientX;
+//       const diff = Math.abs(endX - startX);
+  
+//       if (diff < 10) {
+//         const url = card.dataset.link;
+//         if (url) window.location.href = url;
+//       }
+//     });
+//   });
+
+
 
 
 // ✅ 키보드 이벤트 리스너 등록 함수
@@ -117,16 +187,13 @@ async function loadPools() {
 
     const response = await fetch("data/pools.json");
     pools = await response.json();
-    updateMarkersAndList();
-    // updateSwiperSlides(pools);
-    // updateMarkers(pools);
+
     displayPools(pools);
 }
 
 
 // ✅ 지도에 마커&리스트 업데이트
 function updateMarkersAndList() {
-    console.log("🔄 updateMarkersAndList() 실행됨");
 
     const bounds = map.getBounds();
     poolsInView = pools.filter(pool => bounds.hasLatLng(new naver.maps.LatLng(pool.lat, pool.lng)));
@@ -154,7 +221,9 @@ function updateMarkersAndList() {
         // ✅ 마커 클릭 또는 터치 시 이벤트 추가
         ["click", "touchstart"].forEach(eventType => {
             naver.maps.Event.addListener(marker, eventType, function () {
-                console.log(`✅ 마커 ${eventType} 이벤트 감지됨 - ${pool.name}`);
+
+                // 마커 클릭 시 flag 설정
+                clickedMarker = true;
 
                 // ✅ 키보드 닫기
                 searchInput.blur();
@@ -162,15 +231,19 @@ function updateMarkersAndList() {
 
                 // ✅ 마커 포커스 및 카드 UI 갱신
                 moveToPool(pool.lat, pool.lng, pool.name);
-                showCardUI(poolsInView, pool.name); // ✅ 선택된 수영장을 리스트 맨 앞으로 이동
-            });
+                
+                // showCardUI(poolsInView, pool.name); 
+                // ✅ 검색 결과가 없거나 바텀시트가 닫힌 상태에서도 작동하도록 전체 풀에서 해당 풀만 찾아서 전달
+                const matchedPools = pools.filter(p => p.name === pool.name);
+                if (matchedPools.length > 0) {
+                    showCardUI(matchedPools, pool.name);
+                } else {
+                    console.warn("❗ 마커 클릭했지만 해당하는 수영장을 리스트에서 찾지 못함");
+                }
+                    });
         });
-
         markers.push(marker);
     });
-        
-//  updateMarkers(poolsInView);
-    displayPools(poolsInView);
 }
 
 
@@ -180,7 +253,7 @@ function updateMarkersAndList() {
 function displayPools(poolsToShow) {
     const poolList = document.getElementById("poolList");
     poolList.innerHTML = "";
-
+    
     if (poolsToShow.length === 0) {
         poolList.innerHTML = "<p>표시할 수영장이 없습니다.</p>";
         return;
@@ -206,6 +279,14 @@ function displayPools(poolsToShow) {
             </div>
             <div class="noti">${pool.off_day || ""}</div>
         `;
+
+
+        poolItem.addEventListener('click', () => {
+            // ✅ 마커 클릭처럼 동작
+            moveToPool(pool.lat, pool.lng, pool.name);
+            showCardUI(poolsInView, pool.name); // 현재 리스트를 기반으로 카드 UI 갱신
+        });
+
         poolList.appendChild(poolItem);
     });
 }
@@ -224,8 +305,8 @@ function executeSearch(event = null) {
     console.log("📌 검색 결과:", filteredPools);
 
 
-    showCardUI(filteredPools);
-     {console.log("✅ showCardUI 실행됨");}
+     showCardUI(filteredPools);
+
 
     // ✅ moveToSearchArea가 검색 입력 중 자동 실행되지 않도록 보장
     if (event && event.key === "Enter" && typeof moveToSearchArea === "function") {
@@ -239,54 +320,51 @@ function executeSearch(event = null) {
 
 
 
-// ✅ 바텀시트 숨기고 카드 UI 표시 (지도 위 마커에서 선택한 수영장을 리스트 맨 앞에 정렬)
+// ✅ 바텀시트 숨기고 카드 UI 표시
 function showCardUI(filteredPools, selectedPoolName = null) {
-console.log("✅ showCardUI 실행됨");
-console.log("📌 전달된 filteredPools:", filteredPools);
-
-
-    bottomSheet.style.display = "none"; // 바텀시트 숨김
-    swiperContainer.style.display = "block"; // Swiper 표시
-    swiperContainer.innerHTML = ''; // 기존 슬라이드 초기화
-
-console.log("✅ cardUI 표시됨");
-
-// ✅ 선택된 수영장을 리스트 맨 앞으로 정렬
-    if (selectedPoolName) {
-        const selectedIndex = filteredPools.findIndex(pool => pool.name === selectedPoolName);
-        if (selectedIndex > -1) {
-            const [selectedPool] = filteredPools.splice(selectedIndex, 1); // 기존 배열에서 제거
-            filteredPools.unshift(selectedPool); // 맨 앞에 추가
-        }
-    }
-    console.log("📌 최종 filteredPools:", filteredPools);
     
-    updateSearchResults(filteredPools);
+    bottomSheet.style.display = "none"; // 바텀시트 숨김
+    swiperContainer.classList.remove('hidden'); // 카드 UI 표시
 
-    console.log(`📌 Swiper 카드 리스트 업데이트 완료, 선택된 수영장 맨 앞으로 이동: ${filteredPools[0]?.name || "없음"}`);
-    console.log("✅ showCardUI 실행종료");
+    updateSearchResults(filteredPools); // 카드 렌더링
+
+    // ✅ 선택된 수영장 카드로 Swiper 이동
+    setTimeout(() => {
+        if (selectedPoolName) {
+            const index = filteredPools.findIndex(pool => pool.name === selectedPoolName);
+            if (index > -1) {
+                console.log("📌 swiper.slideTo 실행:", index);
+                swiper.slideTo(index, 300); // 300ms 동안 슬라이드 이동
+            }
+        }
+    }, 100); // swiper.update() 후 실행되도록 약간의 딜레이
 }
     
     
  // ✅ 마커 선택시 or 검색결과 Swiper를 사용하여 UI 업데이트 (카드 형태)
  function updateSearchResults(filteredPools) {
-     swiperContainer.innerHTML = ''; // 기존 슬라이드 초기화
+    const swiperWrapper = swiperContainer.querySelector('.swiper-wrapper');
+    if (!swiperWrapper) return;
+
+    swiperWrapper.innerHTML = ''; // 기존 슬라이드 초기화
  
      if (filteredPools.length === 0) {
-         console.warn("⚠️ updateSearchResults: 검색 결과 없음!");
          swiperContainer.style.display = "none";
          return;
      }
  
-     swiperContainer.style.display = "block";
-     console.log(`📌 카드 업데이트 시작 - 총 ${filteredPools.length}개`);
- 
     filteredPools.forEach(pool => {
-        console.log(`🆕 카드 추가됨: ${pool.name}`);
+        const slide = document.createElement("div");  // ✅ 'swiper-slide' 클래스를 가진 div 생성
+        slide.classList.add("swiper-slide");
 
-        const slide = document.createElement('swiper-slide'); 
-         slide.setAttribute("data-name", pool.name); // ✅ Swiper Slide에 pool 이름 저장
- 
+        // ✅ Swiper Slide에 pool 정보 저장, 슬라이드 이동 시 moveToPool 호출 할 때 비교할 데이터
+        slide.setAttribute("data-name", pool.name);   
+        slide.setAttribute("data-lat", pool.lat);
+        slide.setAttribute("data-lng", pool.lng);
+        slide.setAttribute('data-link', `detail.html?poolId=${pool.id}`); 
+
+        
+
          slide.innerHTML = `
              <div class="short-address">${pool.address.split(" ").slice(0, 4).join(" ")}</div>
              <div class="poolTitle">
@@ -295,16 +373,12 @@ console.log("✅ cardUI 표시됨");
              </div>
              <div class="noti">${pool.off_day || ""}</div>
          `;
- 
-         // ✅ 카드 클릭 또는 터치 시 지도 중심 이동 & 마커 강조
-         ["click", "touchstart"].forEach(eventType => {
-             slide.addEventListener(eventType, () => {
-                 moveToPool(pool.lat, pool.lng, pool.name);
-             });
-         });
- 
-         swiperContainer.appendChild(slide);
+         
+         swiperWrapper.appendChild(slide);
      });
+
+    swiper.update()
+    swiper.slideTo(0, 0); // ✅ 첫 번째 슬라이드로 강제 이동 (애니메이션 없이)
 
  }
 
@@ -313,16 +387,20 @@ console.log("✅ cardUI 표시됨");
 // ✅ 검색 초기화 (X 버튼 클릭 시)
 clearSearchBtn.addEventListener("click", () => {
     searchInput.value = "";
-    resultContainer.style.display = "none"; // 카드 UI 삭제
     bottomSheet.style.display = "block"; // 바텀시트 다시 표시
+    swiperContainer.classList.add("hidden"); // ✅ 카드 UI 숨기기
     updateMarkersAndList();
 });
 
 
 // ✅ 특정 수영장 위치로 지도 이동
 function moveToPool(lat, lng, poolName) {
+
+    console.log("poolName 전달값:", poolName);
+    markers.forEach(marker => console.log("마커 title:", marker.getTitle()));
+
     map.setCenter(new naver.maps.LatLng(lat, lng));
-    map.setZoom(14);
+    map.setZoom(12);
 
 
     // ✅ 기존 마커 스타일 초기화
@@ -352,5 +430,3 @@ function moveToPool(lat, lng, poolName) {
     }
 
 }
-
-

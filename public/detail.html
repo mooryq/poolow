@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>poolow</title>
+    <script type="text/javascript" 
+        src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2c569m0l5t">
+    </script>
+
+    <link rel="stylesheet" href="css/index.css"><link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+</head>
+<body>
+    <div class="containerDetail">
+    <header>
+        <div class="header flex-between">
+            <i class="fa-solid fa-arrow-left Back"></i>
+            <i class="fa-regular fa-heart"></i>
+        </div>
+    </header>
+    <main>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="flex-between">
+                <div class="flex tag-container">
+                    <!-- <div class="tag"></div>
+                    <div class="tag"></div> -->
+                </div>
+                <div class="web-link">사이트 바로가기</div>
+            </div>
+            <div class="flex-column">
+                <div class="short-address"></div>
+                <div class="pool-name"></div>
+            </div>
+        </div>
+
+        <div class="gap"></div>
+
+        
+        <div class="detailMenu flex-between">
+            <div class="menu active"> 홈</div>
+            <div class="menu"> 일일수영 </div>
+            <div class="menu"> 위치 </div>
+            <div class="menu"> 후기 </div>
+            <div class="menu"> 상세정보 </div>
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="flex">
+                <div class="detailTitle"> 자유수영 시간표</div>
+                <div class="flex">
+                    <div class="timeTab active">평일</div>
+                    <div class="timeTab">주말/공휴일</div>
+                </div>
+            </div>
+            <div class="noti"></div>
+            <div class="time-table">
+                    <div class="flex">
+                        <span class="session-num"></span>
+                        <span class="session-time"></span>
+                    </div>
+                    <div class="flex">
+                        <span class="session-num"></span>
+                        <span class="session-time"></span>
+                    </div>
+            </div>
+        </div>
+        
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="detailTitle"> 이용 요금</div>
+            <div class="flex chargeInfo">
+                <!-- <div class="charge"></div> 동적생성 -->
+            </div>
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="detailTitle"> 주차 </div>
+            <div class="flex">
+                <span style="font-weight: bold;"></span>
+                <span> </span>
+            </div>
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="detailTitle"> 위치 </div>
+            <div class="detailMap"></div>
+            
+            <div class="flex-between flex-top">
+            <div class="flex">
+                <i class="fa-solid fa-map-pin"></i>
+                <div class="flex-column">              
+                    <div class="address"></div>
+                    <div class="wayTo">
+                        <div> </div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex copy"> <i class="fa-regular fa-copy"></i>
+                복사
+            </div>
+            </div>
+            <div class="flex-between">
+                <div class="bigBtn">로드뷰</div>
+                <div class="bigBtn">길찾기</div>
+            </div>
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="detailBox">
+            <div class="detailTitle"> 상세정보 </div>
+            <div class="flex">
+                <span style="font-weight: bold;"> 일일수영 </span>
+                <span> https://spo.isdc.co.kr/sns_programGuide.do#tabs-2 </span>
+            </div>
+            <div class="flex">
+                <span style="font-weight: bold;"> 전화번호 </span>
+                <span> 031-739-6711 </span>
+            </div>
+        </div>
+        
+    
+
+    
+    
+    </main>
+</div><!--container-->
+
+<script src="js/search.js"></script>
+<script src="js/global.js"></script>
+<script src="js/detail.js"></script>
+
+</body>
+</html>

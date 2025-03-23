@@ -20,16 +20,28 @@ function updateBottomSheetStyle() {
     bottomSheet.style.borderRadius = isExpanded ? "0" : "20px 20px 0 0";
 }
 
-// ✅ BottomSheet 크기 조절
-function toggleBottomSheet(expand) {
-    if (expand === isExpanded) return;
 
-    bottomSheet.style.height = expand ? "95dvh" : "25dvh";
-    poolList.style.maxHeight = expand ? "calc(95dvh - 40px)" : "calc(25dvh - 40px)";
+// ✅ 바텀시트 크기 및 스타일 업데이트
+function toggleBottomSheet(expand) {
+    if (expand === isExpanded) return; // ✅ 상태가 이미 동일하면 실행 안 함
+
+    const searchConsole = document.querySelector('.search-console');
+    const searchHeight = searchConsole?.offsetHeight || 0;
+    const expandedHeight = window.innerHeight - searchHeight; // 👉 검색창 아래까지만 확장
+
+    if (expand) {
+        // bottomSheet.style.top = `${searchHeight}px`; // 👈 이렇게 하면 search 바로 아래에 붙어!
+        bottomSheet.style.height = `${expandedHeight}px`;
+        poolList.style.maxHeight = `${expandedHeight - 40}px`;
+    } else {
+        bottomSheet.style.height = "25dvh";
+        poolList.style.maxHeight = "calc(25dvh - 40px)";
+    }
+
     isExpanded = expand;
     updateBottomSheetStyle();
-}
 
+}
 // ✅ 드래그 이벤트 (PC & 모바일)
 function startDrag(event) {
     startY = event.touches?.[0]?.clientY || event.clientY;
@@ -68,3 +80,22 @@ handle.addEventListener("touchstart", startDrag);
 
 // ✅ 초기 실행
 initializeBottomSheet();
+
+
+// ✅ poolList 안에서 드래그로 바텀시트 축소
+let touchStartY = 0;
+
+poolList.addEventListener("touchstart", (event) => {
+  touchStartY = event.touches[0].clientY;
+});
+
+poolList.addEventListener("touchmove", (event) => {
+  const touchMoveY = event.touches[0].clientY;
+  const scrollTop = poolList.scrollTop;
+  const diff = touchMoveY - touchStartY;
+
+  // 스크롤 맨 위 + 아래로 당겼을 때
+  if (scrollTop === 0 && diff > 15) {
+    toggleBottomSheet(false);
+  }
+});
