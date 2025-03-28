@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no,viewport-fit=cover">
+
+    <title>poolow</title>
+    <script type="text/javascript" 
+        src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2c569m0l5t">
+    </script>
+
+    
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="css/mypage.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+</head>
+<body>
+    <div class="container">
+        <header>
+            
+            <div class="header flex-between">
+                <i class="fa-solid fa-arrow-left Back"></i>
+                <i class="fa-regular fa-heart"></i>
+            </div>
+        </header>
+        
+
+        <main>
+            <div class="container">
+                <h2>My Page</h2>
+                <p id="userName"><strong>Name:</strong> </p>
+                <p id="userEmail"><strong>Email:</strong> </p>
+                <div id="userPhoto"  alt="Profile photo"></div>
+                <button id="logoutBtn">로그아웃</button>
+            </div>
+
+        </main>
+    </div><!--container-->
+
+
+
+
+
+<script src="js/global.js"></script>
+<script type="module" src="js/firebase.js"></script>
+<script type="module" src="js/mypage.js"></script>
+
+
+</body>
+</html>

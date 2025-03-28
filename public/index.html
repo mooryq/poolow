@@ -31,12 +31,22 @@
                         <i class="fa-solid fa-xmark" id="clearSearch"></i>
                     </div>
                 </div>
+                <div id="myLocation" class="location-btn">
+                    <svg class="crosshair" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M44 24C44 35.0457 35.0457 44 24 44M44 24C44 12.9543 35.0457 4 24 4M44 24H36M24 44C12.9543 44 4 35.0457 4 24M24 44V36M4 24C4 12.9543 12.9543 4 24 4M4 24H12M24 4V12"/>
+                    </svg>                    
+                </div>
             </div>
+            
+            <div id="loadingIndicator" class="loading-spinner hidden"></div>
             
         </header>
         
         <main>
+            
             <div id="map"></div>
+            
+          
 
             <!-- ✅ 바텀시트 (초기 상태: 지도 안에서 리스트 표시) -->
             <div id="bottomSheet">
@@ -59,6 +69,8 @@
 <script src="js/search.js"></script>
 <script src="js/index.js"></script>
 <script src="js/global.js"></script>
+<script type="module" src="js/firebase.js"></script>
+
 
 </body>
 </html>

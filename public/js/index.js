@@ -1,5 +1,8 @@
 // ✅ 전역 변수 선언
 let map;
+let myLocationBtn;
+let loadingIndicator;
+let currentUserLatLng = null; // 사용자의 현재 위치를 저장
 let markers = [];
 let pools = [];
 let poolsInView = [];
@@ -19,24 +22,71 @@ const swiperContainer = document.querySelector('.cardUI');
 // ✅ 네이버 지도 초기화
 function initMap() {
     return new Promise ((resolve, reject) => {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            const userLatLng = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-            map = new naver.maps.Map("map", {
-                center: userLatLng,
-                zoom: 13
-            });
+    const defaultLatLng = new naver.maps.LatLng(37.5665, 126.9780);
+    map = new naver.maps.Map("map", {
+      center: defaultLatLng,
+      zoom: 13
+    });
+  
+  
+      // 이후 현재 위치 시도
+      if (navigator.geolocation) {
+        loadingIndicator = document.getElementById("loadingIndicator");
+        gettingLocation();  // ✅ 초기 로딩 시에도 무조건 표시
+    
+
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const userLatLng = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            map.setCenter(userLatLng);
+            map.setZoom(13);
+
+            hideLoadingIndicator(); // "내 위치 찾기"
+            registerMapEvents(); // 마커 등록 등
+            resolve(); // 성공 시 Promise resolve
+          },
+
+          error => {
+            hideLoadingIndicator();
+            
             registerMapEvents();
-            resolve();
-        }, error => {
-            console.error("Geolocation error:",error);
-            defaultCenter().then(resolve);
-        });
-    }else {
-        defaultCenter().then(resolve);
-    }
-});
+            resolve(); // 에러 발생 시에도 resolve 처리해서 기본 좌표 유지
+          }
+        );
+
+      } else {
+        resolve(); // 위치 서비스를 지원하지 않으면 기본 좌표 상태 그대로
+      }
+    
+      // 지도 드래그 시작 시 내 위치 버튼 active 상태 해제
+      naver.maps.Event.addListener(map, 'dragstart', function() {
+        if (myLocationBtn) {
+        myLocationBtn.classList.remove('active');
+        }
+      });
+    });
+           
+//     return new Promise ((resolve, reject) => {
+//     if (navigator.geolocation) {
+//         navigator.geolocation.getCurrentPosition(position => {
+//             const userLatLng = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+//             map = new naver.maps.Map("map", {
+//                 center: userLatLng,
+//                 zoom: 13
+//             });
+//             registerMapEvents();
+//             resolve();
+//         }, error => {
+//             console.error("Geolocation error:",error);
+//             defaultCenter().then(resolve);
+//         });
+//     }else {
+//         defaultCenter().then(resolve);
+//     }
+// });
+
 }
 
 // 네이버지도: 사용자 위치 못찾으면 디폴트 센터 가져옴
@@ -430,3 +480,91 @@ function moveToPool(lat, lng, poolName) {
     }
 
 }
+
+
+//내위치 찾기 버튼
+
+
+function initMyLocationButton() {
+    myLocationBtn = document.getElementById("myLocation");
+    loadingIndicator = document.getElementById("loadingIndicator");
+
+
+
+    myLocationBtn.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        alert("이 브라우저에서는 위치 서비스를 지원하지 않습니다.");
+        return;
+      }
+    
+        // 내 위치 찾는 중 로딩 인디케이터 표시
+        gettingLocation();
+        console.log("⏳ [로딩 표시] loadingIndicator 표시됨");
+
+  
+      navigator.geolocation.getCurrentPosition(
+        position => {
+            hideLoadingIndicator();
+            const userLatLng = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            map.setCenter(userLatLng);
+            map.setZoom(13);
+
+            // 내 위치 찾기 완료 후 버튼을 파란색(active)으로 변경
+            myLocationBtn.classList.add('active');
+
+        },
+        error => {
+            hideLoadingIndicator();
+          console.error("위치 정보를 가져오는 중 오류 발생:", error);
+        }
+      );
+    });
+  }
+
+        function gettingLocation() {
+            if (loadingIndicator) {
+                loadingIndicator.classList.remove("hidden");
+                console.log("🔄 [gettingLocation] 로딩 인디케이터 표시됨");
+            }
+        }
+
+  
+        // 로딩 인디케이터 숨기기
+        function hideLoadingIndicator() {
+            if (loadingIndicator) {
+              loadingIndicator.classList.add("hidden");
+            }
+          }
+      
+  
+  
+
+
+
+
+// ✅ 1. --vh 정확히 계산
+function setViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+    console.log("📐 set --vh:", vh);
+}
+
+// ✅ 2. DOM 로딩되자마자 1차 계산
+document.addEventListener("DOMContentLoaded", () => {
+    setViewportHeight();  // 1차 계산 먼저
+    initMap().then(() => {
+        loadPools().then(() => {
+            initMyLocationButton();
+            initSwiper();
+        });
+    });
+});
+
+// ✅ 3. 전체 자원 로딩 완료 후 (주소창 애니메이션도 끝난 후)
+window.addEventListener("load", () => {
+    setTimeout(setViewportHeight, 300);  // 0.3초 후 재계산
+});
+
+// ✅ 4. 화면 회전/리사이즈 시에도
+window.addEventListener("resize", setViewportHeight);
+

@@ -60,21 +60,20 @@ header{
 /* 검색창 */
 
 .search-console{
-    padding: 20px 15px;
-    margin-bottom: 10px;
     position: absolute;
-    width: 100%;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 10%);  
+    width: 96%;
     box-sizing: border-box;    
 }
 
 .search{
     display: flex;
     align-items: center;
-    width: 99%;
-    margin: auto;
     align-items: center;
     height: 3rem;
-    border-radius: 9px;
+    border-radius: 5px;
     transition: all .2sease-out;
     outline: 1px solid #A9A9A9;
     background-color: #fff;
@@ -100,6 +99,47 @@ input:focus {
     outline: none;
     box-shadow: none;
 }
+
+
+.location-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 888;
+    width: 30px;
+    height: 30px;
+    margin-top: 0.5rem;
+    background-color: #fff;
+    border-radius: 50%;
+    border:1px solid #a9a9a9;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .crosshair{
+    width: 22px;
+    height: 22px;
+    stroke: #383838;
+    stroke-width: 4; 
+    stroke-linecap: round;
+    stroke-linejoin : round;
+  }
+
+  .location-btn.active .crosshair{
+    stroke: #0982ec;
+    stroke-width: 5; 
+  }
+
+  .loading-spinner {
+    z-index: 999;
+    background-color: #fff;
+    border-radius: 4px;
+    background: url('/public/images/loading.gif') no-repeat center / cover;
+  }
+
+  .hidden {
+    display: none;
+  }
 
 
 .pool-item{

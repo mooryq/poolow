@@ -4,31 +4,13 @@ document.addEventListener("gesturestart", function (event) {
     event.preventDefault();
 });
 
-// ✅ 1. --vh 정확히 계산
-function setViewportHeight() {
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-    console.log("📐 set --vh:", vh);
+
+function updateHeaderHeight() {
+    const header = document.querySelector('header');
+    document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
 }
-
-// ✅ 2. DOM 로딩되자마자 1차 계산
-document.addEventListener("DOMContentLoaded", () => {
-    setViewportHeight();  // 1차 계산 먼저
-    initMap().then(() => {
-        loadPools().then(() => {
-            initSwiper();
-        });
-    });
-});
-
-// ✅ 3. 전체 자원 로딩 완료 후 (주소창 애니메이션도 끝난 후)
-window.addEventListener("load", () => {
-    setTimeout(setViewportHeight, 300);  // 0.3초 후 재계산
-});
-
-// ✅ 4. 화면 회전/리사이즈 시에도
-window.addEventListener("resize", setViewportHeight);
-
+window.addEventListener('resize', updateHeaderHeight);
+updateHeaderHeight();
 
 // 토스트 ~.~
 function showToast(message) {

@@ -9,8 +9,8 @@ let isAtTopOnce = false;
 
 // ✅ BottomSheet 초기화
 function initializeBottomSheet() {
-    bottomSheet.style.height = "25dvh";
-    poolList.style.maxHeight = "calc(25dvh - 40px)";
+    bottomSheet.style.height = "20dvh";
+    poolList.style.maxHeight = "calc(20dvh - 40px)";
     poolList.style.overflowY = "auto";
     updateBottomSheetStyle();
 }
@@ -34,8 +34,8 @@ function toggleBottomSheet(expand) {
         bottomSheet.style.height = `${expandedHeight}px`;
         poolList.style.maxHeight = `${expandedHeight - 40}px`;
     } else {
-        bottomSheet.style.height = "25dvh";
-        poolList.style.maxHeight = "calc(25dvh - 40px)";
+        bottomSheet.style.height = "20dvh";
+        poolList.style.maxHeight = "calc(20dvh - 40px)";
     }
 
     isExpanded = expand;

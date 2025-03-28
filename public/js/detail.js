@@ -1,12 +1,3 @@
-
-function updateHeaderHeight() {
-    const header = document.querySelector('header');
-    document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
-}
-window.addEventListener('resize', updateHeaderHeight);
-updateHeaderHeight();
-
-
 document.querySelector('.Back').addEventListener('click', () => {
     if (document.referrer) {
         window.history.back();
