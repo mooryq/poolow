@@ -12,6 +12,7 @@
     
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/detail.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link
@@ -23,30 +24,32 @@
 <body>
     <div class="container">
         <header>
-            
-            <div class="search-console">
-                <div class="search">
-                    <div class="inside-search">
-                        <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" >
-                        <i class="fa-solid fa-xmark" id="clearSearch"></i>
-                    </div>
-                </div>
+            <div class="header flex-between">
+                <a id="home" href="index.html"> 🌊 poolow </a>
+                <a id="mypage" href="mypage.html"> my </a>
             </div>
-            
         </header>
         
         <main>
-            <div id="map"></div>
-
-            <!-- ✅ 바텀시트 (초기 상태: 지도 안에서 리스트 표시) -->
-            <div id="bottomSheet">
-                <div id="handle"><div class="handle-bar"></div></div>
-                <div id="poolList"></div>
+            <div class="map-container">
+                <div class="search-console">
+                    <div class="search">
+                        <div class="inside-search">
+                            <input type="text" id="searchInput" placeholder="어디서 수영할까요? 50m, 송파구 등으로 검색!" >
+                            <i class="fa-solid fa-xmark" id="clearSearch"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="myLocation" class="location-btn">
+                    <svg class="crosshair" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M44 24C44 35.0457 35.0457 44 24 44M44 24C44 12.9543 35.0457 4 24 4M44 24H36M24 44C12.9543 44 4 35.0457 4 24M24 44V36M4 24C4 12.9543 12.9543 4 24 4M4 24H12M24 4V12"/>
+                    </svg>                    
+                </div>
+                <div id="loadingIndicator" class="loading-spinner hidden"></div>
+                <div id="map"></div>
             </div>
-
-            <!-- Slider main container -->
+            
             <div class="swiper-container cardUI hidden">
-                <!-- Additional required wrapper -->
                 <div class="swiper-wrapper">
                     <p id="resultCount"></p>
                 </div>
@@ -55,10 +58,12 @@
     </div><!--container-->
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script src="js/bottomSheetCard.js"></script>
-<script src="js/search.js"></script>
-<script src="js/index.js"></script>
-<script src="js/global.js"></script>
+
+<script type="module" src="js/search.js"></script>
+<script type="module" src="js/index.js"></script>
+<script type="module" src="js/global.js"></script>
+<script type="module" src="js/firebase.js"></script>
+
 
 </body>
 </html>

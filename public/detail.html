@@ -3,150 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
     <title>poolow</title>
     <script type="text/javascript" 
         src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2c569m0l5t">
     </script>
-
-    <link rel="stylesheet" href="css/index.css"><link rel="stylesheet" href="css/detail.css">
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="css/addFavRev.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
 </head>
 <body>
     <div class="containerDetail">
-    <header>
-        <div class="header flex-between">
-            <i class="fa-solid fa-arrow-left Back"></i>
-            <i class="fa-regular fa-heart"></i>
-        </div>
-    </header>
-    <main>
-
-        <div class="gap"></div>
-
-        <div class="detailBox">
-            <div class="flex-between">
-                <div class="flex tag-container">
-                    <!-- <div class="tag"></div>
-                    <div class="tag"></div> -->
+        <header>
+            <div class="header flex-between">
+                <div class="flex flex-align-center">
+                    <div id="Back"> ← </div>
+                    <div class="pool-name"></div>
+                    <div id="heartBtn" style="visibility: hidden;">🩶</div>
                 </div>
-                <div class="web-link">사이트 바로가기</div>
+                    <a id="mypage" href="mypage.html"> my </a>
             </div>
-            <div class="flex-column">
-                <div class="short-address"></div>
-                <div class="pool-name"></div>
+        </header>
+        <main>
+            <div class="gap"></div>
+
+            <div class="detailBox">
+                <div class="flex-between">
+                    <div class="flex tag-container">
+                        <!-- 태그들이 동적으로 여기에 추가됩니다 -->
+                    </div>
+                    <div id="sharePool" class="border-link"> 
+                        <img src="icons/shareIos_thick.svg" alt="share icon" width="20" height="20">
+                        <span>수영장 공유</span>
+                    </div>
+                    <!-- <div class="web-link" id="webLink">사이트 바로가기</div> -->
+                </div>
+                <div class="flex-column">
+                    <div class="short-address"></div>
+                    <div class="pool-name"></div>
+                    
+                </div>
+                <div class="flex pool-function">
+                    <div id="reviews"> </div>
+                </div>
             </div>
-        </div>
 
-        <div class="gap"></div>
+            <div class="gap"></div>
 
-        
-        <div class="detailMenu flex-between">
-            <div class="menu active"> 홈</div>
-            <div class="menu"> 일일수영 </div>
-            <div class="menu"> 위치 </div>
-            <div class="menu"> 후기 </div>
-            <div class="menu"> 상세정보 </div>
-        </div>
-
-        <div class="gap"></div>
-
-        <div class="detailBox">
-            <div class="flex">
-                <div class="detailTitle"> 자유수영 시간표</div>
+            <div class="detailBox">
                 <div class="flex">
-                    <div class="timeTab active">평일</div>
-                    <div class="timeTab">주말/공휴일</div>
+                    <div class="detailTitle">일일 자유수영 시간표</div>
+                </div>
+                
+                <!-- 요일 탭 추가 -->
+                <div class="day-tabs">
+                    <div class="day-tab" data-day="monday">월</div>
+                    <div class="day-tab" data-day="tuesday">화</div>
+                    <div class="day-tab" data-day="wednesday">수</div>
+                    <div class="day-tab" data-day="thursday">목</div>
+                    <div class="day-tab" data-day="friday">금</div>
+                    <div class="day-tab" data-day="saturday">토</div>
+                    <div class="day-tab" data-day="sunday">일</div>
+                </div>
+                
+                <!-- <div class="noti off-day"></div> -->
+                <div class="time-table">
+                    <!-- 시간표가 동적으로 여기에 추가됩니다 -->
                 </div>
             </div>
-            <div class="noti"></div>
-            <div class="time-table">
-                    <div class="flex">
-                        <span class="session-num"></span>
-                        <span class="session-time"></span>
-                    </div>
-                    <div class="flex">
-                        <span class="session-num"></span>
-                        <span class="session-time"></span>
-                    </div>
-            </div>
-        </div>
-        
-        <div class="gap"></div>
-
-        <div class="detailBox">
-            <div class="detailTitle"> 이용 요금</div>
-            <div class="flex chargeInfo">
-                <!-- <div class="charge"></div> 동적생성 -->
-            </div>
-        </div>
-
-        <div class="gap"></div>
-
-        <div class="detailBox">
-            <div class="detailTitle"> 주차 </div>
-            <div class="flex">
-                <span style="font-weight: bold;"></span>
-                <span> </span>
-            </div>
-        </div>
-
-        <div class="gap"></div>
-
-        <div class="detailBox">
-            <div class="detailTitle"> 위치 </div>
-            <div class="detailMap"></div>
             
-            <div class="flex-between flex-top">
-            <div class="flex">
-                <i class="fa-solid fa-map-pin"></i>
-                <div class="flex-column">              
-                    <div class="address"></div>
-                    <div class="wayTo">
-                        <div> </div>
-                        <div></div>
-                        <div></div>
-                    </div>
+            <div class="gap"></div>
+
+            <div class="detailBox">
+                <div class="detailTitle"> 이용 요금</div>
+                <div class="flex chargeInfo">
+                    <!-- 요금 정보가 동적으로 여기에 추가됩니다 -->
                 </div>
             </div>
-            <div class="flex copy"> <i class="fa-regular fa-copy"></i>
-                복사
-            </div>
-            </div>
-            <div class="flex-between">
-                <div class="bigBtn">로드뷰</div>
-                <div class="bigBtn">길찾기</div>
-            </div>
-        </div>
 
-        <div class="gap"></div>
+            <div class="gap"></div>
 
-        <div class="detailBox">
-            <div class="detailTitle"> 상세정보 </div>
-            <div class="flex">
-                <span style="font-weight: bold;"> 일일수영 </span>
-                <span> https://spo.isdc.co.kr/sns_programGuide.do#tabs-2 </span>
+            <div class="detailBox" id="information">
+                <div class="detailTitle">이용 안내</div>
+                <div class="information">
+                    <!-- 안내사항이 동적으로 여기에 추가됩니다 -->
+                </div>
             </div>
-            <div class="flex">
-                <span style="font-weight: bold;"> 전화번호 </span>
-                <span> 031-739-6711 </span>
+
+            <div class="gap"></div>
+
+            <div class="detailBox" id="parkingBox">
+                <div class="detailTitle">주차</div>
+                <div class="parking-info">
+                    <!-- 주차 정보가 동적으로 여기에 추가됩니다 -->
+                </div>
             </div>
-        </div>
-        
-    
 
-    
-    
-    </main>
-</div><!--container-->
+            <div class="gap"></div>
 
-<script src="js/search.js"></script>
-<script src="js/global.js"></script>
-<script src="js/detail.js"></script>
+            <div class="detailBox">
+                <div class="detailTitle">위치</div>
+                <div class="detailMap"></div>
+                
+                
+                <div class="flex-column">              
+                    <div class="flex-between">
+                        <div class="flex">
+                            <span>🌊</span>
+                        <div class="address"></div>
+                        </div>
+                        <div class="flex copy"> <span>📋</span> 복사</div>
+                    </div>
+                    <div class="flex">
+                        <span>🚌</span>
+                        <div class="wayTo transportation-info">
+                            <!-- 교통 정보가 동적으로 여기에 추가됩니다 -->
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-between">
+                    <div class="bigBtn" id="roadViewBtn">로드뷰</div>
+                    <div class="bigBtn" id="directionBtn">길찾기</div>
+                </div>
+            </div>
 
+            <div class="gap"></div>
+
+            <div class="detailBox review-section">
+                <div class="flex-between">
+                    <div class="detailTitle">리뷰</div>
+                    <div id="openReviewModal" class="border-link">리뷰 작성</div>
+                </div>
+                <div id="reviewList">
+                    <!-- 리뷰가 동적으로 여기에 추가됩니다 -->
+                </div>
+            </div>
+
+
+            <div class="gap"></div>
+
+            <div class="detailBox" id="contactBox">
+                <div class="detailTitle">상세정보</div>
+                <div class="flex website-info">
+                    <span style="font-weight: bold; white-space: nowrap; flex-shrink: 0; min-width: 5rem;">웹사이트</span>
+                    <span style="word-break: break-all;" id="websiteLink"></span>
+                    
+                </div>
+                <div class="flex phone-info">
+                    <span style="font-weight: bold; flex-shrink: 0; min-width: 5rem;">전화번호</span>
+                    <span id="phoneNumber"></span>
+                </div>
+            </div>
+
+            <!-- 모달 -->
+            <div id="reviewModal" class="modal-backdrop">
+                <div class="modal-content">
+                    <div class="cancleForm">
+                        <div class="modal-close"> 취소 </div>
+                    </div>
+                    <textarea id="reviewText" placeholder="수영장 어땠어요?" rows="15"></textarea>
+                    <input type="file" id="reviewImages" multiple accept="image/*" />
+                    <div id="imagePreview" class="preview-wrapper"></div>
+                    <div class="submitForm">
+                        <button id="submitReview" disabled> 등록 </button>
+                    </div>
+                </div>
+            </div><!--모달-->
+        </main>
+    </div>
+
+    <script type="module" src="js/global.js"></script>
+    <script type="module" src="js/detail.js"></script>
+    <script type="module" src="js/addFavRev.js"></script>
 </body>
 </html>
