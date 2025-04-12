@@ -4,23 +4,13 @@
     flex-direction: column;
     width: 460px;  /* 아이폰 */
     max-width: 100%;
-    height: 100vh;
+    height: 100%;
     margin: auto;
     background-color:#F5F5F5;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow: auto; 
 }
 
-
-.header{
-    padding: 1.5rem 1.5rem;
-    /* box-shadow: ; */
-}
-
-main {
-    margin-top: var(--header-height);
-    width: 100%;
-}
 
 
 
@@ -43,44 +33,76 @@ main {
     align-items: start !important;
 }
 
+.flex-bottom{
+    align-items: end !important;
+}
+
+
 .flex-column{
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
 }
-.gap{
-    height: 0.5rem;
+
+.flex-align-center{
+    align-items: center;
 }
 
-.header .fa-regular, .header .fa-solid{
-    font-size: 1.5rem;
+.gap{
+    height: 0.3rem;
+}
+
+
+#sharePool, #reviews {
+    cursor: pointer;
+}
+
+#sharePool {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 5px;
+}
+
+.border-link{
+    cursor: pointer;
+    border: 1px solid #A9A9A9;
+    border-radius: 10px;
+    padding: 0.3rem 0.6rem;
+}
+
+.border-link:hover{
+    background-color: #f5f5f5;
+}
+
+#sharePool img {
+    display: block;
+    margin: 0 auto;
+}
+
+#sharePool span {
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: #2D1157;
+}
+
+#reviews{
+  font-size: 1.1rem;
+  color: #2D1157;
+  
 }
 
 .detailBox{
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1rem;
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.03);
 }
-
-
-
-/* style.css 에서 지정
-.tag {
-   
-}
-
-.short-adress{
-   
-} 
-
-.pool-name{
-    font-size: 1.5rem;
-    font-weight: 500;
-}
-*/
-
 
 .detailMenu{
     gap: 1.25rem;
@@ -102,7 +124,7 @@ main {
 }
 
 .detailTitle{
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     margin-right: 1rem;
 }
 
@@ -112,25 +134,74 @@ main {
     border-radius: 0.2rem;
 }
 
-.time-table > * {
+.time-table > *:not(:last-child) {
     margin-bottom: 0.5rem;
 }
 
-.timeTab{
-    border-radius: 5px;
-    padding: 0.2rem 0.5rem;
-    font-size: 1rem;
-    text-align: center;
-    margin-right: 5px;
-    align-self:center;
-    border: 1px solid #666666;
+/* 요일 탭 스타일 */
+.day-tabs {
+    display: flex;
+    /* margin: 0 -0.5rem; 왼쪽과 오른쪽 패딩을 상쇄하기 위해 음수 마진 추가 */
+    /* border-top: 1px solid #d9d9d9;
+    border-bottom: 1px solid #d9d9d9; */
+    overflow: hidden;
 }
 
-.timeTab.active {
-    background-color: #000;
+
+.day-tab {
+    flex: 1;
+    margin-right: 0.2rem;
+    text-align: center;
+    padding: 0.4rem 0;
+    cursor: pointer;
+    position: relative;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    border-radius: 12px;
+    border: 1px solid transparent;
+}
+
+.day-tab:hover{
+    background-color: #f8f8f8;
+}
+
+.day-tab.active {
+    background-color: #C8F575;
+}
+
+.day-tab.today:after {
+    content: '오늘';
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.6rem;
+    background-color: #45206C;
     color: white;
-  }
-  
+    padding: 0 3px;
+    border-bottom-left-radius: 4px;
+}
+
+.time-table{
+    background-color: #f5f5f5;
+    padding:  1rem;
+}
+
+
+.session-num, .session-time{
+    font-weight: 500;
+}
+
+.session-admission {
+    margin-left: auto;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.day-tab.closed {
+    background-color: #f5f5f5;
+    color: #999;
+}
+
 .session-num{
     margin-right: 0.375rem;
 }
@@ -138,12 +209,11 @@ main {
 .charge:not(:last-child)::after {
     content: "|";
     margin-left: 0.5rem;
-  }
+}
   
 .wayTo{
     flex-direction: column;
-    gap: 3px;
-    margin: 0 !important;
+    
 }
 
 .bigBtn{
@@ -155,3 +225,100 @@ main {
     border: 1px solid #d9d9d9;
     padding: 0.5rem;
 }
+
+
+.chargeInfo{
+    flex-direction: column;
+}
+/* 
+.member-charges-title {
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+    color: #333;
+    border-top: 1px dashed #d9d9d9;
+    padding-top: 0.5rem;
+} */
+
+.charge-info {
+    background-color: #f5f5f5;
+    padding: 15px;
+    margin-bottom: 0.3rem;
+}
+
+.charge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #ddd;
+}
+
+
+.parking-item, .transportation-item{
+    margin-bottom: 0.3rem;
+}
+
+.web-link{
+    border: 1px solid #A9A9A9;
+    border-radius: 12px;
+    padding: 0.4rem 0.6rem;
+}
+
+.web-link:hover{
+    background-color: #f5f5f5;
+    cursor: pointer;
+}
+/* 
+.time-table{
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    padding: 0.5rem;
+} */
+
+
+#Back{
+    font-size: 1.3rem;
+}
+
+#Back, #heartBtn {
+    cursor: pointer;
+}
+
+#heartBtn {
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+
+#websiteLink, #phoneNumber {
+    color: #2D1157;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.information, .parking-info{
+    color: #666666;
+}
+
+.info-item, parking-item{
+    margin-bottom:0.25rem;
+}
+
+li {
+    position: relative;
+    padding-left: 0.7rem;
+    list-style: none; /* 기본 마커 제거 */
+  }
+  
+  li::before {
+    content: "•"; /* 원하는 마커 기호 */
+    position: absolute;
+    left: -0.2rem;
+    color: #000; /* 마커 색상 */
+  }
+
+  b{
+    font-weight: 500;
+  }
