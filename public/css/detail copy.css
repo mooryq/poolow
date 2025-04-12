@@ -1,0 +1,201 @@
+.containerDetail{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;  /* 아이폰 */
+    max-width: 460px;
+    height: 100%;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+
+main {
+    padding-top: var(--header-height);
+    flex: 1;
+    width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.headerPoolName{
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%; /* 헤더 중앙에 적당한 너비로 제한 */
+    text-align: center;
+}
+
+
+.flex{
+    display: flex;
+    align-items: center;
+}
+
+.flex > * {
+    margin-right: 0.5rem;
+}
+
+.flex-between{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.flex-top{
+    align-items: start !important;
+}
+
+.flex-column{
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.gap{
+    height: 0.2rem;
+}
+
+.detailBox{
+    padding: 1rem 1.5rem;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detailMenu{
+    gap: 1.25rem;
+    background-color: #fff;
+    border-bottom: 0.5px solid #A9A9A9;
+}
+
+.menu{
+    flex: 1;
+    text-align: center;
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+    height: 100%;
+    border-bottom: 2px solid transparent;
+}
+
+.menu.active{
+    border-bottom: 2px solid #666666;
+}
+
+.detailTitle{
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-right: 1rem;
+}
+
+.detailMap{
+    height: 12rem;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.2rem;
+}
+
+.time-table > * {
+    margin-bottom: 0.5rem;
+}
+
+.timeTab{
+    border-radius: 5px;
+    padding: 0.2rem 0.5rem;
+    font-size: 1rem;
+    text-align: center;
+    margin-right: 5px;
+    align-self:center;
+    border: 1px solid #666666;
+}
+
+.timeTab.active {
+    background-color: #000;
+    color: white;
+  }
+  
+.session-num{
+    margin-right: 0.375rem;
+}
+
+.charge:not(:last-child)::after {
+    content: "|";
+    margin-left: 0.5rem;
+  }
+  
+.wayTo{
+    flex-direction: column;
+    gap: 3px;
+    margin: 0 !important;
+}
+
+.bigBtn{
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3px;
+    border: 1px solid #d9d9d9;
+    padding: 0.5rem;
+}
+
+
+
+/* 즐겨찾기 */
+
+#heartBtn{
+    font-size: 1.4rem;
+}
+
+#heartBtn:hover{
+    cursor: pointer;
+}
+
+/* 뒤로가기 */
+
+#Back{
+    font-size: 1.5rem;
+}
+
+
+/*  후기 */
+
+#reviewList{
+    width: 100%;
+
+}
+
+.reviewCard{
+    padding: 0.5rem 0;
+    /* border-bottom: 1px solid #a9a9a9; */
+}
+
+
+
+/* 후기 등록시 이미지 미리보기 */
+.preview-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .preview-wrapper img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+
+  .review-img{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-top: 8px;
+    margin-right: 8px;
+  }

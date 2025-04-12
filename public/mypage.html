@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no,viewport-fit=cover">
+
+    <title>poolow</title>
+    
+
+    
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/addFavRev.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="css/mypage.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header flex-between">
+                <a id="home" href="index.html"> 🌊 poolow </a>
+                <div id="logoutBtn" class="flex-align-center flex">
+                    <img src="icons/settings.svg" alt="Settings Icon" width="20" height="20">
+                </div>
+            </div>
+        </header>
+        <main>  
+
+            <div id="phoneForm" style="display: none;">
+                <p>📱 전화번호를 입력해주세요</p>
+                <input type="text" id="phoneInput" placeholder="010-0000-0000" />
+                <button id="savePhoneBtn">저장</button>
+            </div>
+            
+            <div id="userInfo" style="display: none;">
+                <div class="flex-between">
+                    <div id="userName"> </div>
+                    <div class="border-link">프로필 수정</div>               
+                </div>
+                <!-- <div class="flex">
+                    <div id="favoriteCount"> 즐겨찾는 수영장 : 개</div>
+                    <div class="gap"></div>
+                    <div id="reviewCount"> 작성한 리뷰 : 개</div>
+                </div> -->
+            </div>
+            <div class="tabMenu">
+                <div class="tab active" data-target="myPool"> 내 수영장</div>
+                 <div class="tab" data-target="myReview"> 내 리뷰</div>
+            </div>
+
+            <div class="tabContent active" id="myPool"> </div>
+            <div class="tabContent" id="myReview"> 
+                <div class="review-item flex-column">
+                    <div class="flex">
+                        <div class="flex-column">
+                          <div class="flex">
+                            <div class="pool-name"></div>
+                            <div class="tag"></div>
+                        </div>
+                        <div class="short-address"></div>
+                    </div>
+                    </div>                    
+                    <div class="review-content">
+                        <div class="write-date"></div>
+                        <div class="review-image">
+                            <img src="images/pool.jpg" alt="review image">
+                            <img src="images/pool.jpg" alt="review image">
+                        </div>
+                        <div class="review-text">
+                            <p>좋아요</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div><!--container-->
+
+
+
+
+
+<script type="module" src="js/global.js"></script>
+<script type="module" src="js/firebase.js"></script>
+<script type="module" src="js/mypage.js"></script>
+
+
+</body>
+</html>

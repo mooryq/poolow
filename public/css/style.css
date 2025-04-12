@@ -1,19 +1,30 @@
-
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Tektur:wght@400..900&display=swap');
+
+
+
 
 html{
-    font-family: 'Pretendard', sans-serif;
+    font-family: 'Pretendard',"Tektur", "Geist Mono", sans-serif;
     letter-spacing: -0.02em; /* 살짝 간격 조정 (Pretendard 권장값) */
-    font-size: 14px;    
+    font-size: 14px;
+    box-sizing: border-box;
+    background-color: #fafafa;
+    overflow: hidden;
+    height: 100%;
 }
 
+*, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+  
 body{
-    background-color: #F6F6F6;
     justify-content: center;
     height: 100%;
     color: #3D3D3D;
-    overflow: hidden;
     margin: 0;
+    overflow: hidden;
 }
 
 
@@ -24,9 +35,32 @@ header{
     margin:auto;
     max-width: 460px;
     width: 100%;
-    background-color: #fff;
+    padding: 1rem 1.2rem;
     z-index: 1000; /* 다른 요소 위에 배치 */
+    background: #fff;
+    box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+ 
 }
+
+main {
+  padding-top: var(--header-height);
+  width: 100%;
+}
+
+button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  
+  a{
+    text-decoration: none;
+    color: #000;
+  }
 
 :root {
     --vh: 100%;
@@ -35,6 +69,8 @@ header{
   .full-height {
     height: calc(var(--vh, 1vh) * 100);
   }
+
+
 
 /*토스트^.^*/
 
@@ -56,50 +92,60 @@ header{
     opacity: 1;
   }
   
+  /*header*/
 
-/* 검색창 */
 
-.search-console{
-    padding: 20px 15px;
-    margin-bottom: 10px;
+
+#home{
+  font-family: "Tektur", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  border-radius: 5px;
+  position: relative;
+  display: inline-block;
+  z-index: 1; 
+}
+
+
+#home::after{
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: -4%;
+  background-color: #C8F575;
+  opacity: 0.5;
+  width: 108%;
+  height: 0.7rem;
+  z-index: -1;
+}
+
+#mypage{
+    text-decoration: none;
+    font-family: "Tektur", sans-serif;
+    font-weight: 500;
+    margin-left: auto;
+    color:#2D1157;
+    padding: 0.5rem;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  #mypage:before{
+    content: "🐋";
     position: absolute;
-    width: 100%;
-    box-sizing: border-box;    
-}
+    top: 0;
+    right: 0;
+  }
+  
+  #mypage:hover{
+    cursor: pointer;
+  }
 
-.search{
-    display: flex;
-    align-items: center;
-    width: 99%;
-    margin: auto;
-    align-items: center;
-    height: 3rem;
-    border-radius: 9px;
-    transition: all .2sease-out;
-    outline: 1px solid #A9A9A9;
-    background-color: #fff;
-    /* box-shadow: 0 1px 2px #0000001f, 0 0 1px #00000014, 0 0 1px #00000014; */
-}
-
-.inside-search{
-    padding: 2px 10px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-}
-
-#searchInput{
-    width: 100%;
-    border: none;
-    height: 100%;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-}
-
-input:focus {
-    outline: none;
-    box-shadow: none;
-}
+  .hidden {
+    display: none;
+  }
 
 
 .pool-item{
@@ -132,14 +178,16 @@ input:focus {
 }
 
 .tag{
-    background-color: #c5cee9;
+    /* background-color: #c5cee9; */
+    background-color: #C8F575;
     border-radius: 5px;
     padding: 0.2rem 0.3rem;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 500;
     text-align: center;
-    margin-right: 5px;
+    margin-right: 3px !important;
     align-self:center;
+    color:#2D1157;
 }
 
 .noti{
@@ -147,13 +195,93 @@ input:focus {
     color: #555;
     text-align: left;
 }
+
 .fav-icon{
     margin-left: auto;
 }
 
+/* 모달 */
+
+#reviewModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+    
+  #reviewModal .modal-content {
+    background: white;
+    border-radius: 5px;
+    padding: 1rem;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  #reviewModal textarea{
+    resize: none;  
+    width: 100%;                   /* 부모 요소 기준 꽉 차게 */
+    min-height: 100px;             /* 기본 높이 */
+    padding: 0.75rem;              /* 안쪽 여백 */
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  #reviewModal .cancleForm{
+    display: flex;
+    padding-bottom: 1rem;
+}
+
+#reviewModal .cancleForm:hover{
+    cursor: pointer;
+  }
 
 
-/**/
+#reviewModal .submitForm{
+    display: flex;
+    justify-content: end;
+    padding-top: 1rem;
+  }
+
+
+.modal-close{
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 5px;
+    padding: 0.35rem 0.7rem;
+    font-weight: 500;
+}
+  
+.modal-close:hover{
+    background-color: #f5f5f5;
+    cursor: pointer;
+}
+
+  #submitReview{
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 5px;
+    padding: 0.35rem 0.7rem;
+    font-weight: 500;
+  }
+
+  #submitReview.active{
+    background-color: #C8F575; 
+    cursor: pointer;
+  }
+
+  #submitReview:disabled {
+    cursor: not-allowed;
+}
+
 /* 
 .list-pool > * {
     margin-bottom: 2px;
