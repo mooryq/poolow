@@ -2,7 +2,7 @@
 import { auth, provider } from "./firebase.js";
 import { signInWithPopup } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
-//구글로그인
+//네이버로그인
 import { naverConfig } from "./config.js";
 
 document.addEventListener("DOMContentLoaded", () => {
