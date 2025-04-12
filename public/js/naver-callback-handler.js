@@ -1,5 +1,5 @@
 //네이버로그인
-import { naverConfig } from "/public/js/config.js";
+import { naverConfig } from "./config.js";
 
 
 document.addEventListener('DOMContentLoaded', function() {
