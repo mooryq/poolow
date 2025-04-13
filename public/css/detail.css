@@ -72,21 +72,12 @@
     padding: 0.3rem 0.6rem;
 }
 
-.border-link:hover{
-    background-color: #f5f5f5;
-}
 
 #sharePool img {
     display: block;
     margin: 0 auto;
 }
 
-#sharePool span {
-    display: block;
-    width: 100%;
-    text-align: center;
-    color: #2D1157;
-}
 
 #reviews{
   font-size: 1.1rem;
@@ -230,15 +221,6 @@
 .chargeInfo{
     flex-direction: column;
 }
-/* 
-.member-charges-title {
-    margin-top: 0.75rem;
-    margin-bottom: 0.25rem;
-    font-weight: bold;
-    color: #333;
-    border-top: 1px dashed #d9d9d9;
-    padding-top: 0.5rem;
-} */
 
 .charge-info {
     background-color: #f5f5f5;
@@ -270,12 +252,7 @@
     background-color: #f5f5f5;
     cursor: pointer;
 }
-/* 
-.time-table{
-    background-color: #f5f5f5;
-    border-radius: 12px;
-    padding: 0.5rem;
-} */
+
 
 
 #Back{
@@ -291,12 +268,28 @@
     transition: transform 0.2s ease;
 }
 
-
 #websiteLink, #phoneNumber {
-    color: #2D1157;
-    font-weight: 500;
+    display: inline-block;
+    word-break: break-all;
+    
+    font-size: 0.9rem;
+}
+
+.website-info div , .phone-info div{
+    flex-shrink: 0;
+    min-width: 5rem;
+    word-break: break-all;
+}
+
+.website-info div img , .phone-info div img{
+    width: 15px; 
+    height: 15px;
+    vertical-align: middle;
+}
+#websiteLink, #phoneNumber {
     cursor: pointer;
 }
+
 
 .information, .parking-info{
     color: #666666;

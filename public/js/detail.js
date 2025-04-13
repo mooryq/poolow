@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     poolNameElements.forEach(element => {
         element.textContent = pool.name;
     });
-    document.querySelector('.address').textContent = pool.address;
+    document.querySelector('.address').textContent = `🌊 ${pool.address}`;
     
     // 후기 개수 가져오기
     const reviewsElement = document.getElementById('reviews');
@@ -150,8 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 웹사이트 정보 표시
     const websiteLink = document.getElementById("websiteLink");
     if (pool.website) {
-        websiteLink.innerHTML = `${pool.website} <img src="icons/open_thick.svg" alt="link icon" width="20" height="20" style="vertical-align: middle; margin-left: 5px;">`;
-        websiteLink.style.cursor = "pointer";
+        websiteLink.innerHTML = `${pool.website}`;
         websiteLink.onclick = () => window.open(pool.website, "_blank");
     } else {
         websiteLink.textContent = "웹사이트 정보가 없습니다.";
@@ -161,8 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 전화번호 정보 표시
     const phoneNumber = document.getElementById('phoneNumber');
     if (pool.phone) {
-        phoneNumber.innerHTML = `${pool.phone} <img src="icons/call.svg" alt="link icon" width="20" height="20" style="vertical-align: middle; margin-left: 5px;">`;
-        phoneNumber.style.cursor = "pointer";
+        phoneNumber.innerHTML = `${pool.phone}`;
         phoneNumber.onclick = () => window.open(`tel:${pool.phone}`, "_blank");
     } else {
         // 전화번호 정보가 없는 경우 항목 숨김
@@ -181,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 대중교통 정보 표시
     if (pool.transportation && pool.transportation.length > 0) {
         const transportationInfo = document.querySelector('.transportation-info');
-        transportationInfo.innerHTML = pool.transportation.map(transportation => `<div class="transportation-item">${transportation}</div>`).join('');
+        transportationInfo.innerHTML = pool.transportation.map(transportation => `<div class="transportation-item">🚌 ${transportation}</div>`).join('');
     }
     
     
@@ -209,6 +207,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchQuery = encodeURIComponent(pool.name + ' ' + pool.address);
         const directionUrl = `https://map.naver.com/v5/search/${searchQuery}`;
         window.open(directionUrl, '_blank');
+    });
+
+     // 공유 버튼 
+    const shareBtn = document.getElementById('sharePool');
+    shareBtn.addEventListener('click', async () => {
+        const shareUrl = `${window.location.origin}/detail.html?poolId=${pool.id}`;
+        const shareTitle = `🌊 ${pool.name}`;
+
+        if (navigator.share) {
+        try {
+            await navigator.share({
+            title: shareTitle,
+            text: `🌊 ${pool.name} 에서 같이 수영해요! by Poolow `,
+            url: shareUrl
+            });
+            console.log("✅ 공유 성공");
+        } catch (err) {
+            console.error("❌ 공유 실패", err);
+        }
+        } else {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast("링크가 복사되었습니다!");
+        });
+        }
     });
   }
   
@@ -372,4 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
         position: new naver.maps.LatLng(lat, lng),
         map: map,
     });
+
+    
 }
+

@@ -113,13 +113,11 @@
                 <div class="flex-column">              
                     <div class="flex-between">
                         <div class="flex">
-                            <span>🌊</span>
                         <div class="address"></div>
                         </div>
-                        <div class="flex copy"> <span>📋</span> 복사</div>
+                        <div class="flex copy"> 📋 복사</div>
                     </div>
                     <div class="flex">
-                        <span>🚌</span>
                         <div class="wayTo transportation-info">
                             <!-- 교통 정보가 동적으로 여기에 추가됩니다 -->
                         </div>
@@ -149,12 +147,17 @@
             <div class="detailBox" id="contactBox">
                 <div class="detailTitle">상세정보</div>
                 <div class="flex website-info">
-                    <span style="font-weight: bold; white-space: nowrap; flex-shrink: 0; min-width: 5rem;">웹사이트</span>
-                    <span style="word-break: break-all;" id="websiteLink"></span>
+                    <div>웹사이트
+                        <img src="icons/open_thick.svg" alt="web link icon">
+                    </div>
+                    <span id="websiteLink"></span>
                     
                 </div>
                 <div class="flex phone-info">
-                    <span style="font-weight: bold; flex-shrink: 0; min-width: 5rem;">전화번호</span>
+                    <div>
+                        전화번호
+                        <img src="icons/call.svg" alt="phone call icon" alt="link icon">
+                    </div>
                     <span id="phoneNumber"></span>
                 </div>
             </div>

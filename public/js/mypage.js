@@ -151,6 +151,7 @@ if (logoutBtn) {
       console.log("👋 로그아웃 성공");
       localStorage.removeItem("user");
       window.location.href = "index.html";
+      showToast("👋🏻 또 놀러와요")
     } catch(error) {
       console.error("❌ 로그아웃 실패:", error);
     }
@@ -263,40 +264,43 @@ document.addEventListener("DOMContentLoaded", () => {
         e.stopPropagation();
         const poolCard = button.closest('.myCard');
         const poolId = poolCard.dataset.poolId;
-        
-        try {
-          // Firestore에서 즐겨찾기 제거 (authUser 사용)
-          authUser(
-            async (userId) => {  // 여기서 userId는 전화번호
-              // 올바른 경로로 문서 삭제
-              await deleteDoc(doc(db, "users", userId, "favorites", poolId));
-              
-              // 전역 데이터에서도 제거
-              userData.favorites = userData.favorites.filter(pool => pool.id !== poolId);
-              
-              // UI에서 카드 제거
-              poolCard.remove();
-              
-              // 즐겨찾기가 모두 제거되었는지 확인
-              if (listContainer.children.length === 0) {
-                listContainer.innerHTML = "<p>저장된 수영장이 없습니다.</p>";
+        const poolName = poolCard.querySelector('.pool-name').textContent;
+
+      if (confirm(`"${poolName}"을 즐겨찾기에서 삭제할까요?`)) {
+          try {
+            // Firestore에서 즐겨찾기 제거 (authUser 사용)
+            authUser(
+              async (userId) => {  // 여기서 userId는 전화번호
+                // 올바른 경로로 문서 삭제
+                await deleteDoc(doc(db, "users", userId, "favorites", poolId));
+                
+                // 전역 데이터에서도 제거
+                userData.favorites = userData.favorites.filter(pool => pool.id !== poolId);
+                
+                // UI에서 카드 제거
+                poolCard.remove();
+                
+                // 즐겨찾기가 모두 제거되었는지 확인
+                if (listContainer.children.length === 0) {
+                  listContainer.innerHTML = "<p>저장된 수영장이 없습니다.</p>";
+                }
+      
+                showToast("즐겨찾기가 해제되었습니다.");
+              },
+              () => {
+                showToast("로그인이 필요합니다.");
               }
-    
-              showToast("즐겨찾기가 해제되었습니다.");
-            },
-            () => {
-              showToast("로그인이 필요합니다.");
-            }
-          );
-        } catch (error) {
-          console.error("즐겨찾기 삭제 중 오류 발생:", error);
-          showToast("즐겨찾기 해제 중 오류가 발생했습니다.");
+            );
+          } catch (error) {
+            console.error("즐겨찾기 삭제 중 오류 발생:", error);
+            showToast("즐겨찾기 해제 중 오류가 발생했습니다.");
+          }
         }
       });
     });
   }
   
-  // 리뷰 렌더링 함수 - 태그 관련 기능 제거
+  // 리뷰 렌더링 함수 
   function renderReviews() {
     if (userData.reviews.length === 0) {
       reviewContainer.innerHTML = "<p>작성한 리뷰가 없습니다.</p>";
@@ -360,18 +364,33 @@ document.addEventListener("DOMContentLoaded", () => {
     ReviewEditListeners();
   }
 
-  // 수영장 카드와 리뷰 아이템 클릭 시 상세 페이지로 이동하는 통합 함수
-  document.addEventListener('click', (e) => {
-    // pool-name 클릭 시에만 상세 페이지로 이동
-    const poolNameElement = e.target.closest('.pool-name');
-    if (poolNameElement) {
-      const card = e.target.closest('.myCard, .review-item');
-      if (card) {
-        const poolId = card.dataset.poolId;
+    // 수영장 카드와 리뷰 아이템 클릭 시 상세 페이지로 이동하는 통합 함수
+    document.addEventListener('click', (e) => {
+      // 하트 버튼 클릭은 무시 (이미 별도 이벤트 핸들러가 있음)
+      if (e.target.closest('.heartBtn') || e.target.closest('.review-actions')) {
+        return;
+      }
+      
+      // 내 수영장 탭의 경우 - 카드 전체 클릭 가능
+      const myCardElement = e.target.closest('.myCard:not(.reviewCard)');
+      if (myCardElement) {
+        const poolId = myCardElement.dataset.poolId;
         if (poolId) {
           window.location.href = `detail.html?poolId=${poolId}`;
+          return;
         }
       }
-    }
-  });
+      
+      // 리뷰의 경우 - pool-name 클릭만 이동 (기존 동작 유지)
+      const poolNameElement = e.target.closest('.pool-name');
+      if (poolNameElement) {
+        const card = e.target.closest('.reviewCard, .review-item');
+        if (card) {
+          const poolId = card.dataset.poolId;
+          if (poolId) {
+            window.location.href = `detail.html?poolId=${poolId}`;
+          }
+        }
+      }
+    });
 });

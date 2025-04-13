@@ -302,10 +302,21 @@ export function initReviewModal() {
                         
                         const deleteBtn = document.createElement("button");
                         deleteBtn.className = "delete-preview-img";
-                        deleteBtn.innerHTML = "×";
+                        
+                        // SVG 파일을 이미지로 참조
+                        const imgElement = document.createElement("img");
+                        imgElement.src = "icons/dismiss.svg"; // SVG 파일 경로
+                        imgElement.alt = "삭제";
+                        imgElement.width = 20;
+                        imgElement.height = 20;
+
+                        // 이미지를 버튼에 추가
+                        deleteBtn.appendChild(imgElement);
+
                         deleteBtn.onclick = function() {
                             imgContainer.remove();
                         };
+
                         
                         imgContainer.appendChild(img);
                         imgContainer.appendChild(deleteBtn);
