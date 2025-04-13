@@ -127,6 +127,7 @@ button {
 #mypage{
     text-decoration: none;
     font-family: "Tektur", sans-serif;
+    font-size: 1.1rem;
     font-weight: 500;
     margin-left: auto;
     padding: 0.5rem;
@@ -146,7 +147,7 @@ button {
   }
 
   .logged-in #mypage {
-    color: #2D1157;
+    color: inherit;
   }
   
   .logged-in .whale-bg {

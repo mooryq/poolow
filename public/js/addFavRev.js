@@ -544,7 +544,7 @@ export function initReviewModal() {
                     "현재 사용자:", currentUserId, "리뷰 작성자:", r.userId);
 
                 html += `
-                    <div class="reviewCard" data-review-id="${reviewId}">
+                    <div class="reviewCard myCard" data-review-id="${reviewId}">
                         <div class="review-header">
                             <div class="review-user-info">
                                 <span class="review-name">${r.userName}</span>

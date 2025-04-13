@@ -28,7 +28,9 @@ main{
   
   .tabContent {
     display: none;
-    padding:1rem;
+    padding: 1rem 0.5rem;
+    max-height: calc(100dvh - 59px - 64px - 55px ); /* header + 탭 높이 제외한 나머지 */
+    overflow-y: auto;
   }
   
   .tabContent.active {
@@ -43,6 +45,10 @@ main{
   }
 
 
+  .myCard.reviewCard::after {
+    display: none !important;
+    content: none !important; 
+}
 
 
   #userInfo {
