@@ -239,7 +239,28 @@ async function fetchUserByUID(uid, onSuccess, onFailure) {
 
 
 
-// 페이지 로드 시 마이페이지 링크 설정 자동 실행
+// 페이지 로드 시 세션 정보 담고, my버튼 UI 조정
 document.addEventListener('DOMContentLoaded', () => {
-  setupReturnUrlForMypage();
+  setupReturnUrlForMypage(); // ✅ my 버튼 누를 때 현재 세션 url 정보 저장
+  initHeaderUI(); // ✅ my버튼 UI 동기화
 });
+
+
+//index와 detail 페이지 header에서 my버튼에 로그인 여부에 따라 다르게 스타일 적용
+
+function initHeaderUI() {
+  const wrapper = document.querySelector('.mypage-wrapper');
+
+  if (!wrapper) return; // 안전성 체크
+
+  authUser(
+    () => {
+      wrapper.classList.remove('logged-out');
+      wrapper.classList.add('logged-in');
+    },
+    () => {
+      wrapper.classList.remove('logged-in');
+      wrapper.classList.add('logged-out');
+    }
+  );
+}

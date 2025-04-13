@@ -119,25 +119,55 @@ button {
   z-index: -1;
 }
 
+
+.mypage-wrapper {
+  position: relative;
+}
+
 #mypage{
     text-decoration: none;
     font-family: "Tektur", sans-serif;
     font-weight: 500;
     margin-left: auto;
-    color:#2D1157;
     padding: 0.5rem;
     text-align: center;
     align-items: center;
     justify-content: center;
     position: relative;
+    z-index: 3;
+  }
+  
+  .whale-bg {
+    position: absolute;
+    top: -0.7rem;
+    right: 0;
+    z-index: 1;
+    font-size: 1.5rem;
   }
 
+  .logged-in #mypage {
+    color: #2D1157;
+  }
+  
+  .logged-in .whale-bg {
+    opacity: 1;
+  }
+  
+  .logged-out #mypage {
+    color: #A9A9A9;
+  }
+  
+  .logged-out .whale-bg {
+    opacity: 0.5;
+  }
+    
+/* 
   #mypage:before{
     content: "🐋";
     position: absolute;
     top: 0;
     right: 0;
-  }
+  } */
   
   #mypage:hover{
     cursor: pointer;

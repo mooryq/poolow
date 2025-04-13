@@ -143,16 +143,6 @@ export async function saveUserToFirestore(phone, userInfo) {
       }, { merge: true });
       
 
-      // await setDoc(userRef, {
-      //   name: docSnap.exists() ? existingData.name : (userInfo.name || ""),
-      //   email: docSnap.exists() ? existingData.email : (userInfo.email || ""),
-      //   photo: docSnap.exists() ? existingData.photo : (userInfo.photo || "default.jpg"),
-      //   provider: docSnap.exists() ? existingData.provider : (userInfo.provider || "unknown"),
-      //   phone,
-      //   uids,
-      //   createdAt: docSnap.exists() ? existingData.createdAt : new Date()
-      // }, { merge: true });
-      
         
       console.log("✅ 사용자 정보 저장 완료");
 
@@ -161,22 +151,3 @@ export async function saveUserToFirestore(phone, userInfo) {
   }
 }
 
-
-// // ✅ Firestore에서 유저 정보 불러오는 함수
-// export async function getUserFromFirestore(phone) {
-//   try {
-//     const docRef = doc(db, "users", phone);
-//     const docSnap = await getDoc(docRef);
-
-//     if (docSnap.exists()) {
-//       console.log("👤 기존 유저 정보:", docSnap.data());
-//       return docSnap.data();
-//     } else {
-//       console.log("🆕 사용자 정보 없음 (새로 생성 필요)");
-//       return null;
-//     }
-//   } catch (e) {
-//     console.error("❌ Firestore 읽기 실패", e);
-//     return null;
-//   }
-// }
