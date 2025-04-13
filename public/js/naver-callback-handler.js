@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const naverLogin = new naver.LoginWithNaverId(naverConfig);
   
   naverLogin.init();
-  
+
 
   naverLogin.getLoginStatus(function (status) {
     if (!status || !naverLogin.user) {
@@ -40,16 +40,21 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("✅ 네이버 로그인 성공:", userInfo);
     localStorage.setItem("user", JSON.stringify(userInfo));
     
-    // 로그인 성공 플래그 설정 (이 줄 추가)
+    // 로그인 성공 플래그 설정 
     localStorage.setItem("loginSuccess", "true");
+    localStorage.setItem("naverLogin", "true"); // 네이버 로그인 표시 추가
+
 
     // 세션 스토리지에서 returnUrl 확인
-    const returnUrl = sessionStorage.getItem('returnUrl');
-    if (returnUrl) {
-        sessionStorage.removeItem('returnUrl'); // 사용 후 삭제
-        window.location.href = returnUrl;
-    } else {
-        window.location.href = "index.html";
-    }
+    
+      const returnUrl = sessionStorage.getItem('returnUrl');
+      if (returnUrl) {
+          sessionStorage.removeItem('returnUrl'); // 사용 후 삭제
+          window.location.href = returnUrl;
+      } else {
+          // window.location.href = "detail.html?poolId=3";
+          window.location.href = "index.html";
+      }
+    
   });
 });

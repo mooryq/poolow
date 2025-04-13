@@ -1,10 +1,8 @@
-// 구글로그인
 import { auth, provider } from "./firebase.js";
 import { signInWithPopup } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-
-//네이버로그인
 import { naverConfig } from "./config.js";
 
+// 구글로그인
 document.addEventListener("DOMContentLoaded", () => {
     const googleLoginBtn = document.getElementById("googleLogin");
     
@@ -31,8 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("loginSuccess", "true");
         console.log("로그인 성공 플래그 설정됨");
 
+        
         // 세션 스토리지에서 returnUrl 확인
         const returnUrl = sessionStorage.getItem('returnUrl');
+      
         if (returnUrl) {
             console.log("리디렉션:", returnUrl);
             sessionStorage.removeItem('returnUrl'); // 사용 후 삭제
@@ -69,31 +69,60 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // 네이버 로그인 콜백 처리
-  if (window.location.pathname.includes('naver_callback')) {
-      const naverLogin = new naver.LoginWithNaverId(naverConfig);
-      naverLogin.init();
+// // 네이버 로그인 콜백 처리
+// if (window.location.pathname.includes('naver_callback')) {
+//   const naverLogin = new naver.LoginWithNaverId(naverConfig);
+//   naverLogin.init();
 
-      naverLogin.getLoginStatus(function(status) {
-          if (status) {
-            console.log("네이버 로그인 성공");
-            
-            // 로그인 성공 플래그 설정
-            localStorage.setItem("loginSuccess", "true");
-            
-            // 세션 스토리지에서 returnUrl 확인
-            const returnUrl = sessionStorage.getItem('returnUrl');
-            if (returnUrl) {
-                console.log("리디렉션:", returnUrl);
-                sessionStorage.removeItem('returnUrl'); // 사용 후 삭제
-                window.location.href = returnUrl;
-            } else {
-                console.log("리디렉션 없음, 기본 페이지로 이동");
-                window.location.href = "index.html";
-            }
-        }
-      });
-  }
+//   naverLogin.getLoginStatus(function(status) {
+//       if (!status || !naverLogin.user) {
+//           console.error("❌ 네이버 로그인 실패 또는 사용자 정보 없음");
+//           localStorage.removeItem("loginSuccess");
+//           localStorage.removeItem("user");
+//           return;    
+//       }
+
+//       const id = naverLogin.user.getId();
+//       const name = naverLogin.user.getName();
+//       const email = naverLogin.user.getEmail();
+
+//       if (!id) {
+//           alert("네이버 사용자 식별자를 불러오지 못했습니다.");
+//           console.warn("⚠️ 유저 정보:", naverLogin.user);
+//           return;
+//       }
+      
+//       console.log("💡 getId:", naverLogin.user.getId());
+//       console.log("💡 전체 유저 정보", naverLogin.user);
+
+//       const userInfo = {
+//           uid: id,
+//           name: name || "이름없음",
+//           email: email || "",
+//           photo: "default.jpg",
+//           provider: "naver"
+//       };
+
+//       console.log("✅ 네이버 로그인 성공:", userInfo);
+//       localStorage.setItem("user", JSON.stringify(userInfo));
+      
+//       // 로그인 성공 플래그 설정
+//       localStorage.setItem("loginSuccess", "true");
+      
+//       // 잠시 지연 후 리다이렉션
+//       setTimeout(() => {
+//           const returnUrl = sessionStorage.getItem('returnUrl');
+//           if (returnUrl) {
+//               console.log("리디렉션:", returnUrl);
+//               sessionStorage.removeItem('returnUrl'); // 사용 후 삭제
+//               window.location.href = returnUrl;
+//           } else {
+//               console.log("리디렉션 없음, 기본 페이지로 이동");
+//               window.location.href = "index.html";
+//           }
+//       }, 200); // 200ms 지연
+//   });
+// }
 
   // // 로그인 버튼 활성화 >전화번호 로그인 사용하려 할 때 다시 살려요 
   // const usernameInput = document.getElementById("userPhone");

@@ -79,7 +79,11 @@ onAuthStateChanged(auth, (user) => {
     }));
   } else {
     // 로그아웃 또는 세션 만료 시
-    localStorage.removeItem("user");
+    // 네이버 로그인 사용자인 경우 로컬 스토리지 유지
+    const localUser = JSON.parse(localStorage.getItem("user"));
+    if (!localUser || localUser.provider !== "naver") {
+      localStorage.removeItem("user");
+    }
   }
 });
 

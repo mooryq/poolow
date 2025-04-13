@@ -69,7 +69,27 @@ export function setupModalListeners(modalId) {
 }
 
 
-
+// 마이페이지 링크 세션 저장 설정 함수
+export function setupReturnUrlForMypage() {
+  const mypageLink = document.getElementById('mypage');
+  
+  if (mypageLink) {
+    mypageLink.addEventListener('click', function(e) {
+      e.preventDefault(); // 기본 동작 방지
+      
+      // 현재 URL을 세션 스토리지에 저장
+      sessionStorage.setItem('returnUrl', window.location.href);
+      
+      // 로그인 상태 확인
+      const loginSuccess = localStorage.getItem('loginSuccess');
+      if (loginSuccess === 'true') {
+        window.location.href = 'mypage.html'; // 로그인됨 -> 마이페이지로
+      } else {
+        window.location.href = 'login.html'; // 로그인 안됨 -> 로그인 페이지로
+      }
+    });
+  }
+}
 
 //로그인 인증 함수 
 // auth-util.js
@@ -85,12 +105,14 @@ import { collection, query, where, getDocs } from "https://www.gstatic.com/fireb
 
 
 export function authUser(onSuccess, onFailure) {
-console.log("🛰 authUser() called global" );
+  console.log("🛰 authUser() called global");
+  console.log("📍 현재 페이지 URL:", window.location.href);
 
-// 이미 로그인 성공 표시가 있는지 확인 (세션 간에도 유지)
-const loginSuccessFlag = localStorage.getItem("loginSuccess");
-const localUser = JSON.parse(localStorage.getItem("user"));
-const cachedUser = auth.currentUser;
+
+  // 이미 로그인 성공 표시가 있는지 확인 (세션 간에도 유지)
+  const loginSuccessFlag = localStorage.getItem("loginSuccess");
+  const localUser = JSON.parse(localStorage.getItem("user"));
+  const cachedUser = auth.currentUser;
 
   // 디버깅 정보 출력
   console.log("⚡️ 로그인 성공 플래그:", loginSuccessFlag);
@@ -216,3 +238,8 @@ async function fetchUserByUID(uid, onSuccess, onFailure) {
 }
 
 
+
+// 페이지 로드 시 마이페이지 링크 설정 자동 실행
+document.addEventListener('DOMContentLoaded', () => {
+  setupReturnUrlForMypage();
+});

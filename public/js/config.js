@@ -6,6 +6,6 @@ export const naverConfig = {
     callbackUrl: isProduction 
     ? `${currentHost}/naver-callback.html` 
     : `${currentHost}/public/naver-callback.html`,
-    isPopup: false,
+    isPopup: true,
     // loginButton: { color: "green", type: 3, height: 40 },
 };

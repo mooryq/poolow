@@ -430,7 +430,6 @@ function setupMapEvents() {
 }
 
 // 검색 이벤트 설정
-// 검색 이벤트 설정
 function setupSearchEvents() {
   // 키보드 엔터 검색
   searchInput.addEventListener("keypress", (event) => {
