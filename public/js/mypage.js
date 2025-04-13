@@ -5,7 +5,6 @@ import {
 } from "./firebase.js";
 
 import { 
-  signOut,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js"; 
 
@@ -142,21 +141,6 @@ savePhoneBtn.addEventListener("click", async () => {
   userInfo.style.display = "block";
 });
 
-//로그아웃
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    try {
-      await signOut(auth);
-      console.log("👋 로그아웃 성공");
-      localStorage.removeItem("user");
-      window.location.href = "index.html";
-      showToast("👋🏻 또 놀러와요")
-    } catch(error) {
-      console.error("❌ 로그아웃 실패:", error);
-    }
-  });
-}
 
 //탭 액티브 동작
 const tabs = document.querySelectorAll(".tab");

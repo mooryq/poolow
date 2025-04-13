@@ -1,0 +1,96 @@
+
+.detailBox2{
+    padding: 2.5rem 2rem;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+
+.userinfo{
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.userName, .userPhone, .userEmail{
+    font-size: 1.1rem;
+}
+
+.userName img{
+    margin-right: 0 !important;
+}
+
+#saveBtn{
+    max-width: 460px;
+    width: 100%;
+    background-color: #C8F575;
+    font-size: 1.3rem;
+    font-weight: 500;
+    text-align: center;
+    padding: 1.3em;
+}
+
+.input-wrapper{
+    position: relative;
+    display: inline-block;
+    width: 100%;  
+}
+
+.input-wrapper input{
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #eee;
+    font-size: 1.3rem;
+    padding: 0.5rem 0;
+    letter-spacing: 1px;
+    z-index: 1;
+    position:relative;
+    border-radius: 0;
+}
+
+.input-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    width: 0;
+    background-color: #a9a9a9;
+    transition: width 0.2s ease;
+    z-index: 2;
+  }
+  
+
+input:focus{
+    outline: none;
+    border: none;
+   
+}
+
+.input-wrapper:focus-within::after {
+    width: 100%;
+  }
+  
+.clear-icon{
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    z-index: 1;
+}
+
+.sso img {
+    padding: 0.2rem;
+    border: 0.5px solid #a9a9a9;
+    border-radius: 5px;
+}
+
+.sso img:last-child{
+    margin-right: 0;
+}

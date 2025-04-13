@@ -95,6 +95,7 @@ export async function saveUserToFirestore(phone, userInfo) {
   
     const userRef = doc(db, "users", phone);
     let uids = [];
+    let providers = [];
 
     try {
       const docSnap = await getDoc(userRef);
@@ -124,24 +125,36 @@ export async function saveUserToFirestore(phone, userInfo) {
       } else {
         console.log("✅ UID 이미 존재:", userInfo.uid);
       }
+
+      // 🔁 기존 providers 배열에서 중복 없이 추가
+      providers = existingData.providers || [];
+      if (!providers.includes(provider)) {
+        console.log("➕ Provider 추가됨:", provider);
+        providers.push(provider);
+      } else {
+        console.log("✅ Provider 이미 존재:", provider);
+      }
+    
     } else {
-      // 문서가 없다면 uid로 새로 생성
+      // 문서가 없다면 uid와 provider로 새로 생성
       uids = [userInfo.uid];
+      providers = [provider];
     }
 
     console.log("📤 Firestore에 저장할 uids 배열:", uids);
+    console.log("📤 Firestore에 저장할 providers 배열:", providers);
 
 
       await setDoc(userRef, {
         name,
         email,
         photo,
-        provider,
+        providers,
+        currentProvider: provider, // 현재 로그인한 provider 정보도 유지 (선택적)
         phone,
         uids,
         createdAt
       }, { merge: true });
-      
 
         
       console.log("✅ 사용자 정보 저장 완료");

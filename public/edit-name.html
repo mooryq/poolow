@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no,viewport-fit=cover">
+    <title>이름 수정 - poolow</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+
+</head>
+<body>
+    <div class="containerDetail">
+        <header>
+            <div class="header flex-between">
+                <div class="flex flex-align-center">
+                    <div id="Back"> ← </div>
+                </div>
+                
+            </div>
+        </header>
+        <main>
+            <div class="detailBox2">
+                <div class="userinfo">이름</div>
+                <div class="input-wrapper">
+                    <input type="text" id="userNameInput" maxlength="30">
+                    <img src="icons/dismiss.svg" id="clearInput" alt="Clear" class="clear-icon">
+                </div>
+                <div id="nameValidation" class="validation-message"></div>
+            </div>
+            <div class="gap"></div>
+            <div id="saveBtn">저장</div>
+            
+        </main>
+    </div>
+
+    <script type="module" src="js/global.js"></script>
+    <script type="module" src="js/profile.js"></script>
+    <script type="module" src="js/firebase.js"></script>
+</body>
+</html>

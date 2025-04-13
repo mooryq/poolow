@@ -2,7 +2,6 @@ button{
     display: block;
 }
 
-  
 .map-container{
     position: relative;    
     width: 100%;
@@ -97,29 +96,6 @@ input:focus {
     border: 1px solid #a9a9a9;
     background: url('/public/images/loading.gif') no-repeat center / cover;
   }
-
-.container {
-    width: 460px;  /* 아이폰 */
-    max-width: 100%;
-    height: calc(var(--vh, 1vh) * 100); /* 💡 100% → 안전하게 바꿈 */
-    margin: auto;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow: auto; 
-}
-
-#bottomSheet {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    max-width: 460px;
-    height: 20dvh; /* ✅ 초기 높이 (화면의 하단 20% 정도) */
-    background: white;
-    border-radius: 20px 20px 0 0;
-    transition: height 0.3s ease-in-out; /* ✅ 부드러운 변화를 위한 애니메이션 */
-    overflow: hidden;
-}
-
 
 #handle {
     width: 100%;
