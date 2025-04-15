@@ -66,9 +66,6 @@ header{
 }
 
 
-
-
-
 main {
   padding-top: var(--header-height);
   width: 100%;
@@ -353,6 +350,7 @@ button {
   #submitReview:disabled {
     cursor: not-allowed;
 }
+
 
 /* 
 .list-pool > * {

@@ -68,78 +68,41 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 
   localStorage.setItem("user", JSON.stringify(unifiedUser));
   console.log("💾 unifiedUser 저장됨:", unifiedUser);
-
   currentUID = unifiedUser.uid;
 
   // Firestore에서 유저 데이터 찾기
   const foundUser = await findUserByUID(currentUID);
-
-  if (foundUser) {
-    console.log("✅ Firestore에서 유저 찾음:", foundUser);
-
-    updateUserUI(foundUser.data);
-    phoneForm.style.display = "none";
-    userInfo.style.display = "block";
-  } else {
-    console.log("🆕 Firestore에서 유저 못 찾음");
-
-    phoneForm.style.display = "block";
-    userInfo.style.display = "none";
-  }
-  console.log("🔥 Firestore에 저장할 userInfo:", unifiedUser);
-});
-
-// Firestore에서 UID에 해당하는 사용자 찾기
-async function findUserByUID(uid) {
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, where("uids", "array-contains", uid));
-  const querySnapshot = await getDocs(q);
-
-  if (!querySnapshot.empty) {
-    const userDoc = querySnapshot.docs[0];
-    const userData = userDoc.data();
-    return { id: userDoc.id, data: userData }; // id = phone
-  }
-  return null;
-}
-
-function updateUserUI(user) {
-  document.getElementById("userName").innerHTML = `${user.name} 님`;
-}
-
-// 전화번호 저장 버튼 클릭 이벤트
-savePhoneBtn.addEventListener("click", async () => {
-  const phone = phoneInput.value.trim();
-
-  console.log("☎️ 입력한 전화번호:", phone);
-  console.log("👤 저장 직전 unified:", unifiedUser);
-
-  if (!phone) {
-    alert("전화번호를 입력해주세요.");
+  
+  if (!foundUser) {
+    // 사용자 정보가 없으면 phoneForm.html로 리다이렉션
+    console.log("🆕 Firestore에서 유저를 찾을 수 없어 phoneForm.html로 이동합니다");
+    window.location.href = "phoneForm.html";
     return;
   }
-
-  if (!unifiedUser || !unifiedUser.uid) {
-    alert("사용자 정보가 완전히 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.");
-    console.warn("⛔️ unifiedUser 또는 uid 없음:", unifiedUser);
-    return;
+  
+  // 사용자 정보가 있으면 UI 업데이트
+  console.log("✅ Firestore에서 유저 찾음:", foundUser);
+  updateUserUI(foundUser.data);
+  });
+  
+  // Firestore에서 UID에 해당하는 사용자 찾기 (기존 함수 유지)
+  async function findUserByUID(uid) {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("uids", "array-contains", uid));
+    const querySnapshot = await getDocs(q);
+  
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+      return { id: userDoc.id, data: userData }; // id = phone
+    }
+    return null;
   }
-
-  // 전화번호가 없으면 새로 저장, 있으면 기존 데이터 덮어쓰기
-  await saveUserToFirestore(phone, unifiedUser);
-
-  // 🔄 저장 후 Firestore에서 최신 데이터 불러와서 UI 업데이트
-  const foundUser = await findUserByUID(unifiedUser.uid);
-  if (foundUser) {
-    updateUserUI(foundUser.data);
-    localStorage.setItem("user", JSON.stringify({ ...foundUser.data }));
+  
+  // 사용자 정보로 UI 업데이트 (기존 함수 유지)
+  function updateUserUI(user) {
+    document.getElementById("userName").innerHTML = `${user.name} 님`;
   }
-
-  localStorage.setItem("user", JSON.stringify({ ...unifiedUser, phone }));
-
-  phoneForm.style.display = "none";
-  userInfo.style.display = "block";
-});
 
 
 //탭 액티브 동작
