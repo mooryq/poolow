@@ -147,32 +147,49 @@ document.addEventListener('DOMContentLoaded', () => {
         submitCodeBtn.disabled = true;
         
         try {
-            // 인증 코드 검증
-            const result = await confirmationResult.confirm(code);
             
-            // 인증에 성공하면 전화번호 저장 (번호 포맷 정리)
+            
+            // 중요: 전화번호 인증 전에 사용했던 소셜 계정 정보 가져오기 (백업)
+            const originalUser = JSON.parse(localStorage.getItem("user"));
+            console.log("전화번호 인증 전 소셜 계정 정보:", originalUser); // 디버깅용
+
+            // 인증 코드 검증과 파이어베이스 로그인
+            await confirmationResult.confirm(code);
+
+            // 전화번호 정보
             const phoneForDB = formattedPhoneNumber.replace('+82', '0');
-            
-            // Firestore에 사용자 정보 저장
-            await saveUserToFirestore(phoneForDB, localUser);
-            
-            // 로컬 스토리지 사용자 정보 업데이트
-            localStorage.setItem("user", JSON.stringify({ ...localUser, phone: phoneForDB }));
-            localStorage.setItem("loginSuccess", "true");
-            
-            showToast("전화번호 인증이 완료되었습니다!");
-            
+            console.log("인증된 전화번호:", phoneForDB); // 디버깅용
+
+            // Firestore에 저장
+            await saveUserToFirestore(phoneForDB, originalUser); 
+
             // 타이머 정지
             clearInterval(timerInterval);
             
-            // 이전 페이지로 복귀
+            showToast("전화번호 인증이 완료되었습니다!");           
+            
+            // 로그인 정보 저장 및 페이지 이동
+
             setTimeout(() => {
+                const updateUser = {
+                    ...originalUser,
+                    phone: phoneForDB
+                };
+                
+                // 로컬 스토리지에 소셜 계정 정보 복원
+                localStorage.setItem("user", JSON.stringify(updateUser));
+                localStorage.setItem("loginSuccess", "true");
+    
+                // 페이지 이동 전 최종 확인을 위한 alert
+                alert(`저장된 최종 정보: ${localStorage.getItem("user")}`);
+                
+                // 이전 페이지로 복귀
                 const returnUrl = sessionStorage.getItem('returnUrl') || "index.html";
                 sessionStorage.removeItem('returnUrl');
-                
                 console.log("👉 복귀할 URL:", returnUrl);
                 window.location.href = returnUrl;
-            }, 1500);
+            }, 1000); // 1초 지연으로 통일
+
             
         } catch (error) {
             console.error("인증 코드 확인 실패:", error);

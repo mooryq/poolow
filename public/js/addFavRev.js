@@ -213,10 +213,13 @@ export function initReviewModal() {
                     
                     imageUrls = await Promise.all(uploadPromises);
                 }
+
+                // 커스텀 이름이 있으면 우선 사용, 없으면 기본 이름 사용
+                const displayName = userData.customName || userData.name;
                 
                 const reviewData = {
                     review: content,
-                    userName: userData.name,
+                    userName: displayName,
                     userId: userId,
                     reviewImage: imageUrls,
                     createdAt: serverTimestamp(),

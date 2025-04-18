@@ -101,7 +101,8 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   
   // 사용자 정보로 UI 업데이트 (기존 함수 유지)
   function updateUserUI(user) {
-    document.getElementById("userName").innerHTML = `${user.name} 님`;
+    const displayName = user.customName || user.name;
+    document.getElementById("userName").innerHTML = `${displayName} 님`;
   }
 
 
