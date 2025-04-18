@@ -68,7 +68,6 @@ export function setupModalListeners(modalId) {
   }
 }
 
-
 // 마이페이지 링크 세션 저장 설정 함수
 export function setupReturnUrlForMypage() {
   const mypageLink = document.getElementById('mypage');

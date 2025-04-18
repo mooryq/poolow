@@ -79,6 +79,7 @@ async function loadUserProfile() {
             
             // 커스텀 이름이 있으면 그것을 우선 표시, 없으면 소셜 계정의 이름 표시
             userNameElement.textContent = userData.customName || userData.name || '이름 없음';
+
             
             // 전화번호 표시 (있는 경우)
             userPhoneElement.textContent = userId || '전화번호 없음';
@@ -230,6 +231,14 @@ async function saveNewName() {
                 await updateDoc(userRef, {
                     customName: newName
                 });
+
+                // 로컬 스토리지의 사용자 정보도 업데이트 - 이 부분 추가
+                const localUser = JSON.parse(localStorage.getItem("user"));
+                if (localUser) {
+                    localUser.name = newName; // 이름 업데이트
+                    localStorage.setItem("user", JSON.stringify(localUser));
+                }
+                
                 
                 // 성공 메시지
                 showToast("이름이 변경되었습니다.");

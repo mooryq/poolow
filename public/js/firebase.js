@@ -90,7 +90,7 @@ onAuthStateChanged(auth, (user) => {
 
 // ✅ Firestore에 유저 정보 저장 함수 (통합 UID 배열 기반)
 export async function saveUserToFirestore(phone, userInfo) {
-  console.log("💾 저장하려는 userInfo:", userInfo);  // 🔥 이 줄을 가장 먼저!
+  console.log("💾 저장하려는 userInfo:", userInfo);
 
   
     const userRef = doc(db, "users", phone);
@@ -114,13 +114,12 @@ export async function saveUserToFirestore(phone, userInfo) {
         name = existingData.name || name;
         email = existingData.email || email;
         photo = existingData.photo || photo;
-        // provider = existingData.provider || provider;
         createdAt = existingData.createdAt || createdAt;
   
       // 🔁 기존 uid 배열에서 중복 없이 추가
       uids = existingData.uids || [];
       if (!uids.includes(userInfo.uid)) {
-        console.log("➕ UID 추가됨:", userInfo.uid);
+        console.log("✅ UID 추가됨:", userInfo.uid);
         uids.push(userInfo.uid);
       } else {
         console.log("✅ UID 이미 존재:", userInfo.uid);
@@ -129,7 +128,7 @@ export async function saveUserToFirestore(phone, userInfo) {
       // 🔁 기존 providers 배열에서 중복 없이 추가
       providers = existingData.providers || [];
       if (!providers.includes(provider)) {
-        console.log("➕ Provider 추가됨:", provider);
+        console.log("✅ Provider 추가됨:", provider);
         providers.push(provider);
       } else {
         console.log("✅ Provider 이미 존재:", provider);
@@ -150,7 +149,7 @@ export async function saveUserToFirestore(phone, userInfo) {
         email,
         photo,
         providers,
-        currentProvider: provider, // 현재 로그인한 provider 정보도 유지 (선택적)
+        currentProvider: provider, // 현재 로그인한 provider (선택적)
         phone,
         uids,
         createdAt

@@ -1,0 +1,130 @@
+.container {
+    overflow: hidden;
+}
+
+.welcome {
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+
+.welcomeMsg {
+    margin: 3rem auto;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+
+.form {
+    margin-bottom: 1.5rem;
+}
+
+.phoneForm{
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.phone-section, .verify-section{
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.phone-section input, .verify-section input{
+    width: 100%;
+    margin: auto;
+    padding: 1rem;
+    border: 1px solid #a9a9a9;
+    box-sizing: border-box;
+    border-radius: 10px;
+    letter-spacing: 0.1rem;
+    font-size: 1.1rem;
+}
+
+#submitPhone, #submitCode {
+    width: 100%;
+    margin: auto;
+    padding: 1.1rem;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+}
+
+#submitPhone:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+.phone-section input:focus, .verify-section input:focus{
+    border: 1px solid #999;
+}
+  
+input, input:focus{
+    outline: none;
+    border: none; 
+  }
+
+#codeInput{
+    margin-right: 1rem;
+}
+
+
+button, button:focus{
+    outline: none;
+}
+
+
+/* 타이머 스타일 */
+.timer {
+    text-align:right;
+    font-weight: 500;
+    margin: 0.4rem;
+}
+
+
+#submitPhone:disabled, #submitCode:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 재전송 링크 스타일 */
+.resend-wrapper {
+    margin-top: 1.2rem;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+}
+
+#resendCode {
+    background: none;
+    border: none;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+
+/* 입력 숫자만 보이게 */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+
+/* reCAPTCHA 컨테이너 스타일 */
+#recaptcha-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}

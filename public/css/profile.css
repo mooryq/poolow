@@ -33,13 +33,15 @@
     padding: 1.3em;
 }
 
+
+
 .input-wrapper{
     position: relative;
     display: inline-block;
     width: 100%;  
-}
-
-.input-wrapper input{
+  }
+  
+  .input-wrapper input{
     width: 100%;
     border: none;
     border-bottom: 1px solid #eee;
@@ -49,9 +51,9 @@
     z-index: 1;
     position:relative;
     border-radius: 0;
-}
-
-.input-wrapper::after {
+  }
+  
+  .input-wrapper::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -63,16 +65,18 @@
     z-index: 2;
   }
   
-
-input:focus{
+  
+  input:focus{
     outline: none;
     border: none;
    
-}
-
-.input-wrapper:focus-within::after {
+  }
+  
+  .input-wrapper:focus-within::after {
     width: 100%;
   }
+  
+  
   
 .clear-icon{
     position: absolute;

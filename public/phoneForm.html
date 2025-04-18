@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no,viewport-fit=cover">
+
+    <title> poolow</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/phoneForm.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+
+    
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header flex-between">
+                <a id="home" href="index.html"> 🌊 poolow </a>
+            </div>
+        </header>
+        <main>  
+
+          <div class="welcome">
+
+            <div class="welcomeMsg">
+                이 소셜 계정으로는 처음 로그인 하셨어요!<br>
+                전화번호를 인증하면 회원가입/통합 됩니다.
+            </div>
+
+            <div class="phoneForm">
+                <div class="form phone-section">
+                    <input type="tel" id="phoneInput" placeholder="010 1234 4531" />     
+                    <button id="submitPhone" disabled> 인증번호 받기 </button>
+                </div>
+             
+                <div class="form verify-section" style="display: none;">
+                    <input type="number" id="codeInput" placeholder="6자리 입력" maxlength="6" />
+                    <div class="timer">3:00</div>
+                    <button id="submitCode" disabled>인증하기</button>
+                    
+                    <div class="resend-wrapper">
+                        <span>인증코드가 오지 않았나요?</span>
+                        <button id="resendCode">재전송</button>
+                    </div>
+                </div>
+            </div>    
+                
+            </div>
+        
+        </main>
+    </div>
+    </div><!--container-->
+
+
+
+
+
+
+
+<script type="module" src="js/global.js"></script>
+<script type="module" src="js/firebase.js"></script>
+<script type="module" src="js/phone.js"></script>
+
+
+</body>
+</html>
