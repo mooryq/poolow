@@ -1,6 +1,4 @@
 import { 
-    auth, 
-    db, 
     doc,
     setDoc, 
     getDoc, 
@@ -9,13 +7,16 @@ import {
     deleteDoc, 
     collection,
     serverTimestamp,
-    updateDoc
+    updateDoc,
+    query, 
+    orderBy, 
+    where
 } from './firebase.js';
 
-import { authUser } from "./global.js";
-import { openModal, closeModal, setupModalListeners, showToast} from './global.js';
+import { authUser, getCurrentUser } from "./auth-service.js";
+import { openModal, closeModal, setupModalListeners, showToast } from './global.js';
 import { resizeImage, uploadReviewImages } from "./resizeImage.js";
-import { query, orderBy, where } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { db } from './firebase.js';
     
 // 전역 변수로 poolData 선언
 let poolData = null;
@@ -160,8 +161,7 @@ export function initReviewModal() {
         // poolData.id를 문자열로 변환
         const poolId = String(poolData.id);
         
-        if (isEditMode&& reviewId){
-
+        if (isEditMode && reviewId) {
             //수정모드
             updateReview(reviewId, content).finally(() => {
                 //작업완료 후 상태 초기화
@@ -171,19 +171,16 @@ export function initReviewModal() {
                 submitBtn.dataset.mode = "create";
                 delete submitBtn.dataset.reviewId;
 
-            //입력필드 초기화
-            document.getElementById("reviewText").value = "";
-            document.getElementById("reviewImages").value = "";
-            previewContainer.innerHTML = "";
+                //입력필드 초기화
+                document.getElementById("reviewText").value = "";
+                document.getElementById("reviewImages").value = "";
+                previewContainer.innerHTML = "";
 
-            //모달 닫기
-            closeModal("reviewModal");
+                //모달 닫기
+                closeModal("reviewModal");
             });
-
-            
         } else {
             //새로운 리뷰
-
             authUser(async (userId, userData) => {
                 // 미리보기에 표시된 모든 이미지 컨테이너 가져오기
                 const imageContainers = document.querySelectorAll('.preview-img-container');
@@ -227,13 +224,11 @@ export function initReviewModal() {
                 };
                 
                 try {
-
                     //먼저 풀의 리뷰에 저장하고 ID 가져오기
                     const reviewRef = await addDoc(collection(db, "pools", poolId, "reviews"), reviewData);
                     const reviewId = reviewRef.id;
 
                     //사용자 리뷰 컬렉션에 저장
-                    
                     await addDoc(collection(db, "users", userId, "reviews"), {
                         ...reviewData,
                         poolName: poolData.name,
@@ -320,7 +315,6 @@ export function initReviewModal() {
                             imgContainer.remove();
                         };
 
-                        
                         imgContainer.appendChild(img);
                         imgContainer.appendChild(deleteBtn);
                         previewContainer.appendChild(imgContainer);
@@ -335,7 +329,6 @@ export function initReviewModal() {
         });
     }
     
-
     // 모달 취소 버튼 이벤트 리스너 추가
     document.querySelector(".modal-close")?.addEventListener("click", () => {
         const submitBtn = document.getElementById("submitReview");
@@ -354,11 +347,8 @@ export function initReviewModal() {
         if (imagePreview) imagePreview.innerHTML = "";
     });
     
-
-    
-            
-       //리뷰 수정 함수
-       async function updateReview(reviewId, reviewContent) {
+    //리뷰 수정 함수
+    async function updateReview(reviewId, reviewContent) {
         if (!poolData) {
             showToast("수영장 정보가 없습니다.");
             return;
@@ -373,8 +363,6 @@ export function initReviewModal() {
                     // 미리보기에 표시된 모든 이미지 컨테이너 가져오기
                     const imageContainers = document.querySelectorAll('.preview-img-container');
                     let imageUrls = [];
-                    
-                    console.log("미리보기 이미지 컨테이너 수:", imageContainers.length);
                     
                     if (imageContainers.length > 0) {
                         // 미리보기에 있는 모든 이미지 처리
@@ -394,9 +382,6 @@ export function initReviewModal() {
                         // 기존 이미지 URL과 새 이미지 분리
                         const existingImages = previewImages.filter(img => img.isExisting);
                         const newImages = previewImages.filter(img => !img.isExisting);
-                        
-                        console.log("기존 이미지 수:", existingImages.length);
-                        console.log("새 이미지 수:", newImages.length);
                         
                         // 기존 이미지의 URL 추출
                         const existingUrls = existingImages.map(img => img.src);
@@ -431,9 +416,6 @@ export function initReviewModal() {
                         // 미리보기에 이미지가 하나도 없는 경우 (모든 이미지 삭제)
                         imageUrls = [];
                     }
-    
-                    console.log("최종 이미지 URL 수:", imageUrls.length);
-                    console.log("최종 이미지 URL:", imageUrls);
     
                     // 업데이트할 데이터 준비
                     const updateData = {
@@ -475,352 +457,269 @@ export function initReviewModal() {
         });
     }
 
-   
     const reviewInput = document.getElementById("reviewText");
     reviewInput.addEventListener("input", checkInputs);
     
     // 초기 리뷰 로드
     loadReviews();
 }
-    //리뷰 로드 함수
-    export async function loadReviews() {
-        if (!poolData) return;
-        
-        // reviewList 요소 가져오기
-        const reviewList = document.getElementById("reviewList");
-        if (!reviewList) return;
-        
-        // poolData.id를 문자열로 변환
-        const poolId = String(poolData.id);
+
+//리뷰 로드 함수
+export async function loadReviews() {
+    if (!poolData) return;
+    
+    // reviewList 요소 가져오기
+    const reviewList = document.getElementById("reviewList");
+    if (!reviewList) return;
+    
+    // poolData.id를 문자열로 변환
+    const poolId = String(poolData.id);
+
+    // 현재 로그인한 사용자 ID 가져오기
+    let currentUserId = null;
+
+    try {
+        // 리뷰 목록 먼저 불러오기 
+        const reviewsRef = collection(db, "pools", poolId, "reviews");
+        const q = query(reviewsRef, orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+            reviewList.innerHTML = "<p class='gray-text'>아직 리뷰가 없습니다.</p>";
+            return;
+        }
 
         // 현재 로그인한 사용자 ID 가져오기
-        let currentUserId = null;
-
         try {
-            // 리뷰 목록 먼저 불러오기 
-            const reviewsRef = collection(db, "pools", poolId, "reviews");
-            const q = query(reviewsRef, orderBy("createdAt", "desc"));
-            const snap = await getDocs(q);
+            currentUserId = await new Promise((resolve, reject) => {
+                // 5초 타임아웃 설정
+                const timeout = setTimeout(() => {
+                    console.log("로그인 상태 확인 타임아웃");
+                    resolve(null);
+                }, 5000);
 
-            if (snap.empty) {
-                reviewList.innerHTML = "<p class='gray-text'>아직 리뷰가 없습니다.</p>";
-                return;
-            }
-
-            // 현재 로그인한 사용자 ID 가져오기
-            try {
-                currentUserId = await new Promise((resolve, reject) => {
-                    // 5초 타임아웃 설정
-                    const timeout = setTimeout(() => {
-                        console.log("로그인 상태 확인 타임아웃");
+                authUser(
+                    (userId) => {
+                        clearTimeout(timeout);
+                        console.log("현재 로그인 사용자 ID", userId);
+                        resolve(userId);
+                    },
+                    () => {
+                        clearTimeout(timeout);
+                        console.log("로그인 된 사용자 없음");
                         resolve(null);
-                    }, 5000);
+                    }
+                );
+            });
+        } catch (authError) {
+            console.error("사용자 인증 확인 중 오류:", authError);
+            currentUserId = null;
+        }
+        
+        let html = "";
 
-                    authUser(
-                        (userId) => {
-                            clearTimeout(timeout);
-                            console.log("현재 로그인 사용자 ID", userId);
-                            resolve(userId);
-                        },
-                        () => {
-                            clearTimeout(timeout);
-                            console.log("로그인 된 사용자 없음");
-                            resolve(null);
-                        }
-                    );
-                });
-            } catch (authError) {
-                console.error("사용자 인증 확인 중 오류:", authError);
-                currentUserId = null;
+        snap.forEach(doc => {
+            const r = doc.data();
+            const reviewId = doc.id;
+
+            //날짜포맷팅
+            let dateText = "날짜 정보 없음"
+            if(r.createdAt){
+                const date = r.createdAt.toDate();
+                dateText = date.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });                
             }
-            
-            let html = "";
 
-            snap.forEach(doc => {
-                const r = doc.data();
-                const reviewId = doc.id;
+            // 현재 사용자가 작성한 리뷰인지 확인
+            const isMyReview = currentUserId && currentUserId === r.userId;
+            console.log("리뷰 ID:", reviewId, "사용자 일치 여부:", isMyReview, 
+                "현재 사용자:", currentUserId, "리뷰 작성자:", r.userId);
 
-                //날짜포맷팅
-                let dateText="날짜 정보 없음"
-                if(r.createdAt){
-                    const date = r.createdAt.toDate();
-                    dateText = date.toLocaleDateString('ko-KR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        
-                    });                
-                }
-
-                // 현재 사용자가 작성한 리뷰인지 확인
-                const isMyReview = currentUserId && currentUserId === r.userId;
-                console.log("리뷰 ID:", reviewId, "사용자 일치 여부:", isMyReview, 
-                    "현재 사용자:", currentUserId, "리뷰 작성자:", r.userId);
-
-                html += `
-                    <div class="reviewCard myCard" data-review-id="${reviewId}">
-                        <div class="review-header">
-                            <div class="review-user-info">
-                                <span class="review-name">${r.userName}</span>
-                                <span class="review-date">${dateText}</span>
-                            </div>
-                            ${isMyReview ? `
-                                <div class="review-actions">
+            html += `
+                <div class="reviewCard myCard" data-review-id="${reviewId}">
+                    <div class="review-header">
+                        <div class="review-user-info">
+                            <span class="review-name">${r.userName}</span>
+                            <span class="review-date">${dateText}</span>
+                        </div>
+                        ${isMyReview ? `
+                            <div class="review-actions">
                                 <button class="more-action-btn">⋮</button>
                                 <div class="actions-dropdown">
                                     <button class="edit-review">수정하기</button>    
                                     <button class="delete-review">삭제하기</button>
                                 </div>
                             </div>
-                            ` : ""}
-                        </div>
-                        ${(Array.isArray(r.reviewImage) && r.reviewImage.length > 0) || (!Array.isArray(r.reviewImage) && r.reviewImage) 
-                            ? `<div class="review-images-container">
-                                ${Array.isArray(r.reviewImage)
-                                    ? r.reviewImage.map(url => `<img src="${url}" class="review-img" />`).join('')
-                                    : `<img src="${r.reviewImage}" class="review-img" />`}
-                            </div>`
-                            : ""}
-                        <div class="review-content">${r.review}</div>
+                        ` : ""}
                     </div>
-                `;
-            });
-            
-            reviewList.innerHTML = html;
+                    ${(Array.isArray(r.reviewImage) && r.reviewImage.length > 0) || (!Array.isArray(r.reviewImage) && r.reviewImage) 
+                        ? `<div class="review-images-container">
+                            ${Array.isArray(r.reviewImage)
+                                ? r.reviewImage.map(url => `<img src="${url}" class="review-img" />`).join('')
+                                : `<img src="${r.reviewImage}" class="review-img" />`}
+                        </div>`
+                        : ""}
+                    <div class="review-content">${r.review}</div>
+                </div>
+            `;
+        });
         
-            // 리뷰 수정, 삭제 버튼 이벤트 리스너 등록
-            ReviewEditListeners();
+        reviewList.innerHTML = html;
+    
+        // 리뷰 수정, 삭제 버튼 이벤트 리스너 등록
+        ReviewEditListeners();
 
-        } catch (error) {
-            console.error("리뷰 로딩 중 오류:", error);
-            reviewList.innerHTML = "<p class='gray-text'>리뷰를 불러오는 중 오류가 발생했습니다.</p>";
-        }
+    } catch (error) {
+        console.error("리뷰 로딩 중 오류:", error);
+        reviewList.innerHTML = "<p class='gray-text'>리뷰를 불러오는 중 오류가 발생했습니다.</p>";
     }
+}
 
-    //리뷰 수정 모달 열기
-    export async function openEditReviewModal(reviewId, reviewContent) {
-        // 리뷰 모달 요소 가져오기
-        const reviewText = document.getElementById("reviewText");
-        const submitBtn = document.getElementById("submitReview");
-        const imagePreview = document.getElementById("imagePreview");
-        
-        // poolData가 이미 있는지 확인하고 poolId가져오기
-        if(!poolData){
-            console.error("poolData가 없습니다.");
+//리뷰 수정 모달 열기
+export async function openEditReviewModal(reviewId, reviewContent) {
+    // 리뷰 모달 요소 가져오기
+    const reviewText = document.getElementById("reviewText");
+    const submitBtn = document.getElementById("submitReview");
+    const imagePreview = document.getElementById("imagePreview");
+    
+    // poolData가 이미 있는지 확인하고 poolId가져오기
+    if (!poolData) {
+        console.error("poolData가 없습니다.");
+        return;
+    }
+    const poolId = String(poolData.id);
+
+    // 리뷰 데이터 가져오기 (이미지 url 포함)
+    try {
+        const reviewRef = doc(db, "pools", poolId, "reviews", reviewId);
+        const reviewSnap = await getDoc(reviewRef);
+        if (!reviewSnap.exists()) {
+            console.error("리뷰를 찾을 수 없습니다.");
             return;
         }
-        const poolId = String(poolData.id);
+        
+        const reviewData = reviewSnap.data();
+        
+        // 텍스트 내용 채우기
+        reviewText.value = reviewContent;
     
-        // 리뷰 데이터 가져오기 (이미지 url 포함)
-        try {
-            const reviewRef = doc(db, "pools", poolId, "reviews", reviewId);
-            const reviewSnap = await getDoc(reviewRef);
-            if(!reviewSnap.exists()){
-                console.error("리뷰를 찾을 수 없습니다.");
+        // 이미지 미리보기 초기화
+        imagePreview.innerHTML = "";
+        
+        // 기존 이미지 미리보기에 추가
+        if (reviewData.reviewImage && 
+           (Array.isArray(reviewData.reviewImage) && reviewData.reviewImage.length > 0 || 
+            !Array.isArray(reviewData.reviewImage))) {
+            
+            const imgUrls = Array.isArray(reviewData.reviewImage) 
+                ? reviewData.reviewImage
+                : [reviewData.reviewImage];
+            
+            // 이미지 URL을 전역 변수에 저장 (수정 시 사용)
+            window.existingImageUrls = [...imgUrls]; // 배열 복사로 참조 문제 방지
+
+            // 각 이미지를 미리보기에 추가
+            imgUrls.forEach((url, index) => {
+                const imgContainer = document.createElement("div");
+                imgContainer.className = "preview-img-container";
+                imgContainer.dataset.index = index; // 기존 이미지 식별자
+                
+                const imgElement = document.createElement("img");
+                imgElement.src = url;
+                imgElement.classList.add("preview-img");
+                
+                const deleteBtn = document.createElement("button");
+                deleteBtn.className = "delete-preview-img";
+                deleteBtn.innerHTML = "×";
+                deleteBtn.onclick = function() {
+                    imgContainer.remove();
+                    // existingImageUrls 배열 수정 없이 DOM에서만 제거
+                    // 실제 이미지 업데이트는 수정 제출 시 DOM 기반으로 처리
+                };
+                
+                imgContainer.appendChild(imgElement);
+                imgContainer.appendChild(deleteBtn);
+                imagePreview.appendChild(imgContainer);
+            });
+        }
+    } catch (error) {
+        console.error("리뷰 데이터 가져오기 오류:", error);
+    }
+
+    // 제출 버튼 텍스트 변경
+    submitBtn.textContent = "수정완료";
+    submitBtn.dataset.reviewId = reviewId;
+    submitBtn.dataset.mode = "edit";
+    
+    // 모달 열기
+    openModal("reviewModal");
+    checkInputs(); // 입력상태 확인하여 버튼 활성화
+}
+
+// 리뷰 수정, 삭제 버튼 이벤트 리스너 설정
+export function ReviewEditListeners() {
+    //더보기 버튼 토글
+    const moreActionBtn = document.querySelectorAll(".more-action-btn");
+    moreActionBtn.forEach(btn => {
+        btn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            //현재 버튼의 드롭다운 메뉴 토글
+            const dropdown = this.nextElementSibling;
+            dropdown.classList.toggle("show");
+
+            //다른 열린 드롭다운 메뉴 닫기
+            document.querySelectorAll(".actions-dropdown.show").forEach(openDropdown => {
+                if (openDropdown !== dropdown) {
+                    openDropdown.classList.remove("show");
+                }
+            });              
+        });
+    });
+
+    // 드롭다운 외부 클릭 시 닫기
+    document.addEventListener("click", function() {
+        document.querySelectorAll(".actions-dropdown.show").forEach(openDropdown => {
+            openDropdown.classList.remove("show");
+        });
+    });
+
+    // 수정 버튼 클릭 시 수정 모달 열기
+    const editButtons = document.querySelectorAll(".edit-review");
+    editButtons.forEach(btn => {
+        btn.addEventListener("click", function() {
+            const reviewCard = this.closest(".reviewCard");
+            const reviewId = reviewCard.dataset.reviewId;
+            const reviewContent = reviewCard.querySelector(".review-content").textContent;
+
+            // 모달에 현재 리뷰 정보 설정
+            openEditReviewModal(reviewId, reviewContent);
+        });
+    });
+
+    // 삭제 버튼 클릭 시 확인 후 삭제
+    const deleteButtons = document.querySelectorAll(".delete-review");
+    deleteButtons.forEach(btn => {
+        btn.addEventListener("click", function() {
+            const reviewCard = this.closest(".reviewCard");
+            if (!reviewCard) {
+                console.error("리뷰 카드를 찾을 수 없습니다");
+                return;
+            }
+    
+            const reviewId = reviewCard.dataset.reviewId;
+            const poolId = reviewCard.dataset.poolId; // poolId도 가져옵니다
+    
+            if (!reviewId) {
+                console.error("리뷰 ID를 찾을 수 없습니다");
                 return;
             }
             
-            const reviewData = reviewSnap.data();
-            
-            // 텍스트 내용 채우기
-            reviewText.value = reviewContent;
-        
-            // 이미지 미리보기 초기화
-            imagePreview.innerHTML = "";
-            
-            // 기존 이미지 미리보기에 추가
-            if(reviewData.reviewImage && 
-               (Array.isArray(reviewData.reviewImage) && reviewData.reviewImage.length > 0 || 
-                !Array.isArray(reviewData.reviewImage))) {
-                
-                const imgUrls = Array.isArray(reviewData.reviewImage) 
-                    ? reviewData.reviewImage
-                    : [reviewData.reviewImage];
-                
-                // 이미지 URL을 전역 변수에 저장 (수정 시 사용)
-                window.existingImageUrls = [...imgUrls]; // 배열 복사로 참조 문제 방지
-    
-                // 각 이미지를 미리보기에 추가
-                imgUrls.forEach((url, index) => {
-                    const imgContainer = document.createElement("div");
-                    imgContainer.className = "preview-img-container";
-                    imgContainer.dataset.index = index; // 기존 이미지 식별자
-                    
-                    const imgElement = document.createElement("img");
-                    imgElement.src = url;
-                    imgElement.classList.add("preview-img");
-                    
-                    const deleteBtn = document.createElement("button");
-                    deleteBtn.className = "delete-preview-img";
-                    deleteBtn.innerHTML = "×";
-                    deleteBtn.onclick = function() {
-                        imgContainer.remove();
-                        // existingImageUrls 배열 수정 없이 DOM에서만 제거
-                        // 실제 이미지 업데이트는 수정 제출 시 DOM 기반으로 처리
-                    };
-                    
-                    imgContainer.appendChild(imgElement);
-                    imgContainer.appendChild(deleteBtn);
-                    imagePreview.appendChild(imgContainer);
-                });
+            if (confirm("정말 삭제하시겠습니까?")) {
+                deleteReview(reviewId, poolId); // poolId도 함께 전달
             }
-        } catch (error) {
-            console.error("리뷰 데이터 가져오기 오류:", error);
-        }
-    
-        // 제출 버튼 텍스트 변경
-        submitBtn.textContent = "수정완료";
-        submitBtn.dataset.reviewId = reviewId;
-        submitBtn.dataset.mode = "edit";
-        
-        // 모달 열기
-        openModal("reviewModal");
-        checkInputs(); // 입력상태 확인하여 버튼 활성화
-    }
-
-    // 리뷰 수정, 삭제 버튼 이벤트 리스너 설정
-    export function ReviewEditListeners(){
-        //더보기 버튼 토글
-        const moreActionBtn = document.querySelectorAll(".more-action-btn");
-        moreActionBtn.forEach(btn => {
-            btn.addEventListener("click", function(e) {
-                e.stopPropagation();
-                //현재 버튼의 드롭다운 메뉴 토글
-                const dropdown = this.nextElementSibling;
-                dropdown.classList.toggle("show");
-
-                //다른 열린 드롭다운 메뉴 닫기
-                document.querySelectorAll(".actions-dropdown.show").forEach(openDropdown => {
-                    if(openDropdown !== dropdown){
-                        openDropdown.classList.remove("show");
-                    }
-                });              
-            });
         });
-
-        // 드롭다운 외부 클릭 시 닫기
-        document.addEventListener("click", function(){
-            document.querySelectorAll(".actions-dropdown.show").forEach(openDropdown => {
-                openDropdown.classList.remove("show");
-            });
-        });
-
-        // 수정 버튼 클릭 시 수정 모달 열기
-        const editButtons = document.querySelectorAll(".edit-review");
-        editButtons.forEach(btn => {
-            btn.addEventListener("click", function(){
-                const reviewCard = this.closest(".reviewCard");
-                const reviewId = reviewCard.dataset.reviewId;
-                const reviewContent = reviewCard.querySelector(".review-content").textContent;
-                // const reviewImages = reviewCard.querySelectorAll(".review-img");
-
-                // 모달에 현재 리뷰 정보 설정
-                openEditReviewModal(reviewId, reviewContent);
-            });
-        });
-
-        // 삭제 버튼 클릭 시 확인 후 삭제
-        const deleteButtons = document.querySelectorAll(".delete-review");
-        deleteButtons.forEach(btn => {
-            btn.addEventListener("click", function() {
-                const reviewCard = this.closest(".reviewCard");
-                if (!reviewCard) {
-                    console.error("리뷰 카드를 찾을 수 없습니다");
-                    return;
-                }
-        
-                const reviewId = reviewCard.dataset.reviewId;
-                const poolId = reviewCard.dataset.poolId; // poolId도 가져옵니다
-        
-                if (!reviewId) {
-                    console.error("리뷰 ID를 찾을 수 없습니다");
-                    return;
-                }
-                
-                if (confirm("정말 삭제하시겠습니까?")) {
-                    deleteReview(reviewId, poolId); // poolId도 함께 전달
-                }
-            });
-        });
-    }
-
-
-     // 등록 버튼 활성화 
-     const reviewInput = document.getElementById("reviewText");
-     const submitBtn = document.getElementById("submitReview");
-     
-     export function checkInputs() {
-         const hasReview = reviewInput.value.trim() !== "";
-         
-         if (hasReview) {
-             submitBtn.classList.add("active");
-             submitBtn.disabled = false;
-         } else {
-             submitBtn.classList.remove("active");
-             submitBtn.disabled = true;
-         }
-     }
-
-    //리뷰 삭제 함수
-    async function deleteReview(reviewId, customPoolId = null) {
-        // HTML 요소에서 정보 찾기
-        const reviewCard = document.querySelector(`.reviewCard[data-review-id="${reviewId}"]`);
-        
-        // poolId 결정
-        let poolId;
-        
-        if (customPoolId) {
-            // 1. 매개변수로 전달된 경우
-            poolId = customPoolId;
-        } else if (poolData) {
-            // 2. 전역 변수에서 가져오는 경우
-            poolId = String(poolData.id);
-        } else if (reviewCard && reviewCard.dataset.poolId) {
-            // 3. HTML 요소에서 가져오는 경우
-            poolId = reviewCard.dataset.poolId;
-        } else {
-            // 4. 모든 방법이 실패한 경우
-            console.error("풀 ID를 찾을 수 없습니다.");
-            showToast("리뷰 삭제 중 오류가 발생했습니다.");
-            return;
-        }
-
-        authUser(async (userId) => {
-            try {
-                // 두 문서 삭제를 병렬로 실행
-                const poolReviewRef = doc(db, "pools", poolId, "reviews", reviewId);
-                
-                // 사용자 리뷰 찾기
-                const userReviewsRef = collection(db, "users", userId, "reviews");
-                const q = query(userReviewsRef, where("reviewId", "==", reviewId));
-                const snap = await getDocs(q);
-                
-                const deletePromises = [
-                    deleteDoc(poolReviewRef) // 풀 리뷰 삭제
-                ];
-                
-                // 사용자 리뷰가 있으면 삭제 Promise 추가
-                if (!snap.empty) {
-                    const userReviewRef = snap.docs[0].ref;
-                    deletePromises.push(deleteDoc(userReviewRef));
-                }
-                
-                // 모든 삭제 작업 병렬 실행
-                await Promise.all(deletePromises);
-                
-                // UI 업데이트 및 완료 메시지
-                if (reviewCard) reviewCard.remove();
-                showToast("리뷰가 삭제되었습니다.");
-                
-                // 필요한 경우 리뷰 목록 새로고침
-                if (poolData && document.getElementById("reviewList")) {
-                    loadReviews();
-                }
-            } catch (error) {
-                console.error("리뷰 삭제 중 오류:", error);
-                showToast("리뷰 삭제 중 오류가 발생했습니다.");
-            }
-        }, () => {
-            showToast("로그인이 필요합니다.");
-        });
-    }
+    });
+}

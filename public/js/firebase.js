@@ -19,7 +19,10 @@ import {
   deleteDoc,
   updateDoc,
   collection,
-  serverTimestamp
+  orderBy,
+  serverTimestamp,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-storage.js";
@@ -59,7 +62,7 @@ export const provider = new GoogleAuthProvider();
 // Doc export
 export { setDoc, doc, getDoc, getDocs, addDoc, deleteDoc, updateDoc };
 
-export { collection, serverTimestamp };
+export { collection, serverTimestamp, orderBy, query, where };
 
 //이미지 업로드용
 export const storage = getStorage(app);
