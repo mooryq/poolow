@@ -1,8 +1,20 @@
-
 import { auth, provider, db } from "./firebase.js";
 import { signInWithPopup } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { naverConfig } from "./config.js";
+
+
+// 임시 소셜 로그인 정보 저장
+function saveTemporaryUserInfo(userInfo) {
+  localStorage.setItem("tempUser", JSON.stringify(userInfo));
+  console.log("📝 임시 사용자 정보 저장:", userInfo);
+}
+
+// 임시 저장된 정보 삭제
+function clearTemporaryUserInfo() {
+  localStorage.removeItem("tempUser");
+  console.log("🧹 임시 사용자 정보 삭제됨");
+}
 
 // Firestore에서 UID로 사용자 찾기
 async function findUserByUID(uid) {
@@ -53,55 +65,67 @@ async function handleRedirectAfterLogin(uid) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const googleLoginBtn = document.getElementById("googleLogin");
-    
-    googleLoginBtn.addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const token = await result.user.getIdToken();
-        const user = result.user;
-        
-        // 인증 토큰 저장
-        sessionStorage.setItem("accessToken", token);
-        console.log("AccessToken saved:", token);
+  const googleLoginBtn = document.getElementById("googleLogin");
+  
+  googleLoginBtn.addEventListener("click", async () => {
+    try {
+      // 기존 소셜 로그인 정보 삭제 (전환 처리)
+      clearTemporaryUserInfo();
+      
+      const result = await signInWithPopup(auth, provider);
+      const token = await result.user.getIdToken();
+      const user = result.user;
+      
+      // 인증 토큰 저장
+      sessionStorage.setItem("accessToken", token);
+      console.log("AccessToken saved:", token);
 
-        // 사용자 정보를 로컬 스토리지에 저장
-        localStorage.setItem("user", JSON.stringify({
-          uid: user.uid,
-          name: user.displayName || "",
-          email: user.email || "",
-          photo: user.photoURL || "default.jpg",
-          provider: "google"
-        }));
+      // 사용자 정보를 임시 저장소에 저장
+      const userInfo = {
+        uid: user.uid,
+        name: user.displayName || "",
+        email: user.email || "",
+        photo: user.photoURL || "default.jpg",
+        provider: "google"
+      };
+      
+      saveTemporaryUserInfo(userInfo);
+      
+      // localStorage의 user 정보도 업데이트 (기존 코드와 호환성 유지)
+      localStorage.setItem("user", JSON.stringify(userInfo));
 
-        // 리다이렉션 처리
-        await handleRedirectAfterLogin(user.uid);
-        
-      } catch (error) {
-        console.error("❌ 로그인 실패:", error);
-        //로그인 실패 플래그 제거
-        localStorage.removeItem("loginSuccess");
-      }
-    });
+      // 리다이렉션 처리
+      await handleRedirectAfterLogin(user.uid);
+      
+    } catch (error) {
+      console.error("❌ 로그인 실패:", error);
+      showToast("로그인에 실패했습니다. 다시 시도해주세요.");
+      //로그인 실패 플래그 제거
+      localStorage.removeItem("loginSuccess");
+    }
+  });
 });
 
 //네이버로그인  
 document.addEventListener("DOMContentLoaded", function () {
-    const naverLogin = new naver.LoginWithNaverId(naverConfig);
-    naverLogin.init();
+  const naverLogin = new naver.LoginWithNaverId(naverConfig);
+  naverLogin.init();
 
-    // 커스텀 버튼 클릭 시 로그인 요청
-    document.getElementById("naverIdLogin").addEventListener("click", function () {
-      // 세션 스토리지에 returnUrl이 있는지 확인
-      const returnUrl = sessionStorage.getItem('returnUrl');
-      if (!returnUrl) {
-          console.log("returnUrl이 세션 스토리지에 없습니다.");
-      } else {
-          console.log("returnUrl:", returnUrl);
-      }
-      
-      window.location.href = naverLogin.generateAuthorizeUrl();
-    });
+  // 커스텀 버튼 클릭 시 로그인 요청
+  document.getElementById("naverIdLogin").addEventListener("click", function () {
+    // 기존 소셜 로그인 정보 삭제 (전환 처리)
+    clearTemporaryUserInfo();
+    
+    // 세션 스토리지에 returnUrl이 있는지 확인
+    const returnUrl = sessionStorage.getItem('returnUrl');
+    if (!returnUrl) {
+        console.log("returnUrl이 세션 스토리지에 없습니다.");
+    } else {
+        console.log("returnUrl:", returnUrl);
+    }
+    
+    window.location.href = naverLogin.generateAuthorizeUrl();
+  });
 });
   // // 로그인 버튼 활성화 >전화번호 로그인 사용하려 할 때 다시 살려요 
   // const usernameInput = document.getElementById("userPhone");

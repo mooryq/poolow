@@ -66,8 +66,6 @@ export const storage = getStorage(app);
 
 //user access token 로컬에 저장
 onAuthStateChanged(auth, (user) => {
-
-
   if (user) {
     // 로그인 성공 시
     localStorage.setItem("user", JSON.stringify({
@@ -75,14 +73,21 @@ onAuthStateChanged(auth, (user) => {
       name: user.displayName,
       email: user.email,
       photo: user.photoURL,
-      provider: user.providerId
+      provider: "google"  // 명확하게 google로 설정
     }));
+    
+    // 네이버 관련 토큰 제거
+    localStorage.removeItem("com.naver.nid.access_token");
+    localStorage.removeItem("com.naver.nid.oauth.state_token");
   } else {
     // 로그아웃 또는 세션 만료 시
     // 네이버 로그인 사용자인 경우 로컬 스토리지 유지
     const localUser = JSON.parse(localStorage.getItem("user"));
     if (!localUser || localUser.provider !== "naver") {
       localStorage.removeItem("user");
+      localStorage.removeItem("loginSuccess");
+      localStorage.removeItem("com.naver.nid.access_token");
+      localStorage.removeItem("com.naver.nid.oauth.state_token");
     }
   }
 });
@@ -118,11 +123,23 @@ export async function saveUserToFirestore(phone, userInfo) {
   
       // 🔁 기존 uid 배열에서 중복 없이 추가
       uids = existingData.uids || [];
-      if (!uids.includes(userInfo.uid)) {
-        console.log("✅ UID 추가됨:", userInfo.uid);
-        uids.push(userInfo.uid);
-      } else {
-        console.log("✅ UID 이미 존재:", userInfo.uid);
+
+        // 소셜 로그인 UID 추가
+        if (!uids.includes(userInfo.uid)) {
+          console.log("✅ 소셜 로그인 UID 추가됨:", userInfo.uid);
+          uids.push(userInfo.uid);
+        } else {
+          console.log("✅ 소셜 로그인 UID 이미 존재:", userInfo.uid);
+        }
+        
+      // 전화번호 인증으로 받은 UID도 함께 저장하기 위해 uids 배열에 추가 
+      if (userInfo.phoneAuthUID) {
+        if (!uids.includes(userInfo.phoneAuthUID)) {
+          console.log("✅ UID 추가됨:", userInfo.phoneAuthUID);
+          uids.push(userInfo.phoneAuthUID);
+        } else {
+          console.log("✅ UID 이미 존재:", userInfo.phoneAuthUID);
+        }
       }
 
       // 🔁 기존 providers 배열에서 중복 없이 추가
@@ -133,12 +150,27 @@ export async function saveUserToFirestore(phone, userInfo) {
       } else {
         console.log("✅ Provider 이미 존재:", provider);
       }
+
+      // 전화번호 provider 추가 (전화번호 인증이 있는 경우)
+      if (userInfo.phoneAuthUID && !providers.includes("phone")) {
+        console.log("✅ 전화번호 Provider 추가됨");
+        providers.push("phone");
+      }
+      
     
     } else {
       // 문서가 없다면 uid와 provider로 새로 생성
       uids = [userInfo.uid];
       providers = [provider];
+
+      // 전화번호 인증이 포함된 경우 추가
+      if (userInfo.phoneAuthUID) {
+        uids.push(userInfo.phoneAuthUID);
+        providers.push("phone");
+      }
     }
+      
+
 
     console.log("📤 Firestore에 저장할 uids 배열:", uids);
     console.log("📤 Firestore에 저장할 providers 배열:", providers);

@@ -60,7 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // 저장 버튼 이벤트
         const saveBtn = document.getElementById('saveBtn');
         if (saveBtn) {
-            saveBtn.addEventListener('click', saveNewName);
+            saveBtn.addEventListener('click', () => {
+                // 디바운스 타이머 취소 (전역 변수로 타이머 ID 관리 필요)
+                if (window.nameCheckTimer) {
+                    clearTimeout(window.nameCheckTimer);
+                    window.nameCheckTimer = null;
+                }
+                
+                saveNewName();
+            });
         }
     }
 });
@@ -145,8 +153,21 @@ function loadCurrentName() {
     );
 }
 
+// 디바운스 함수 추가
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 // 이름 중복 체크
-async function checkNameAvailability() {
+const checkNameAvailability = debounce(async function() {
     const newName = document.getElementById('userNameInput').value.trim();
     const validationElement = document.getElementById('nameValidation');
     
@@ -156,54 +177,55 @@ async function checkNameAvailability() {
         return;
     }
     
-    authUser(
-        async (userId, userData) => {
-            try {
-                // 사용자 컬렉션 참조
-                const usersRef = collection(db, "users");
-                
-                // customName 또는 name 필드에서 동일한 이름 검색 (현재 사용자 제외)
-                const nameQuery = query(usersRef, where("customName", "==", newName));
-                const originalNameQuery = query(usersRef, where("name", "==", newName));
-                
-                const [nameResults, originalNameResults] = await Promise.all([
-                    getDocs(nameQuery),
-                    getDocs(originalNameQuery)
-                ]);
-                
-                // 자신의 이름 제외하고 중복 검사
-                let isDuplicate = false;
-                
-                nameResults.forEach(doc => {
-                    if (doc.id !== userId) {
-                        isDuplicate = true;
-                    }
-                });
-                
-                originalNameResults.forEach(doc => {
-                    if (doc.id !== userId) {
-                        isDuplicate = true;
-                    }
-                });
-                
-                if (isDuplicate) {
-                    validationElement.textContent = "이미 사용 중인 이름입니다.";
-                    validationElement.classList.add("error");
-                } else {
-                    validationElement.textContent = "";
-                    validationElement.classList.remove("error");
-                }
-                
-            } catch (error) {
-                console.error("이름 검사 중 오류:", error);
+    // 현재 사용자 정보 가져오기
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    if (!currentUser || !currentUser.uid) {
+        window.location.href = "login.html";
+        return;
+    }
+    
+    try {
+        // 사용자 컬렉션 참조
+        const usersRef = collection(db, "users");
+        
+        // customName 또는 name 필드에서 동일한 이름 검색 (현재 사용자 제외)
+        const nameQuery = query(usersRef, where("customName", "==", newName));
+        const originalNameQuery = query(usersRef, where("name", "==", newName));
+        
+        const [nameResults, originalNameResults] = await Promise.all([
+            getDocs(nameQuery),
+            getDocs(originalNameQuery)
+        ]);
+        
+        // 자신의 이름 제외하고 중복 검사
+        let isDuplicate = false;
+        
+        nameResults.forEach(doc => {
+            if (doc.id !== currentUser.uid) {
+                isDuplicate = true;
             }
-        },
-        () => {
-            // 로그인 안된 경우
-            window.location.href = "login.html";
+        });
+        
+        originalNameResults.forEach(doc => {
+            if (doc.id !== currentUser.uid) {
+                isDuplicate = true;
+            }
+        });
+        
+        if (isDuplicate) {
+            validationElement.textContent = "이미 사용 중인 이름입니다.";
+            validationElement.classList.add("error");
+        } else {
+            validationElement.textContent = "";
+            validationElement.classList.remove("error");
         }
-    );
-}
+        
+    } catch (error) {
+        console.error("이름 검사 중 오류:", error);
+        validationElement.textContent = "이름 검사 중 오류가 발생했습니다.";
+        validationElement.classList.add("error");
+    }
+}, 500); // 500ms 디바운스
 
 // 새 이름 저장
 async function saveNewName() {

@@ -13,17 +13,26 @@ let formattedPhoneNumber = null; // 국제 형식 전화번호
 let timerInterval = null; // 타이머 인터벌
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 사용자 정보 확인
-    const localUser = JSON.parse(localStorage.getItem("user"));
+    
+    // 임시 저장소에서 사용자 정보 가져오기 (우선 시도)
+    let userInfo = JSON.parse(localStorage.getItem("tempUser"));
+    console.log("👤 임시 저장소에서 가져온 사용자 정보:", userInfo);
+
+    // 임시 저장소에서 사용자 정보가 없으면 로컬 스토리지에서 가져오기
+    if (!userInfo) {
+        userInfo = JSON.parse(localStorage.getItem("user"));
+        console.log("👤 로컬 스토리지에서 가져온 사용자 정보:", userInfo);
+    }
     
     // 로그인 되어 있지 않으면 로그인 페이지로 리다이렉션
-    if (!localUser || !localUser.uid) {
+    if (!userInfo || !userInfo.uid) {
         console.error("로그인 정보가 없습니다.");
+        showToast("로그인이 필요합니다.");
         window.location.href = "login.html";
         return;
     }
     
-    console.log("👤 현재 유저 정보:", localUser);
+    console.log("👤 현재 유저 정보:", userInfo);
     
     // UI 요소
     const phoneSection = document.querySelector('.phone-section');
@@ -143,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // 버튼 상태 업데이트
-        submitCodeBtn.textContent = "확인 중...";
+        submitCodeBtn.textContent = "확인 중";
         submitCodeBtn.disabled = true;
         
         try {
@@ -154,15 +163,24 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("전화번호 인증 전 소셜 계정 정보:", originalUser); // 디버깅용
 
             // 인증 코드 검증과 파이어베이스 로그인
-            await confirmationResult.confirm(code);
+            const result = await confirmationResult.confirm(code);
+            const phoneAuthUser = result.user;
+
+            // 전화번호 인증으로 받은 UID도 함께 저장하기 위해 originalUser에 추가
+            const userWithPhoneAuth = {
+              ...originalUser,
+              phoneAuthUID: phoneAuthUser.uid  // 전화번호 인증 UID 추가
+            };
 
             // 전화번호 정보
             const phoneForDB = formattedPhoneNumber.replace('+82', '0');
             console.log("인증된 전화번호:", phoneForDB); // 디버깅용
 
             // Firestore에 저장
-            await saveUserToFirestore(phoneForDB, originalUser); 
-
+            await saveUserToFirestore(phoneForDB, userWithPhoneAuth);
+            
+            
+            
             // 타이머 정지
             clearInterval(timerInterval);
             
@@ -179,6 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 로컬 스토리지에 소셜 계정 정보 복원
                 localStorage.setItem("user", JSON.stringify(updateUser));
                 localStorage.setItem("loginSuccess", "true");
+
+                // 임시 저장소에서 사용자 정보 삭제
+                localStorage.removeItem("tempUser");
     
                 // 페이지 이동 전 최종 확인을 위한 alert
                 alert(`저장된 최종 정보: ${localStorage.getItem("user")}`);
