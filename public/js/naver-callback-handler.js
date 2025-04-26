@@ -1,4 +1,4 @@
-import { naverConfig } from "/public/js/config.js";
+import { naverConfig } from "./config.js";
 import { db } from "./firebase.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { showToast } from "./global.js";
