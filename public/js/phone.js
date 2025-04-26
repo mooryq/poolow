@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const userWithPhoneAuth = {
               ...originalUser,
               phoneAuthUID: phoneAuthUser.uid  // 전화번호 인증 UID 추가
-            };
+          };
 
             // 전화번호 정보
             const phoneForDB = formattedPhoneNumber.replace('+82', '0');
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await saveUserToFirestore(phoneForDB, userWithPhoneAuth);
             
             
-            
+
             // 타이머 정지
             clearInterval(timerInterval);
             

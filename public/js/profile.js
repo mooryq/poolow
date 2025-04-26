@@ -90,7 +90,11 @@ async function loadUserProfile() {
 
             
             // 전화번호 표시 (있는 경우)
+            if (userData.providers && userData.providers.includes('phone')) {
+                userPhoneElement.innerHTML = `${userId} <span class="tag">인증</span>`;
+            } else {
             userPhoneElement.textContent = userId || '전화번호 없음';
+            }
             
             // 이메일 표시
             userEmailElement.textContent = userData.email || '이메일 없음';
@@ -122,8 +126,8 @@ async function loadUserProfile() {
                     providerLogo.src = 'images/naver.png';
                     providerLogo.alt = 'Naver logo';
                 } else {
-                    providerLogo.src = 'images/unknown.png';
-                    providerLogo.alt = 'Unknown provider';
+                    // unknown provider일 때는 이미지를 표시하지 않음
+                    return;
                 }
                                 
                 sso.appendChild(providerLogo);
@@ -184,47 +188,47 @@ const checkNameAvailability = debounce(async function() {
         return;
     }
     
-    try {
-        // 사용자 컬렉션 참조
-        const usersRef = collection(db, "users");
-        
-        // customName 또는 name 필드에서 동일한 이름 검색 (현재 사용자 제외)
-        const nameQuery = query(usersRef, where("customName", "==", newName));
-        const originalNameQuery = query(usersRef, where("name", "==", newName));
-        
-        const [nameResults, originalNameResults] = await Promise.all([
-            getDocs(nameQuery),
-            getDocs(originalNameQuery)
-        ]);
-        
-        // 자신의 이름 제외하고 중복 검사
-        let isDuplicate = false;
-        
-        nameResults.forEach(doc => {
+            try {
+                // 사용자 컬렉션 참조
+                const usersRef = collection(db, "users");
+                
+                // customName 또는 name 필드에서 동일한 이름 검색 (현재 사용자 제외)
+                const nameQuery = query(usersRef, where("customName", "==", newName));
+                const originalNameQuery = query(usersRef, where("name", "==", newName));
+                
+                const [nameResults, originalNameResults] = await Promise.all([
+                    getDocs(nameQuery),
+                    getDocs(originalNameQuery)
+                ]);
+                
+                // 자신의 이름 제외하고 중복 검사
+                let isDuplicate = false;
+                
+                nameResults.forEach(doc => {
             if (doc.id !== currentUser.uid) {
-                isDuplicate = true;
-            }
-        });
-        
-        originalNameResults.forEach(doc => {
+                        isDuplicate = true;
+                    }
+                });
+                
+                originalNameResults.forEach(doc => {
             if (doc.id !== currentUser.uid) {
-                isDuplicate = true;
-            }
-        });
-        
-        if (isDuplicate) {
-            validationElement.textContent = "이미 사용 중인 이름입니다.";
-            validationElement.classList.add("error");
-        } else {
-            validationElement.textContent = "";
-            validationElement.classList.remove("error");
-        }
-        
-    } catch (error) {
-        console.error("이름 검사 중 오류:", error);
+                        isDuplicate = true;
+                    }
+                });
+                
+                if (isDuplicate) {
+                    validationElement.textContent = "이미 사용 중인 이름입니다.";
+                    validationElement.classList.add("error");
+                } else {
+                    validationElement.textContent = "";
+                    validationElement.classList.remove("error");
+                }
+                
+            } catch (error) {
+                console.error("이름 검사 중 오류:", error);
         validationElement.textContent = "이름 검사 중 오류가 발생했습니다.";
         validationElement.classList.add("error");
-    }
+}
 }, 500); // 500ms 디바운스
 
 // 새 이름 저장

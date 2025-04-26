@@ -98,3 +98,18 @@
 .sso img:last-child{
     margin-right: 0;
 }
+
+.userPhone {
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 6px; /* 전화번호와 태그 사이 간격 */
+}
+
+.userPhone .tag {
+  margin-top: 0; /* 기존에 있을 수 있는 마진 제거 */
+  margin-bottom: 0;
+  display: inline-flex; /* 인라인 요소이지만 flex 속성 사용 */
+  align-items: center;
+  vertical-align: middle; /* 추가 보정 */
+  line-height: 1; /* 라인 높이 조정 */
+}

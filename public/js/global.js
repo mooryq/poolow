@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('resize', () => {
   const header = document.querySelector('header');
   if (header) {
-    updateHeaderHeight();
+updateHeaderHeight();
   }
 });
 
