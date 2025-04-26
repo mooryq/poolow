@@ -100,3 +100,9 @@ main{
     width: 28px;
     height: 28px;
 }
+
+.logo{
+    font-family: "Tektur", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+}

@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formattedPhoneNumber = formatToE164(phone);
         
         // 버튼 상태 업데이트
-        submitPhoneBtn.textContent = "처리 중...";
+        submitPhoneBtn.textContent = "인증번호 발송중";
         submitPhoneBtn.disabled = true;
         
         try {
@@ -201,9 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 임시 저장소에서 사용자 정보 삭제
                 localStorage.removeItem("tempUser");
     
-                // 페이지 이동 전 최종 확인을 위한 alert
-                alert(`저장된 최종 정보: ${localStorage.getItem("user")}`);
-                
                 // 이전 페이지로 복귀
                 const returnUrl = sessionStorage.getItem('returnUrl') || "index.html";
                 sessionStorage.removeItem('returnUrl');

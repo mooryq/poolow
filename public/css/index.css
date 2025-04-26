@@ -2,16 +2,17 @@ button{
     display: block;
 }
 
-.map-container{
-    position: relative;    
+.map-container {
+    position: relative;
     width: 100%;
 }
 
 #map {
-    width: 460px;
-    height: calc(var(--vh, 1vh) * 100);
-    position: relative;
-    top: 0;
+  width: 460px;
+  height: calc(var(--vh, 1vh) * 100);
+  position: relative;
+  top: 0;
+
 }
 
 /* 검색창 */
@@ -163,7 +164,9 @@ input:focus {
     bottom: 15rem;
     background-color: transparent;
     margin-bottom: 1rem;
+    
   }
+
 
   .swiper-slide {
     position: relative;
@@ -174,8 +177,8 @@ input:focus {
     padding: 1rem 1rem  0 1rem;
     border-radius: 1rem;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 2px 12px 0px;
-  }
 
+  }
 
   .hidden{
     display:none;

@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 즐겨찾기 렌더링 함수
   function renderFavorites() {
     if (userData.favorites.length === 0) {
-      listContainer.innerHTML = "<p>저장된 수영장이 없습니다.</p>";
+      listContainer.innerHTML = "<p style='text-align:center;'>저장된 수영장이 없습니다.</p>";
       return;
     }
   
@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 리뷰 렌더링 함수 
   function renderReviews() {
     if (userData.reviews.length === 0) {
-      reviewContainer.innerHTML = "<p>작성한 리뷰가 없습니다.</p>";
+      reviewContainer.innerHTML = "<p style='text-align:center;' style='text-align:center;'>작성한 리뷰가 없습니다.</p>";
       return;
     }
   
