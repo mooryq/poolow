@@ -87,16 +87,20 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   
   // Firestore에서 UID에 해당하는 사용자 찾기 (기존 함수 유지)
   async function findUserByUID(uid) {
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("uids", "array-contains", uid));
-    const querySnapshot = await getDocs(q);
-  
-    if (!querySnapshot.empty) {
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data();
-      return { id: userDoc.id, data: userData }; // id = phone
+    try {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("uids", "array-contains", uid));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.providers && userData.providers.includes('phone');
+      }
+      return false;
+    } catch (error) {
+      console.error("Firestore 조회 오류:", error);
+      return false;
     }
-    return null;
   }
   
   // 사용자 정보로 UI 업데이트 (기존 함수 유지)

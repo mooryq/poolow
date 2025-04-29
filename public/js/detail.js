@@ -11,7 +11,7 @@ import {
     serverTimestamp
     } from './firebase.js';
 
-import { authUser } from "./global.js"; 
+import { authUser, initAuth } from "./global.js"; 
 import { fetchPoolData, getRawPool } from './pool-service.js';
 import { openModal, closeModal, setupModalListeners, showToast} from './global.js';
 import { initFavoriteButton, initReviewModal } from './addFavRev.js';
@@ -20,7 +20,7 @@ import { resizeImage, uploadReviewImages } from "./resizeImage.js";
 import { query, orderBy } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // 헤더 높이 설정
     updateHeaderHeight();
     
@@ -41,7 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Pool ID가 제공되지 않았습니다.");
         return;
     }
-    
+    // 인증 초기화를 먼저 완료한 후 나머지 작업 진행
+    await initAuth();
+
     // 풀 데이터 불러오기
     fetch('data/pools.json')
         .then(response => response.json())

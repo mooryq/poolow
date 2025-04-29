@@ -1,22 +1,22 @@
+// public/js/naver-callback-handler.js
 import { naverConfig } from "./config.js";
-import { db } from "./firebase.js";
-import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import { showToast } from "./global.js";
+import { app, auth }       from "./firebase.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-functions.js";
+import { signInWithCustomToken }       from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+import { showToast }   from "./global.js";
+import axios from "https://cdn.skypack.dev/axios";
+const functionsURL = "https://asia-northeast3-poolow-f324e.cloudfunctions.net/createNaverToken";
 
-
-
-// 임시 소셜 로그인 정보 저장
-function saveTemporaryUserInfo(userInfo) {
-  localStorage.setItem("tempUser", JSON.stringify(userInfo));
-  console.log("📝 임시 사용자 정보 저장:", userInfo);
+// 서버에 네이버 토큰을 보내고 Firebase 커스텀 토큰을 받아오는 함수
+async function callCreateNaverToken(rawToken) {
+  try {
+    const response = await axios.post(functionsURL, { accessToken: rawToken });
+    return response.data;
+  } catch (error) {
+    console.error("❌ 서버 호출 에러:", error);
+    throw error;
+  }
 }
-
-// 임시 저장된 정보 삭제
-function clearTemporaryUserInfo() {
-  localStorage.removeItem("tempUser");
-  console.log("🧹 임시 사용자 정보 삭제됨");
-}
-
 
 // Firestore에서 UID로 사용자 찾기
 async function findUserByUID(uid) {
@@ -26,114 +26,100 @@ async function findUserByUID(uid) {
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      return true; // 사용자가 존재함
+      return { exists: true, docId: querySnapshot.docs[0].id };
     }
-    return false; // 사용자가 존재하지 않음 (전화번호 등록 필요)
+    return { exists: false };
   } catch (error) {
     console.error("Firestore 조회 오류:", error);
-    return false;
-  }
-}
-
-// 로그인 후 리다이렉션 처리
-async function handleRedirectAfterLogin(uid) {
-  try {
-    // Firestore에서 사용자 확인
-    const userExists = await findUserByUID(uid);
-    
-    // 세션 스토리지에서 returnUrl 확인
-    const returnUrl = sessionStorage.getItem('returnUrl');
-    console.log("returnUrl:", returnUrl);
-    
-    if (userExists) {
-      // 사용자가 존재하면 returnUrl로 리다이렉션
-      localStorage.setItem("loginSuccess", "true");
-      
-      if (returnUrl) {
-        sessionStorage.removeItem('returnUrl'); // 사용 후 삭제
-        window.location.href = returnUrl;
-      } else {
-        window.location.href = "index.html";
-      }
-    } else {
-      // 사용자가 존재하지 않으면 전화번호 등록 페이지로 이동
-      // returnUrl 유지
-      window.location.href = "phoneForm.html";
-    }
-  } catch (error) {
-    console.error("리다이렉션 처리 오류:", error);
-    window.location.href = "index.html"; // 오류 시 홈으로
+    return { exists: false, error };
   }
 }
 
 // 네이버 로그인 초기화 및 처리
-function initNaverLogin() {
-  try {
-    // 네이버 로그인 객체 생성 및 초기화
+
+async function initNaverLogin() {
   const naverLogin = new naver.LoginWithNaverId(naverConfig);
   naverLogin.init();
-  
-    console.log("✅ 네이버 로그인 초기화 완료");
-    
-    // 기존 로그인 정보 초기화
-    localStorage.removeItem("user");
-    localStorage.removeItem("loginSuccess");
-    localStorage.removeItem("com.naver.nid.access_token");
-    localStorage.removeItem("com.naver.nid.oauth.state_token");
-    
-    // 로그인 상태 확인
-  naverLogin.getLoginStatus(function (status) {
+  console.log("✅ 네이버 로그인 초기화 완료");
+
+  naverLogin.getLoginStatus(async (status) => {
     if (!status || !naverLogin.user) {
       console.error("❌ 네이버 로그인 실패 또는 사용자 정보 없음");
-      localStorage.removeItem("loginSuccess");
-      localStorage.removeItem("user");
-        window.location.href = "login.html"; // 로그인 실패 시 로그인 페이지로
-      return;    
+      return window.location.href = "login.html";
     }
 
-    const id = naverLogin.user.getId();
-    const name = naverLogin.user.getName();
-    const email = naverLogin.user.getEmail();
+    //네이버 사용자 정보 가져오기
+    const user = naverLogin.user;    
+    const userId = user.getId(); 
+    const name = typeof user.getName === "function" ? user.getName() : (user.name || "");
+    const email = typeof user.getEmail === "function" ? user.getEmail() : (user.email || "");
+    const photo = typeof user.getProfileImage === "function" ? user.getProfileImage() : (user.profile_image || "");
 
-    if (!id) {
-        console.error("⚠️ 네이버 사용자 식별자를 불러오지 못했습니다.");
-      console.warn("⚠️ 유저 정보:", naverLogin.user);
-        window.location.href = "login.html";
-      return;
+    console.log("✅네이버 사용자 정보:", {userId, name, email, photo});
+    // localStorage.setItem("user", JSON.stringify(userInfo));
+    // localStorage.setItem("loginSuccess", "true");
+    
+    try{
+      // 1) 네이버 SDK에서 token 가져오기
+      let rawToken = naverLogin.accessToken?.accessToken
+                  || naverLogin.oauthParams?.access_token
+                  || localStorage.getItem('com.naver.nid.access_token');
+      if (!rawToken) {
+        console.error("토큰을 찾을 수 없습니다.");
+        showToast("로그인 토큰 획득 실패");
+        return;
+      }
+      if (rawToken.includes('.')) {
+        rawToken = rawToken.split('.')[0];
+      }
+
+      console.log("✅ 서버에 보낼 rawToken:", rawToken);
+
+      //2) 서버에 네이버 토큰 보내고 firebase 커스텀 토큰 받아오기  
+      const result = await callCreateNaverToken(rawToken);
+      console.log("✅ 서버 응답:", result);
+
+      if (!result || !result.customToken) {
+        throw new Error("토큰 발급 실패");
+      }
+
+      //3) firebase 인증
+      const userCred = await signInWithCustomToken(auth, result.customToken);
+      console.log("✅ Firebase Auth 로그인 성공:", userCred.user.uid);
+
+      //4) 사용자 정보 저장
+      const userInfo = {
+        uid: userId,
+        name: typeof user.getName === "function" ? user.getName() : (user.name || ""),
+        email: typeof user.getEmail === "function" ? user.getEmail() : (user.email || ""),
+        photo: typeof user.getProfileImage === "function" ? user.getProfileImage() : (user.profile_image || ""),
+        provider: "naver"
+      };
+
+      localStorage.setItem("user", JSON.stringify(userInfo));
+      localStorage.setItem("loginSuccess", "true");
+
+      //5) 성공 메시지 및 리다이렉트
+      showToast("로그인되었습니다. 반가워요👋🏻");
+      window.location.href = sessionStorage.getItem('returnUrl') || "index.html";
+    }catch(error){
+      console.error("❌ 로그인 처리 중 오류:", error);
+      alert("로그인 처리 중 오류가 발생했습니다.: " + error.message);
+      setTimeout(() => window.location.href = "login.html", 2000);
     }
-    
-      console.log("💡 네이버 사용자 ID:", id);
-      console.log("💡 전체 유저 정보:", naverLogin.user);
-
-    const userInfo = {
-      uid: id,
-      name: name || "이름없음",
-      email: email || "",
-      photo: "default.jpg",
-      provider: "naver"
-    };
-
-    console.log("✅ 네이버 로그인 성공:", userInfo);
-    localStorage.setItem("user", JSON.stringify(userInfo));
-    
-    // 로그인 후 리다이렉션 처리
-    handleRedirectAfterLogin(id);
   });
-  } catch (error) {
-    console.error("❌ 네이버 로그인 초기화 실패:", error);
-    window.location.href = "login.html";
-  }
 }
+ 
 
-// DOM이 완전히 로드된 후 네이버 로그인 초기화
-document.addEventListener('DOMContentLoaded', function() {
-  // 네이버 SDK가 로드되었는지 확인
-  if (typeof naver === 'undefined') {
-    console.error("❌ 네이버 SDK가 로드되지 않았습니다.");
-    window.location.href = "login.html";
-    return;
-  }
-  
-  // 네이버 로그인 초기화
-  initNaverLogin();
-});
+  //페이지 로드 시 네이버 로그인 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+      //네이버 SDK가 로드되었는지 확인
+      if (typeof naver === 'undefined') {
+        console.error("❌ 네이버 SDK 미로드");
+        window.location.href = "login.html";
+        return;
+      }
+
+      //네이버 로그인 초기화
+      initNaverLogin();
+    });

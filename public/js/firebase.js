@@ -6,7 +6,8 @@ import {
     signInWithPopup,
     onAuthStateChanged,
     signOut,
-    GoogleAuthProvider
+    GoogleAuthProvider,
+    signInWithCustomToken
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
 import {
@@ -41,7 +42,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+
+export const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 // Firestore DB 연결

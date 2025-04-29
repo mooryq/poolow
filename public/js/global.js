@@ -125,11 +125,27 @@ import { collection, query, where, getDocs } from "https://www.gstatic.com/fireb
 * @param {Function} onFailure - 로그인 안 되어있거나 유저 정보 못 찾았을 때 실행할 콜백 (선택)
 */
 
+// 인증 상태 캐싱을 위한 객체
+let authCache = {
+  isAuthenticated: false,
+  userId: null,
+  userData: null,
+  timestamp: null,
+  ttl: 5 * 60 * 1000 // 5분 캐시 유지 시간
+};
+
 
 export function authUser(onSuccess, onFailure) {
   console.log("🛰 authUser() called global");
   console.log("📍 현재 페이지 URL:", window.location.href);
 
+  const now = Date.now();
+  if (authCache.isAuthenticated && authCache.timestamp && 
+      (now - authCache.timestamp < authCache.ttl)) {
+    console.log("✅ 캐시된 인증 정보 사용:", authCache.userId);
+    return onSuccess(authCache.userId, authCache.userData);
+  }
+  
 
   // 이미 로그인 성공 표시가 있는지 확인 (세션 간에도 유지)
   const loginSuccessFlag = localStorage.getItem("loginSuccess");
@@ -158,7 +174,7 @@ export function authUser(onSuccess, onFailure) {
   // 2. Firebase 캐시된 사용자 확인
   if (cachedUser) {
     console.log("⚡️ Firebase currentUser 확인됨:", cachedUser.uid);
-   
+    
     // 사용자 정보를 로컬 스토리지에 저장
     const userInfo = {
       uid: cachedUser.uid,
@@ -167,7 +183,12 @@ export function authUser(onSuccess, onFailure) {
       photo: cachedUser.photoURL || "default.jpg",
       provider: cachedUser.providerId || "firebase"
     };
-    localStorage.setItem("user", JSON.stringify(userInfo));
+    
+    // 로컬 스토리지 업데이트 전에 기존 정보 확인
+    const existingUser = JSON.parse(localStorage.getItem("user")) || {};
+    const updatedUser = { ...existingUser, ...userInfo };
+    
+    localStorage.setItem("user", JSON.stringify(updatedUser));
     localStorage.setItem("loginSuccess", "true");
     
     return fetchUserByUID(cachedUser.uid, onSuccess, onFailure);
@@ -211,58 +232,94 @@ export function authUser(onSuccess, onFailure) {
   });
 }
 
+  export async function initAuth() {
+    if (authCache.isAuthenticated) return;
+    
+    console.log("🔄 인증 상태 초기화 시작");
+    
+    return new Promise((resolve) => {
+      authUser(
+        (userId, userData) => {
+          console.log("✅ 초기 인증 성공:", userId);
+          resolve(true);
+        },
+        () => {
+          console.log("⛔️ 초기 인증 실패");
+          resolve(false);
+        }
+      );
+    });
+  }
+
 
 // UID로 Firestore에서 사용자 정보 가져오기
 async function fetchUserByUID(uid, onSuccess, onFailure) {
   try {
     console.log("🔍 UID로 사용자 조회:", uid);
+    
+    // Firebase 인증 상태 확인 로그
+    console.log("🔑 현재 Firebase 인증 상태:", auth.currentUser?.uid);
+    
     const usersRef = collection(db, "users");
+    console.log("📚 사용자 컬렉션 참조 생성");
+    
+    // 쿼리 로그
+    console.log("🔍 쿼리 생성: where('uids', 'array-contains', '" + uid + "')");
+    
     const q = query(usersRef, where("uids", "array-contains", uid));
-    const querySnapshot = await getDocs(q);
+    console.log("🔍 쿼리 실행 중...");
+    
+    try {
+      const querySnapshot = await getDocs(q);
+      console.log("✅ 쿼리 결과:", querySnapshot.size, "개 문서");
+      
+      if (querySnapshot.empty) {
+        console.warn("📭 사용자 정보 없음 (Firestore)");
+        onFailure && onFailure();
+        return;
+      }
+      
+      const userDoc = querySnapshot.docs[0];
+      const phone = userDoc.id;
+      const data = userDoc.data();
+      
+      console.log("✅ 사용자 정보 찾음:", phone, data);
+      
+      // 로그인 성공 플래그 설정
+      localStorage.setItem("loginSuccess", "true");
+      
+      // 사용자 정보 업데이트 (phone 추가)
+      const userInfo = JSON.parse(localStorage.getItem("user")) || {};
+      userInfo.phone = phone;
+      
+      if(!userInfo.uid) {
+        userInfo.uid = uid;
+      }
+      // 성공 시 캐시 업데이트
+      authCache.isAuthenticated = true;
+      authCache.userId = phone;
+      authCache.userData = data;
+      authCache.timestamp = Date.now();
 
-    if (querySnapshot.empty) {
-      console.warn("📭 사용자 정보 없음 (Firestore)");
-      // localStorage.removeItem("loginSuccess"); // 플래그 제거
-      // localStorage.removeItem("user"); // 사용자 정보 제거
-      onFailure && onFailure();
-      return;
+      localStorage.setItem("user", JSON.stringify(userInfo));
+      onSuccess(phone, data);
+      
+    } catch (queryError) {
+      console.error("🔥 쿼리 실행 중 에러:", queryError);
+      throw queryError;
     }
-
-    const userDoc = querySnapshot.docs[0];
-    const phone = userDoc.id;
-    const data = userDoc.data();
-
-    console.log("✅ 사용자 정보 찾음:", phone, data);
     
-    // 로그인 성공 플래그 설정
-    localStorage.setItem("loginSuccess", "true");
-    
-
-    // 사용자 정보 업데이트 (phone 추가)
-    const userInfo = JSON.parse(localStorage.getItem("user")) || {};
-    
-    userInfo.phone = phone;
-
-    if(!userInfo.uid){
-      userInfo.uid = uid;
-    }
-
-    localStorage.setItem("user", JSON.stringify(userInfo));
-    
-    onSuccess(phone, data);
-
   } catch (e) {
     console.error("🔥 사용자 정보 조회 중 에러:", e);
-    // localStorage.removeItem("loginSuccess");
-    // localStorage.removeItem("user");
+    console.error("🔍 에러 상세:", e.code, e.message);
     onFailure && onFailure();
   }
 }
 
 
-
 // 페이지 로드 시 세션 정보 담고, my버튼 UI 조정
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await initAuth();
   setupReturnUrlForMypage(); // ✅ my 버튼 누를 때 현재 세션 url 정보 저장
   initHeaderUI(); // ✅ my버튼 UI 동기화
 });
