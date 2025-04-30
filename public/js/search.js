@@ -1,4 +1,4 @@
-import { showToast } from './global.js';
+import { showToast } from './ui.js';
 export { executeSearch, moveToSearchArea };
 
 // 구별 중심 좌표 데이터 저장 변수

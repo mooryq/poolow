@@ -5,7 +5,7 @@ import {
 } from "./firebase.js";
 
 import { RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-import { showToast } from './global.js';
+import { showToast } from './ui.js';
 
 // 전역 변수
 let confirmationResult = null; // SMS 인증 결과를 저장

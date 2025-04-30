@@ -13,7 +13,7 @@ import {
 } from './firebase.js';
 
 import { authUser } from "./global.js";
-import { openModal, closeModal, setupModalListeners, showToast} from './global.js';
+import { openModal, closeModal, setupModalListeners, showToast} from './ui.js';
 import { resizeImage, uploadReviewImages } from "./resizeImage.js";
 import { query, orderBy, where } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
     
@@ -25,6 +25,16 @@ export function setPoolData(data) {
     poolData = data;
 }
 
+
+    // 인증 상태 캐싱을 위한 객체
+    let authCache = {
+        isAuthenticated: false,
+        userId: null,
+        userData: null,
+        timestamp: null,
+        ttl: 5 * 60 * 1000 // 5분 캐시 유지 시간
+    };
+   
 // 즐겨찾기 버튼 초기화
 export function initFavoriteButton(data) {
     // poolData 설정
@@ -482,15 +492,7 @@ export function initReviewModal() {
     // 초기 리뷰 로드
     loadReviews();
 }
-    // 인증 상태 캐싱을 위한 객체
-    let authCache = {
-        isAuthenticated: false,
-        userId: null,
-        userData: null,
-        timestamp: null,
-        ttl: 5 * 60 * 1000 // 5분 캐시 유지 시간
-    };
-   
+
     // 리뷰 로드 함수
     export async function loadReviews() {
     if (!poolData) return;
@@ -504,6 +506,20 @@ export function initReviewModal() {
 
     // 현재 로그인한 사용자 ID 가져오기
     let currentUserId = null;
+    const loginSuccess = localStorage.getItem("loginSuccess");
+    const localUser = JSON.parse(localStorage.getItem("user"));
+  
+    if (loginSuccess === "true" && localUser && localUser.phone) {
+        // 로컬 스토리지에 전화번호가 있으면 사용
+        currentUserId = localUser.phone;
+        console.log("📱 로컬 스토리지에서 사용자 ID 가져옴:", currentUserId);
+      }
+      // 캐시에 정보가 있는지 확인
+      else if (authCache.isAuthenticated && authCache.userId) {
+        currentUserId = authCache.userId;
+        console.log("✅ 캐시된 인증 정보 사용:", currentUserId);
+      }
+    
 
     try {
         // 리뷰 목록 먼저 불러오기 
@@ -515,7 +531,41 @@ export function initReviewModal() {
             reviewList.innerHTML = "<p class='gray-text'>아직 리뷰가 없습니다.</p>";
             return;
         }
-        
+            // 로컬 스토리지나 캐시에서 사용자 ID를 찾지 못한 경우에만 authUser 호출
+    if (!currentUserId) {
+        try {
+          currentUserId = await new Promise((resolve, reject) => {
+            // 1초 타임아웃으로 줄임 (원래 2초)
+            const timeout = setTimeout(() => {
+              console.log("로그인 상태 확인 타임아웃");
+              resolve(null);
+            }, 1000);
+  
+            authUser(
+              (userId, userData) => {
+                clearTimeout(timeout);
+                // 캐시 업데이트
+                authCache.isAuthenticated = true;
+                authCache.userId = userId;
+                authCache.userData = userData;
+                authCache.timestamp = Date.now();
+                
+                console.log("현재 로그인 사용자 ID", userId);
+                resolve(userId);
+              },
+              () => {
+                clearTimeout(timeout);
+                console.log("로그인 된 사용자 없음");
+                resolve(null);
+              }
+            );
+          });
+        } catch (authError) {
+          console.error("사용자 인증 확인 중 오류:", authError);
+          currentUserId = null;
+        }
+      }
+  
         // 캐시된 인증 정보가 있는지 먼저 확인
         const now = Date.now();
         if (authCache.isAuthenticated && authCache.timestamp && 

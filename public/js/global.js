@@ -1,96 +1,3 @@
-// 제스처 확대 방지
-document.addEventListener("gesturestart", function (event) {
-  event.preventDefault();
-});
-
-
-//헤더사이즈 조정
-export function updateHeaderHeight() {
-  const header = document.querySelector('header');
-  
-  // header 요소가 없으면 함수 종료
-  if (!header) {
-    console.warn('⚠️ header 요소를 찾을 수 없습니다.');
-    return;
-  }
-  
-  document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
-}
-
-// DOM이 완전히 로드된 후에만 실행
-document.addEventListener('DOMContentLoaded', () => {
-  updateHeaderHeight();
-});
-
-// 리사이즈 이벤트는 header가 있을 때만 실행
-window.addEventListener('resize', () => {
-  const header = document.querySelector('header');
-  if (header) {
-updateHeaderHeight();
-  }
-});
-
-// 페이지 로드 완료 후에도 한 번 더 실행
-window.addEventListener('load', () => {
-  const header = document.querySelector('header');
-  if (header) {
-    updateHeaderHeight();
-  }
-});
-
-
- 
-// 토스트 ~.~
-export function showToast(message) {
-  const toast = document.createElement('div');
-  toast.className = 'custom-toast';
-  toast.textContent = message;
-
-  document.body.appendChild(toast);
-
-  // 잠깐 있다가 사라짐
-  setTimeout(() => {
-    toast.classList.add('show');
-  }, 10);
-
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, 900);
-}
-
-
-//모달 함수
-export function openModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (!modal) return;
-  modal.style.display = "flex";
-  document.body.style.overflow = "hidden";
-}
-
-export function closeModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (!modal) return;
-  modal.style.display = "none";
-  document.body.style.overflow = "auto";
-}
-
-export function setupModalListeners(modalId) {
-  const modal = document.getElementById(modalId);
-  if (!modal) return;
-
-  // // 바깥 클릭
-  // modal.addEventListener("click", (e) => {
-  //   if (e.target === modal) closeModal(modalId);
-  // });
-
-  // 닫기 버튼
-  const closeBtn = modal.querySelector(".modal-close");
-  if (closeBtn) {
-    closeBtn.addEventListener("click", () => closeModal(modalId));
-  }
-}
-
 // 마이페이지 링크 세션 저장 설정 함수
 export function setupReturnUrlForMypage() {
   const mypageLink = document.getElementById('mypage');
@@ -126,12 +33,12 @@ import { collection, query, where, getDocs } from "https://www.gstatic.com/fireb
 */
 
 // 인증 상태 캐싱을 위한 객체
-let authCache = {
+export let authCache = {
   isAuthenticated: false,
   userId: null,
   userData: null,
   timestamp: null,
-  ttl: 5 * 60 * 1000 // 5분 캐시 유지 시간
+  ttl: 15 * 60 * 1000 // 5분 캐시 유지 시간
 };
 
 
@@ -145,8 +52,8 @@ export function authUser(onSuccess, onFailure) {
     console.log("✅ 캐시된 인증 정보 사용:", authCache.userId);
     return onSuccess(authCache.userId, authCache.userData);
   }
-  
 
+  
   // 이미 로그인 성공 표시가 있는지 확인 (세션 간에도 유지)
   const loginSuccessFlag = localStorage.getItem("loginSuccess");
   const localUser = JSON.parse(localStorage.getItem("user"));
@@ -232,15 +139,57 @@ export function authUser(onSuccess, onFailure) {
   });
 }
 
-  export async function initAuth() {
-    if (authCache.isAuthenticated) return;
+// 전역 단일 인증 진행 상태
+let authInitialized = false;
+let authInitPromise = null;
+
+
+
+export async function initAuth() {
+    // 이미 초기화되었으면 즉시 반환
+    if (authInitialized) {
+      console.log("✅ 인증 이미 초기화됨, 건너뜀");
+      return authCache.isAuthenticated;
+    }
     
+    // 초기화 진행 중이면 기존 Promise 반환
+    if (authInitPromise) {
+      console.log("⏳ 인증 초기화 진행 중, 완료 대기...");
+      return authInitPromise;
+    }
+
     console.log("🔄 인증 상태 초기화 시작");
     
-    return new Promise((resolve) => {
+
+    authInitPromise = new Promise((resolve) => {
+      //로컬에서 사용자 정보 확인
+      const loginSuccess = localStorage.getItem("loginSuccess");
+      const localUser = JSON.parse(localStorage.getItem("user"));
+
+      if (loginSuccess === "true" && localUser && localUser.phone) {
+        console.log("✅ 로컬 스토리지에서 사용자 정보 확인됨:", localUser.phone);
+
+        authCache.isAuthenticated = true;
+        authCache.userId = localUser.phone;
+        authCache.timestamp = Date.now();
+
+        //userData는 당장 필요하지 않으므로 비동기로 로드
+        fetchUserData(localUser.uid).then(userData => {
+          if(userData) {
+            authCache.userData = userData;
+          }
+        });
+
+        authInitialized = true;
+        resolve(true);
+        return;
+      }
+        
+      //로컬 스토리지에 정보가 없으면 전체 인증과정 수행
       authUser(
         (userId, userData) => {
           console.log("✅ 초기 인증 성공:", userId);
+          authInitialized = true;
           resolve(true);
         },
         () => {
@@ -249,8 +198,27 @@ export function authUser(onSuccess, onFailure) {
         }
       );
     });
+    return authInitPromise;
   }
 
+//사용자 데이터만 가져오는 경량함수
+async function fetchUserData(uid) {
+  if (!uid) return null;
+
+  try {
+    console.log("🔍 사용자 데이터 조회:", uid);
+    const userRef = collection(db, "users");
+    const q = query(userRef, where("uids", "array-contains", uid));  // uid -> uids, == -> array-contains
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) return null;
+
+    return querySnapshot.docs[0].data();  // snapshot -> querySnapshot
+  } catch (error) {
+    console.error("🔥 사용자 데이터 조회 중 에러:", error);
+    return null;
+  }
+}
 
 // UID로 Firestore에서 사용자 정보 가져오기
 async function fetchUserByUID(uid, onSuccess, onFailure) {
@@ -319,9 +287,12 @@ async function fetchUserByUID(uid, onSuccess, onFailure) {
 
 // 페이지 로드 시 세션 정보 담고, my버튼 UI 조정
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log("📄 페이지로드: 인증초기화 시작 😒")
   await initAuth();
   setupReturnUrlForMypage(); // ✅ my 버튼 누를 때 현재 세션 url 정보 저장
   initHeaderUI(); // ✅ my버튼 UI 동기화
+  console.log("📄 페이지 로드: 인증 초기화 완료 😉");
+
 });
 
 
@@ -329,9 +300,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function initHeaderUI() {
   const wrapper = document.querySelector('.mypage-wrapper');
-
   if (!wrapper) return; // 안전성 체크
 
+  // authCache가 이미 인증된 상태면 바로 스타일 적용
+  if (authCache.isAuthenticated) {
+    wrapper.classList.remove('logged-out');
+    wrapper.classList.add('logged-in');
+    return;
+  }
+
+  // 로컬 스토리지에서 로그인 상태 확인
+  const loginSuccess = localStorage.getItem("loginSuccess");
+  if (loginSuccess === "true") {
+    wrapper.classList.remove('logged-out');
+    wrapper.classList.add('logged-in');
+    return;
+  }
+
+  // 위 방법으로 확인할 수 없는 경우만 authUser 호출
   authUser(
     () => {
       wrapper.classList.remove('logged-out');

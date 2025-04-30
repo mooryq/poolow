@@ -1,4 +1,5 @@
-import { updateHeaderHeight, showToast, authUser } from "./global.js";
+import { authUser } from "./global.js";
+import { updateHeaderHeight, showToast } from "./ui.js";
 import { 
     auth,
     db, 

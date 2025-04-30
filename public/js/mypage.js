@@ -20,7 +20,8 @@ import {
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-import { authUser, updateHeaderHeight, showToast } from './global.js';
+import { authUser, } from './global.js';
+import { updateHeaderHeight, showToast } from './ui.js';
 import { ReviewEditListeners } from './addFavRev.js';
 
 const localUser = JSON.parse(localStorage.getItem("user")); // 네이버 또는 구글 공통

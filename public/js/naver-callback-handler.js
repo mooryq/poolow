@@ -3,7 +3,7 @@ import { naverConfig } from "./config.js";
 import { app, auth }       from "./firebase.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-functions.js";
 import { signInWithCustomToken }       from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-import { showToast }   from "./global.js";
+import { showToast }   from "./ui.js";
 import axios from "https://cdn.skypack.dev/axios";
 const functionsURL = "https://asia-northeast3-poolow-f324e.cloudfunctions.net/createNaverToken";
 

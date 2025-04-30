@@ -11,9 +11,9 @@ import {
     serverTimestamp
     } from './firebase.js';
 
-import { authUser, initAuth } from "./global.js"; 
+import { authUser, authCache, initAuth } from "./global.js"; 
 import { fetchPoolData, getRawPool } from './pool-service.js';
-import { openModal, closeModal, setupModalListeners, showToast} from './global.js';
+import { showToast} from './ui.js';
 import { initFavoriteButton, initReviewModal } from './addFavRev.js';
 
 import { resizeImage, uploadReviewImages } from "./resizeImage.js";
@@ -42,7 +42,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     // 인증 초기화를 먼저 완료한 후 나머지 작업 진행
-    await initAuth();
+    if (!(authCache.isAuthenticated && authCache.timestamp && 
+        (Date.now() - authCache.timestamp < authCache.ttl))) {
+      await initAuth();  // 필요한 경우에만 인증 초기화
+    }
 
     // 풀 데이터 불러오기
     fetch('data/pools.json')
@@ -81,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         .catch(error => {
             console.error("데이터 로딩 중 오류 발생:", error);
         });
-  });
+    });
   
   // 헤더 높이 업데이트
   function updateHeaderHeight() {
@@ -221,7 +224,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             await navigator.share({
             title: shareTitle,
-            text: `🌊 ${pool.name} 에서 같이 수영해요! by Poolow `,
+            text: `${pool.name} 에서 같이 수영해요! 
+💙Poolow💙 `,
             url: shareUrl
             });
             console.log("✅ 공유 성공");
