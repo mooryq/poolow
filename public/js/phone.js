@@ -1,9 +1,4 @@
-import { 
-    auth, 
-    db, 
-    saveUserToFirestore
-} from "./firebase.js";
-
+import { auth, saveUserToFirestore } from "./firebase.js";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { showToast } from './ui.js';
 
@@ -11,6 +6,7 @@ import { showToast } from './ui.js';
 let confirmationResult = null; // SMS 인증 결과를 저장
 let formattedPhoneNumber = null; // 국제 형식 전화번호
 let timerInterval = null; // 타이머 인터벌
+let isProcessing = false; // 중복 요청 방지 플래그
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -65,6 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 전화번호 제출 버튼 클릭 이벤트
     submitPhoneBtn.addEventListener('click', async () => {
+        // 이미 처리 중이면 중복 요청 방지
+        if (isProcessing) return;
+
         const phone = phoneInput.value.trim();
         
         // 유효성 검사
@@ -83,9 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // 전화번호 국제 형식으로 변환
         formattedPhoneNumber = formatToE164(phone);
         
+        // 처리 중 플래그 설정
+        isProcessing = true;
+        
         // 버튼 상태 업데이트
         submitPhoneBtn.textContent = "인증번호 발송중";
         submitPhoneBtn.disabled = true;
+        submitPhoneBtn.style.backgroundColor = "#f5f5f5";  // 명시적으로 회색으로 설정
         
         try {
             // reCAPTCHA가 초기화되어 있는지 확인
@@ -109,13 +112,20 @@ document.addEventListener('DOMContentLoaded', () => {
             
             showToast("인증 코드가 문자로 발송되었습니다.");
             
+            // 처리 완료 후 플래그 해제 (필요한 경우)
+            // isProcessing = false; // 인증 코드 화면으로 전환되므로 여기서는 플래그 유지
+            
         } catch (error) {
             console.error("SMS 인증 요청 실패:", error);
             
+            // 처리 중 플래그 해제
+            isProcessing = false;
+            
             // 버튼 상태 복원
             submitPhoneBtn.textContent = "인증번호 받기";
-            submitPhoneBtn.disabled = false;
-            validatePhoneInput(phone);  // 다시 유효성 체크해서 버튼 상태 설정
+            
+            // 유효성 검증 다시 수행하여 버튼 상태 업데이트
+            validatePhoneInput(phone);
             
             // 에러 메시지 처리
             let errorMessage = "SMS 인증 요청에 실패했습니다.";
@@ -130,8 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             showToast(errorMessage);
             
-            // reCAPTCHA 재설정
-            resetRecaptcha();
+            // reCAPTCHA 재설정 (isProcessing이 false이므로 버튼 상태는 자동으로 업데이트됨)
+            resetRecaptcha(true); // 버튼 상태 유지 옵션 추가
         }
     });
     
@@ -156,8 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
         submitCodeBtn.disabled = true;
         
         try {
-            
-            
             // 중요: 전화번호 인증 전에 사용했던 소셜 계정 정보 가져오기 (백업)
             const originalUser = JSON.parse(localStorage.getItem("user"));
             console.log("전화번호 인증 전 소셜 계정 정보:", originalUser); // 디버깅용
@@ -170,24 +178,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const userWithPhoneAuth = {
               ...originalUser,
               phoneAuthUID: phoneAuthUser.uid  // 전화번호 인증 UID 추가
-          };
+            };
 
             // 전화번호 정보
             const phoneForDB = formattedPhoneNumber.replace('+82', '0');
             console.log("인증된 전화번호:", phoneForDB); // 디버깅용
-
-            // Firestore에 저장
-            await saveUserToFirestore(phoneForDB, userWithPhoneAuth);
             
-            
+            const naverCustomToken = localStorage.getItem("naverCustomToken");
 
-            // 타이머 정지
-            clearInterval(timerInterval);
+            if (naverCustomToken) {
+                await signInWithCustomToken(auth, naverCustomToken);
+                console.log("🔁 소셜 로그인 상태로 복원 완료");
+            }
+
+            await saveUserToFirestore(phoneForDB, userWithPhoneAuth); // Firestore에 저장
+            clearInterval(timerInterval);// 타이머 정지
             
             showToast("전화번호 인증이 완료되었습니다!");           
             
             // 로그인 정보 저장 및 페이지 이동
-
             setTimeout(() => {
                 const updateUser = {
                     ...originalUser,
@@ -207,8 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("👉 복귀할 URL:", returnUrl);
                 window.location.href = returnUrl;
             }, 1000); // 1초 지연으로 통일
-
-            
         } catch (error) {
             console.error("인증 코드 확인 실패:", error);
             
@@ -230,27 +237,53 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 재전송 버튼 클릭 이벤트
     resendCodeBtn.addEventListener('click', async () => {
+        // 이미 처리 중이면 중복 요청 방지
+        if (isProcessing) return;
+        
         if (!formattedPhoneNumber) {
             showToast("전화번호 정보가 없습니다. 처음부터 다시 시도해주세요.");
             resetUI();
             return;
         }
         
-        // reCAPTCHA 재설정
-        resetRecaptcha();
+        // 처리 중 플래그 설정
+        isProcessing = true;
+        resendCodeBtn.disabled = true;
         
         try {
-            // SMS 인증 재요청
-            const appVerifier = window.recaptchaVerifier;
-            confirmationResult = await signInWithPhoneNumber(auth, formattedPhoneNumber, appVerifier);
+            // SMS 인증 재요청 전 reCAPTCHA 재설정
+            resetRecaptcha(true);
             
-            // 타이머 재시작
-            startTimer();
-            
-            showToast("인증 코드가 다시 발송되었습니다.");
+            setTimeout(async () => {
+                try {
+                    // SMS 인증 재요청
+                    const appVerifier = window.recaptchaVerifier;
+                    confirmationResult = await signInWithPhoneNumber(auth, formattedPhoneNumber, appVerifier);
+                    
+                    // 타이머 재시작
+                    startTimer();
+                    
+                    showToast("인증 코드가 다시 발송되었습니다.");
+                    
+                    // 처리 중 플래그 해제
+                    isProcessing = false;
+                    resendCodeBtn.disabled = false;
+                } catch (error) {
+                    console.error("인증 코드 재발송 실패:", error);
+                    showToast("인증 코드 재발송에 실패했습니다. 다시 시도해주세요.");
+                    
+                    // 처리 중 플래그 해제
+                    isProcessing = false;
+                    resendCodeBtn.disabled = false;
+                }
+            }, 1000); // reCAPTCHA 재설정 후 약간 지연시키고 요청
         } catch (error) {
-            console.error("인증 코드 재발송 실패:", error);
+            console.error("reCAPTCHA 재설정 중 오류:", error);
             showToast("인증 코드 재발송에 실패했습니다. 다시 시도해주세요.");
+            
+            // 처리 중 플래그 해제
+            isProcessing = false;
+            resendCodeBtn.disabled = false;
         }
     });
     
@@ -274,6 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 전화번호 유효성 검증 및 버튼 상태 업데이트
     function validatePhoneInput(value) {
+        // 처리 중이면 항상 비활성화 상태 유지
+        if (isProcessing) {
+            submitPhoneBtn.disabled = true;
+            submitPhoneBtn.style.backgroundColor = "#f5f5f5";
+            return false;
+        }
+
         const phoneRegex = /^01([0|1|6|7|8|9])[-\s]?([0-9]{3,4})[-\s]?([0-9]{4})$/;
         const isValid = phoneRegex.test(value);
         
@@ -332,7 +372,7 @@ function initRecaptcha() {
         },
         'expired-callback': () => {
             console.log("⚠️ reCAPTCHA 만료됨");
-            resetRecaptcha();
+            resetRecaptcha(true); // 버튼 상태 유지
         },
         'error-callback': (error) => {
             console.error("❌ reCAPTCHA 오류:", error);
@@ -341,7 +381,16 @@ function initRecaptcha() {
 }
 
 // reCAPTCHA 재설정
-function resetRecaptcha() {
+function resetRecaptcha(keepButtonState = false) {
+    // 현재 버튼 상태 저장
+    const submitPhoneBtn = document.getElementById('submitPhone');
+    if (!submitPhoneBtn) return;
+    
+    const wasDisabled = submitPhoneBtn.disabled;
+    const backgroundColor = submitPhoneBtn.style.backgroundColor;
+    const buttonText = submitPhoneBtn.textContent;
+    
+    // reCAPTCHA 초기화
     if (window.recaptchaVerifier) {
         try {
             window.recaptchaVerifier.clear();
@@ -353,8 +402,17 @@ function resetRecaptcha() {
     
     setTimeout(() => {
         try {
+            // reCAPTCHA 재초기화
             initRecaptcha();
             console.log("✅ reCAPTCHA 재초기화 완료");
+            
+            // 버튼 상태 복원 (유지해야 하는 경우)
+            if (keepButtonState && submitPhoneBtn) {
+                submitPhoneBtn.disabled = wasDisabled;
+                submitPhoneBtn.style.backgroundColor = backgroundColor;
+                submitPhoneBtn.textContent = buttonText;
+                console.log("버튼 상태 복원:", { wasDisabled, backgroundColor, buttonText });
+            }
         } catch (error) {
             console.error("❌ reCAPTCHA 재초기화 실패:", error);
         }
@@ -401,6 +459,8 @@ function startTimer() {
             timerElement.style.color = "red";
             confirmationResult = null; // 인증 정보 초기화
             showToast("인증 시간이 초과되었습니다. 다시 시도해주세요.");
+            // 처리 중 플래그 해제 (타이머 종료 시)
+            isProcessing = false;
         }
         timeLeft--;
     }, 1000);
@@ -447,4 +507,5 @@ function resetUI() {
     // 전역 변수 초기화
     confirmationResult = null;
     formattedPhoneNumber = null;
+    isProcessing = false; // 처리 중 플래그 초기화
 }

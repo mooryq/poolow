@@ -79,6 +79,11 @@ async function loadUserProfile() {
     // authUser 함수를 사용하여 현재 로그인된 사용자 정보 가져오기
     authUser(
         async (userId, userData) => {
+            if (!userData) {
+                console.error("사용자 데이터가 없습니다");
+                return;
+            }
+    
             // 사용자 정보 표시
             const userNameElement = document.querySelector('.userName .name-text');
             const userPhoneElement = document.querySelector('.userPhone');

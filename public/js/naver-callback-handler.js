@@ -1,6 +1,7 @@
 // public/js/naver-callback-handler.js
 import { naverConfig } from "./config.js";
-import { app, auth }       from "./firebase.js";
+import { app, db,auth, saveUserToFirestore }       from "./firebase.js";
+import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-functions.js";
 import { signInWithCustomToken }       from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { showToast }   from "./ui.js";
@@ -21,12 +22,24 @@ async function callCreateNaverToken(rawToken) {
 // Firestore에서 UID로 사용자 찾기
 async function findUserByUID(uid) {
   try {
+    console.log("findUserByUID 호출됨, UID:", uid);
     const usersRef = collection(db, "users");
+
     const q = query(usersRef, where("uids", "array-contains", uid));
+    console.log("쿼리 실행 전");
+    
     const querySnapshot = await getDocs(q);
+    console.log("쿼리 실행 후, 결과 수:", querySnapshot.size);
+
 
     if (!querySnapshot.empty) {
-      return { exists: true, docId: querySnapshot.docs[0].id };
+      const userData = querySnapshot.docs[0].data();
+      console.log("사용자 데이터:", userData);
+      return { 
+        exists: true, 
+        docId: querySnapshot.docs[0].id,
+        data: userData
+      };
     }
     return { exists: false };
   } catch (error) {
@@ -34,6 +47,8 @@ async function findUserByUID(uid) {
     return { exists: false, error };
   }
 }
+
+
 
 // 네이버 로그인 초기화 및 처리
 
@@ -56,8 +71,6 @@ async function initNaverLogin() {
     const photo = typeof user.getProfileImage === "function" ? user.getProfileImage() : (user.profile_image || "");
 
     console.log("✅네이버 사용자 정보:", {userId, name, email, photo});
-    // localStorage.setItem("user", JSON.stringify(userInfo));
-    // localStorage.setItem("loginSuccess", "true");
     
     try{
       // 1) 네이버 SDK에서 token 가져오기
@@ -85,9 +98,9 @@ async function initNaverLogin() {
 
       //3) firebase 인증
       const userCred = await signInWithCustomToken(auth, result.customToken);
-      console.log("✅ Firebase Auth 로그인 성공:", userCred.user.uid);
+      console.log("✅ Firebase Auth 로그인 성공:", userCred.user);
 
-      //4) 사용자 정보 저장
+      //4) 사용자 정보 저장 후 로컬에도 저장
       const userInfo = {
         uid: userId,
         name: typeof user.getName === "function" ? user.getName() : (user.name || ""),
@@ -96,12 +109,21 @@ async function initNaverLogin() {
         provider: "naver"
       };
 
+
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("loginSuccess", "true");
 
       //5) 성공 메시지 및 리다이렉트
-      showToast("로그인되었습니다. 반가워요👋🏻");
-      window.location.href = sessionStorage.getItem('returnUrl') || "index.html";
+      showToast("로그인되었습니다. 반가워요💙");
+      const exists = await findUserByUID(userCred.user.uid);
+
+      if (exists.exists) {
+        window.location.href = sessionStorage.getItem('returnUrl') || "index.html";
+      } else {
+        console.log("🆕 신규 사용자 - 전화번호 인증 페이지로 이동");
+        window.location.href = "phoneForm.html";
+      }
+
     }catch(error){
       console.error("❌ 로그인 처리 중 오류:", error);
       alert("로그인 처리 중 오류가 발생했습니다.: " + error.message);

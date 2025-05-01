@@ -73,18 +73,23 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 
   // Firestore에서 유저 데이터 찾기
   const foundUser = await findUserByUID(currentUID);
-  
-  if (!foundUser) {
+    
+  if (!foundUser.exists) {
     // 사용자 정보가 없으면 phoneForm.html로 리다이렉션
     console.log("🆕 Firestore에서 유저를 찾을 수 없어 phoneForm.html로 이동합니다");
     window.location.href = "phoneForm.html";
     return;
   }
-  
   // 사용자 정보가 있으면 UI 업데이트
   console.log("✅ Firestore에서 유저 찾음:", foundUser);
-  updateUserUI(foundUser.data);
-  });
+
+  // updaateUserUI 함수 호출 시 data 전달
+  if (foundUser.data) {
+    updateUserUI(foundUser.data);
+  } else {
+    console.error("유저 데이터가 없습니다");
+  }
+});
   
   // Firestore에서 UID에 해당하는 사용자 찾기 (기존 함수 유지)
   async function findUserByUID(uid) {
@@ -93,21 +98,42 @@ onAuthStateChanged(auth, async (firebaseUser) => {
       const q = query(usersRef, where("uids", "array-contains", uid));
       const querySnapshot = await getDocs(q);
 
+      
+
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
-        return userData.providers && userData.providers.includes('phone');
-      }
-      return false;
+      const foundUser = {
+        exists: true,
+        verified: userData.providers && userData.providers.includes('phone'),
+        data: userData,
+        phone: querySnapshot.docs[0].id
+      };
+
+      console.log("✅ Firestore에서 유저 찾음:", foundUser);
+      console.log("✅ 유저 데이터:", foundUser.data);
+      
+        // 사용자 데이터와 함께 phone 인증 여부도 반환
+        return foundUser;
+      }    
+      
+      console.log("❌ Firestore에서 유저를 찾을 수 없음");
+      return { exists: false };
     } catch (error) {
       console.error("Firestore 조회 오류:", error);
-      return false;
+      return { exists: false, error };
     }
-  }
+}
+
   
   // 사용자 정보로 UI 업데이트 (기존 함수 유지)
   function updateUserUI(user) {
-    const displayName = user.customName || user.name;
-    document.getElementById("userName").innerHTML = `${displayName} 님`;
+    if (!user) {
+      console.error("유저 데이터가 없습니다");
+      return;
+    }
+    
+    const displayName = user.customName || user.name || '이름 없음';
+    document.getElementById("userName").innerHTML = `${displayName} 님`;  
   }
 
 

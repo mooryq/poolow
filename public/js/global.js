@@ -22,7 +22,7 @@ export function setupReturnUrlForMypage() {
 
 //로그인 인증 함수 
 // auth-util.js
-import { auth, db } from './firebase.js';
+import { auth, db, doc, getDoc } from './firebase.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
@@ -47,8 +47,8 @@ export function authUser(onSuccess, onFailure) {
   console.log("📍 현재 페이지 URL:", window.location.href);
 
   const now = Date.now();
-  if (authCache.isAuthenticated && authCache.timestamp && 
-      (now - authCache.timestamp < authCache.ttl)) {
+  if (authCache.isAuthenticated && authCache.timestamp && authCache.userData && 
+    (now - authCache.timestamp < authCache.ttl)) {
     console.log("✅ 캐시된 인증 정보 사용:", authCache.userId);
     return onSuccess(authCache.userId, authCache.userData);
   }
@@ -219,6 +219,44 @@ async function fetchUserData(uid) {
     return null;
   }
 }
+
+
+
+// async function fetchUserByUID(uid, onSuccess, onFailure) {
+//   try {
+//     //먼저 UID 기반으로 사용자 검색
+//     const userRef = collection(db, "users");
+//     const q = query(userRef, where("uids", "array-contains", uid));
+//     const querySnapshot = await getDocs(q);
+
+//     if (querySnapshot.empty) {
+//       console.warn("📭 사용자 문서 없음:", uid);
+//       onFailure && onFailure();
+//       return;
+//     }
+
+//     // 사용자 문서가 있으면 전화번호 추출
+//     const userInfo=JSON.parse(localStorage.getItem("user")) || {};
+//     const phone = userInfo?.phone;
+//     localStorage.setItem("user", JSON.stringify(userInfo));
+    
+//     //캐시 업데이트
+//     authCache.isAuthenticated = true;
+//     authCache.userId = phone;
+//     authCache.userData = data;
+//     authCache.timestamp = Date.now();
+
+//     onSuccess(phone, data);
+
+//   } catch (e) {
+//     console.error("🔥 getDoc 사용자 정보 조회 실패:", e);
+//     onFailure && onFailure();
+//   }
+//   }
+
+
+
+
 
 // UID로 Firestore에서 사용자 정보 가져오기
 async function fetchUserByUID(uid, onSuccess, onFailure) {
