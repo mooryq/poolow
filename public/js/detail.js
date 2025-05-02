@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // 수영장 설명 생성 - 태그와 주소 정보 포함
     const tags = pool.tags ? pool.tags.join(', ') : '';
-    metaDescription.content = `${pool.name}의 자유수영 시간표, 요금, 주차 정보와 이용자들의 생생한 후기(${reviewCount}개)를 지금 확인해보세요! | ${pool.address}`;
+    metaDescription.content = `${pool.name}의 자유수영 시간표, 요금, 주차 정보와 이용자들의 생생한 후기를 지금 확인해보세요! | ${pool.address}`;
     
     
     // 후기 개수 가져오기
