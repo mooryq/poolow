@@ -55,11 +55,11 @@ async function findUserByUID(uid) {
 async function initNaverLogin() {
   const naverLogin = new naver.LoginWithNaverId(naverConfig);
   naverLogin.init();
-  console.log("✅ 네이버 로그인 초기화 완료");
+  // console.log("✅ 네이버 로그인 초기화 완료");
 
   naverLogin.getLoginStatus(async (status) => {
     if (!status || !naverLogin.user) {
-      console.error("❌ 네이버 로그인 실패 또는 사용자 정보 없음");
+      // console.error("❌ 네이버 로그인 실패 또는 사용자 정보 없음");
       return window.location.href = "login.html";
     }
 
@@ -70,7 +70,7 @@ async function initNaverLogin() {
     const email = typeof user.getEmail === "function" ? user.getEmail() : (user.email || "");
     const photo = typeof user.getProfileImage === "function" ? user.getProfileImage() : (user.profile_image || "");
 
-    console.log("✅네이버 사용자 정보:", {userId, name, email, photo});
+    // console.log("✅네이버 사용자 정보:", {userId, name, email, photo});
     
     try{
       // 1) 네이버 SDK에서 token 가져오기
@@ -78,7 +78,7 @@ async function initNaverLogin() {
                   || naverLogin.oauthParams?.access_token
                   || localStorage.getItem('com.naver.nid.access_token');
       if (!rawToken) {
-        console.error("토큰을 찾을 수 없습니다.");
+        // console.error("토큰을 찾을 수 없습니다.");
         showToast("로그인 토큰 획득 실패");
         return;
       }
@@ -86,11 +86,11 @@ async function initNaverLogin() {
         rawToken = rawToken.split('.')[0];
       }
 
-      console.log("✅ 서버에 보낼 rawToken:", rawToken);
+      // console.log("✅ 서버에 보낼 rawToken:", rawToken);
 
       //2) 서버에 네이버 토큰 보내고 firebase 커스텀 토큰 받아오기  
       const result = await callCreateNaverToken(rawToken);
-      console.log("✅ 서버 응답:", result);
+      // console.log("✅ 서버 응답:", result);
 
       if (!result || !result.customToken) {
         throw new Error("토큰 발급 실패");
@@ -98,7 +98,7 @@ async function initNaverLogin() {
 
       //3) firebase 인증
       const userCred = await signInWithCustomToken(auth, result.customToken);
-      console.log("✅ Firebase Auth 로그인 성공:", userCred.user);
+      // console.log("✅ Firebase Auth 로그인 성공:", userCred.user);
 
       //4) 사용자 정보 저장 후 로컬에도 저장
       const userInfo = {
@@ -108,7 +108,6 @@ async function initNaverLogin() {
         photo: typeof user.getProfileImage === "function" ? user.getProfileImage() : (user.profile_image || ""),
         provider: "naver"
       };
-
 
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("loginSuccess", "true");
@@ -120,12 +119,12 @@ async function initNaverLogin() {
       if (exists.exists) {
         window.location.href = sessionStorage.getItem('returnUrl') || "index.html";
       } else {
-        console.log("🆕 신규 사용자 - 전화번호 인증 페이지로 이동");
+        // console.log("🆕 신규 사용자 - 전화번호 인증 페이지로 이동");
         window.location.href = "phoneForm.html";
       }
 
     }catch(error){
-      console.error("❌ 로그인 처리 중 오류:", error);
+      // console.error("❌ 로그인 처리 중 오류:", error);
       alert("로그인 처리 중 오류가 발생했습니다.: " + error.message);
       setTimeout(() => window.location.href = "login.html", 2000);
     }
@@ -137,7 +136,7 @@ async function initNaverLogin() {
     document.addEventListener('DOMContentLoaded', function() {
       //네이버 SDK가 로드되었는지 확인
       if (typeof naver === 'undefined') {
-        console.error("❌ 네이버 SDK 미로드");
+        // console.error("❌ 네이버 SDK 미로드");
         window.location.href = "login.html";
         return;
       }

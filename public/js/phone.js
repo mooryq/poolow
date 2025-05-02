@@ -12,23 +12,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 임시 저장소에서 사용자 정보 가져오기 (우선 시도)
     let userInfo = JSON.parse(localStorage.getItem("tempUser"));
-    console.log("👤 임시 저장소에서 가져온 사용자 정보:", userInfo);
+    // console.log("👤 임시 저장소에서 가져온 사용자 정보:", userInfo);
 
     // 임시 저장소에서 사용자 정보가 없으면 로컬 스토리지에서 가져오기
     if (!userInfo) {
         userInfo = JSON.parse(localStorage.getItem("user"));
-        console.log("👤 로컬 스토리지에서 가져온 사용자 정보:", userInfo);
+        // console.log("👤 로컬 스토리지에서 가져온 사용자 정보:", userInfo);
     }
     
     // 로그인 되어 있지 않으면 로그인 페이지로 리다이렉션
     if (!userInfo || !userInfo.uid) {
-        console.error("로그인 정보가 없습니다.");
+        // console.error("로그인 정보가 없습니다.");
         showToast("로그인이 필요합니다.");
         window.location.href = "login.html";
         return;
     }
     
-    console.log("👤 현재 유저 정보:", userInfo);
+    // console.log("👤 현재 유저 정보:", userInfo);
     
     // UI 요소
     const phoneSection = document.querySelector('.phone-section');
@@ -53,9 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         try {
             initRecaptcha();
-            console.log("✅ reCAPTCHA 초기화 완료");
+            // console.log("✅ reCAPTCHA 초기화 완료");
         } catch (error) {
-            console.error("❌ reCAPTCHA 초기화 실패:", error);
+            // console.error("❌ reCAPTCHA 초기화 실패:", error);
         }
     }, 1000);
     
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // isProcessing = false; // 인증 코드 화면으로 전환되므로 여기서는 플래그 유지
             
         } catch (error) {
-            console.error("SMS 인증 요청 실패:", error);
+            // console.error("SMS 인증 요청 실패:", error);
             
             // 처리 중 플래그 해제
             isProcessing = false;
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // 중요: 전화번호 인증 전에 사용했던 소셜 계정 정보 가져오기 (백업)
             const originalUser = JSON.parse(localStorage.getItem("user"));
-            console.log("전화번호 인증 전 소셜 계정 정보:", originalUser); // 디버깅용
+            // console.log("전화번호 인증 전 소셜 계정 정보:", originalUser); // 디버깅용
 
             // 인증 코드 검증과 파이어베이스 로그인
             const result = await confirmationResult.confirm(code);
@@ -182,13 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 전화번호 정보
             const phoneForDB = formattedPhoneNumber.replace('+82', '0');
-            console.log("인증된 전화번호:", phoneForDB); // 디버깅용
+            // console.log("인증된 전화번호:", phoneForDB); // 디버깅용
             
             const naverCustomToken = localStorage.getItem("naverCustomToken");
 
             if (naverCustomToken) {
                 await signInWithCustomToken(auth, naverCustomToken);
-                console.log("🔁 소셜 로그인 상태로 복원 완료");
+                // console.log("🔁 소셜 로그인 상태로 복원 완료");
             }
 
             await saveUserToFirestore(phoneForDB, userWithPhoneAuth); // Firestore에 저장
@@ -213,11 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 이전 페이지로 복귀
                 const returnUrl = sessionStorage.getItem('returnUrl') || "index.html";
                 sessionStorage.removeItem('returnUrl');
-                console.log("👉 복귀할 URL:", returnUrl);
+                // console.log("👉 복귀할 URL:", returnUrl);
                 window.location.href = returnUrl;
             }, 1000); // 1초 지연으로 통일
         } catch (error) {
-            console.error("인증 코드 확인 실패:", error);
+            // console.error("인증 코드 확인 실패:", error);
             
             // 에러 메시지 처리
             let errorMessage = "인증에 실패했습니다.";
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     isProcessing = false;
                     resendCodeBtn.disabled = false;
                 } catch (error) {
-                    console.error("인증 코드 재발송 실패:", error);
+                    // console.error("인증 코드 재발송 실패:", error);
                     showToast("인증 코드 재발송에 실패했습니다. 다시 시도해주세요.");
                     
                     // 처리 중 플래그 해제
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }, 1000); // reCAPTCHA 재설정 후 약간 지연시키고 요청
         } catch (error) {
-            console.error("reCAPTCHA 재설정 중 오류:", error);
+            // console.error("reCAPTCHA 재설정 중 오류:", error);
             showToast("인증 코드 재발송에 실패했습니다. 다시 시도해주세요.");
             
             // 처리 중 플래그 해제
@@ -368,14 +368,14 @@ function initRecaptcha() {
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'submitPhone', {
         'size': 'invisible',
         'callback': (response) => {
-            console.log("✅ reCAPTCHA 확인 완료");
+            // console.log("✅ reCAPTCHA 확인 완료");
         },
         'expired-callback': () => {
-            console.log("⚠️ reCAPTCHA 만료됨");
+            // console.log("⚠️ reCAPTCHA 만료됨");
             resetRecaptcha(true); // 버튼 상태 유지
         },
         'error-callback': (error) => {
-            console.error("❌ reCAPTCHA 오류:", error);
+            // console.error("❌ reCAPTCHA 오류:", error);
         }
     });
 }
@@ -395,7 +395,7 @@ function resetRecaptcha(keepButtonState = false) {
         try {
             window.recaptchaVerifier.clear();
         } catch (error) {
-            console.error("reCAPTCHA 초기화 해제 실패:", error);
+            // console.error("reCAPTCHA 초기화 해제 실패:", error);
         }
         window.recaptchaVerifier = null;
     }
@@ -404,17 +404,17 @@ function resetRecaptcha(keepButtonState = false) {
         try {
             // reCAPTCHA 재초기화
             initRecaptcha();
-            console.log("✅ reCAPTCHA 재초기화 완료");
+            // console.log("✅ reCAPTCHA 재초기화 완료");
             
             // 버튼 상태 복원 (유지해야 하는 경우)
             if (keepButtonState && submitPhoneBtn) {
                 submitPhoneBtn.disabled = wasDisabled;
                 submitPhoneBtn.style.backgroundColor = backgroundColor;
                 submitPhoneBtn.textContent = buttonText;
-                console.log("버튼 상태 복원:", { wasDisabled, backgroundColor, buttonText });
+                // console.log("버튼 상태 복원:", { wasDisabled, backgroundColor, buttonText });
             }
         } catch (error) {
-            console.error("❌ reCAPTCHA 재초기화 실패:", error);
+            // console.error("❌ reCAPTCHA 재초기화 실패:", error);
         }
     }, 500);
 }

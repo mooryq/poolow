@@ -99,7 +99,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     poolNameElements.forEach(element => {
         element.textContent = pool.name;
     });
+
+    //페이지 타이틀
+    document.title = `${pool.name} | 자유수영 정보 - 풀로우(Poolow)`;  
     document.querySelector('.address').textContent = `🌊 ${pool.address}`;
+  
+    // meta description 동적 추가
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.name = 'description';
+        document.head.appendChild(metaDescription);
+    }
+    
+    // 수영장 설명 생성 - 태그와 주소 정보 포함
+    const tags = pool.tags ? pool.tags.join(', ') : '';
+    metaDescription.content = `${pool.name}의 자유수영 시간표, 요금, 주차 정보와 이용자들의 생생한 후기(${reviewCount}개)를 지금 확인해보세요! | ${pool.address}`;
+    
     
     // 후기 개수 가져오기
     const reviewsElement = document.getElementById('reviews');

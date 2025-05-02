@@ -118,9 +118,9 @@ export function initReviewModal() {
     openReviewModalBtn.parentNode.replaceChild(newOpenReviewModalBtn, openReviewModalBtn);
     
     newOpenReviewModalBtn.addEventListener("click", () => {
-        console.log("1. 리뷰 작성 버튼 클릭");
-        console.log("2. 현재 URL:", window.location.href);
-        console.log("3. 로그인 상태:", localStorage.getItem("loginSuccess"));
+        // console.log("1. 리뷰 작성 버튼 클릭");
+        // console.log("2. 현재 URL:", window.location.href);
+        // console.log("3. 로그인 상태:", localStorage.getItem("loginSuccess"));
         
         // 현재 URL을 세션 스토리지에 저장
         sessionStorage.setItem('returnUrl', window.location.href);
@@ -129,12 +129,12 @@ export function initReviewModal() {
         authUser(
             (userId) => {
                 // 로그인 되어 있으면 모달 열기
-                console.log("✅ 사용자 인증 확인됨:", userId);
+                // console.log("✅ 사용자 인증 확인됨:", userId);
                 openModal("reviewModal");
             },
             () => {
                 // 비로그인 상태면 알림 표시 후 로그인 페이지로 이동
-                console.log("⛔️ 사용자 인증 실패");
+                // console.log("⛔️ 사용자 인증 실패");
                 alert("로그인 후 이용해 주세요.");
                 window.location.href = "/public/login.html";
             }

@@ -325,11 +325,11 @@ async function fetchUserByUID(uid, onSuccess, onFailure) {
 
 // 페이지 로드 시 세션 정보 담고, my버튼 UI 조정
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log("📄 페이지로드: 인증초기화 시작 😒")
+  // console.log("📄 페이지로드: 인증초기화 시작 😒")
   await initAuth();
   setupReturnUrlForMypage(); // ✅ my 버튼 누를 때 현재 세션 url 정보 저장
   initHeaderUI(); // ✅ my버튼 UI 동기화
-  console.log("📄 페이지 로드: 인증 초기화 완료 😉");
+  // console.log("📄 페이지 로드: 인증 초기화 완료 😉");
 
 });
 

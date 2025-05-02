@@ -109,17 +109,17 @@ onAuthStateChanged(auth, async (firebaseUser) => {
         phone: querySnapshot.docs[0].id
       };
 
-      console.log("✅ Firestore에서 유저 찾음:", foundUser);
-      console.log("✅ 유저 데이터:", foundUser.data);
+      // console.log("✅ Firestore에서 유저 찾음:", foundUser);
+      // console.log("✅ 유저 데이터:", foundUser.data);
       
         // 사용자 데이터와 함께 phone 인증 여부도 반환
         return foundUser;
       }    
       
-      console.log("❌ Firestore에서 유저를 찾을 수 없음");
+      // console.log("❌ Firestore에서 유저를 찾을 수 없음");
       return { exists: false };
     } catch (error) {
-      console.error("Firestore 조회 오류:", error);
+      // console.error("Firestore 조회 오류:", error);
       return { exists: false, error };
     }
 }
@@ -128,7 +128,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   // 사용자 정보로 UI 업데이트 (기존 함수 유지)
   function updateUserUI(user) {
     if (!user) {
-      console.error("유저 데이터가 없습니다");
+      // console.error("유저 데이터가 없습니다");
       return;
     }
     
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const listContainer = document.getElementById("myPool");
   const reviewContainer = document.getElementById("myReview");
 
-  console.log("📄 mypage.js에서 authUser 호출");
+  // console.log("📄 mypage.js에서 authUser 호출");
 
   authUser(
     async (userId) => {
@@ -201,10 +201,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }));
 
       // 디버깅용 로그
-      console.log(`즐겨찾기 ${userData.favorites.length}개, 리뷰 ${userData.reviews.length}개 로드됨`);
+      // console.log(`즐겨찾기 ${userData.favorites.length}개, 리뷰 ${userData.reviews.length}개 로드됨`);
       
     } catch (error) {
-      console.error("데이터 로드 중 오류:", error);
+      // console.error("데이터 로드 중 오류:", error);
     }
   }
 

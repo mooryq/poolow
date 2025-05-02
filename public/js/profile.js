@@ -299,12 +299,12 @@ if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
     try {
       await signOut(auth);
-      console.log("👋 로그아웃 성공");
+      // console.log("👋 로그아웃 성공");
       localStorage.removeItem("user");
       window.location.href = "index.html";
       showToast("👋🏻 또 놀러와요")
     } catch(error) {
-      console.error("❌ 로그아웃 실패:", error);
+      // console.error("❌ 로그아웃 실패:", error);
     }
   });
 }
