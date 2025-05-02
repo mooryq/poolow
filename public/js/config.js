@@ -12,8 +12,10 @@ export const naverConfig = {
 
 // 운영 도메인 목록 (필요에 따라 추가)
 const PROD_HOSTNAMES = [
-  "poolow.com",
-  "www.poolow.com"
+  "poolow.net",
+  "www.poolow.net",
+  "https://poolow.net",
+  "poolow.vercel.app"
 ];
 
 // 현재 환경이 운영환경인지 판별
