@@ -1,5 +1,5 @@
 // public/js/naver-callback-handler.js
-import { naverConfig } from "./config.js";
+import { naverConfig, LOGIN_URL, INDEX_URL, PHONEFORM_URL } from "./config.js";
 import { app, db,auth, saveUserToFirestore }       from "./firebase.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-functions.js";
@@ -60,7 +60,7 @@ async function initNaverLogin() {
   naverLogin.getLoginStatus(async (status) => {
     if (!status || !naverLogin.user) {
       // console.error("❌ 네이버 로그인 실패 또는 사용자 정보 없음");
-      return window.location.href = "login.html";
+      return window.location.href = LOGIN_URL;
     }
 
     //네이버 사용자 정보 가져오기
@@ -117,16 +117,16 @@ async function initNaverLogin() {
       const exists = await findUserByUID(userCred.user.uid);
 
       if (exists.exists) {
-        window.location.href = sessionStorage.getItem('returnUrl') || "index.html";
+        window.location.href = sessionStorage.getItem('returnUrl') || INDEX_URL;
       } else {
         // console.log("🆕 신규 사용자 - 전화번호 인증 페이지로 이동");
-        window.location.href = "phoneForm.html";
+        window.location.href = PHONEFORM_URL;
       }
 
     }catch(error){
       // console.error("❌ 로그인 처리 중 오류:", error);
       alert("로그인 처리 중 오류가 발생했습니다.: " + error.message);
-      setTimeout(() => window.location.href = "login.html", 2000);
+      setTimeout(() => window.location.href = LOGIN_URL, 2000);
     }
   });
 }
@@ -137,7 +137,7 @@ async function initNaverLogin() {
       //네이버 SDK가 로드되었는지 확인
       if (typeof naver === 'undefined') {
         // console.error("❌ 네이버 SDK 미로드");
-        window.location.href = "login.html";
+        window.location.href = LOGIN_URL;
         return;
       }
 

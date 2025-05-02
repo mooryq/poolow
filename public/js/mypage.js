@@ -23,6 +23,7 @@ import {
 import { authUser, } from './global.js';
 import { updateHeaderHeight, showToast } from './ui.js';
 import { ReviewEditListeners } from './addFavRev.js';
+import { LOGIN_URL, PHONEFORM_URL, getPageUrl } from './config.js';
 
 const localUser = JSON.parse(localStorage.getItem("user")); // 네이버 또는 구글 공통
 let unifiedUser = null;
@@ -63,7 +64,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     };
   } else {
     // ❌ 둘 다 로그인 안 된 경우
-    window.location.href = "login.html";
+    window.location.href = LOGIN_URL;
     return;
   }
 
@@ -77,8 +78,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   if (!foundUser.exists) {
     // 사용자 정보가 없으면 phoneForm.html로 리다이렉션
     console.log("🆕 Firestore에서 유저를 찾을 수 없어 phoneForm.html로 이동합니다");
-    window.location.href = "phoneForm.html";
-    return;
+    window.location.href = PHONEFORM_URL;
   }
   // 사용자 정보가 있으면 UI 업데이트
   console.log("✅ Firestore에서 유저 찾음:", foundUser);
@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (myCardElement) {
         const poolId = myCardElement.dataset.poolId;
         if (poolId) {
-          window.location.href = `detail.html?poolId=${poolId}`;
+          window.location.href = getPageUrl('detail.html', { poolId });
           return;
         }
       }
@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (card) {
           const poolId = card.dataset.poolId;
           if (poolId) {
-            window.location.href = `detail.html?poolId=${poolId}`;
+            window.location.href = getPageUrl('detail.html', { poolId });
           }
         }
       }

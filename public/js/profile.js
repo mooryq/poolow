@@ -1,4 +1,5 @@
 import { authUser } from "./global.js";
+import { LOGIN_URL, INDEX_URL } from "./config.js";
 import { updateHeaderHeight, showToast } from "./ui.js";
 import { 
     auth,
@@ -142,7 +143,7 @@ async function loadUserProfile() {
         },
         () => {
             // 로그인 안된 경우 처리
-            window.location.href = "login.html";
+            window.location.href = LOGIN_URL;
         }
     );
 }
@@ -158,7 +159,7 @@ function loadCurrentName() {
         },
         () => {
             // 로그인 안된 경우 처리
-            window.location.href = "login.html";
+            window.location.href = LOGIN_URL;
         }
     );
 }
@@ -190,7 +191,7 @@ const checkNameAvailability = debounce(async function() {
     // 현재 사용자 정보 가져오기
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (!currentUser || !currentUser.uid) {
-        window.location.href = "login.html";
+        window.location.href = LOGIN_URL;
         return;
     }
     
@@ -287,7 +288,7 @@ async function saveNewName() {
         },
         () => {
             showToast("로그인이 필요합니다.");
-            window.location.href = "login.html";
+            window.location.href = LOGIN_URL;
         }
     );
 }
@@ -301,7 +302,7 @@ if (logoutBtn) {
       await signOut(auth);
       // console.log("👋 로그아웃 성공");
       localStorage.removeItem("user");
-      window.location.href = "index.html";
+      window.location.href = INDEX_URL;
       showToast("👋🏻 또 놀러와요")
     } catch(error) {
       // console.error("❌ 로그아웃 실패:", error);

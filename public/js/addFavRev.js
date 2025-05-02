@@ -16,7 +16,7 @@ import { authUser } from "./global.js";
 import { openModal, closeModal, setupModalListeners, showToast} from './ui.js';
 import { resizeImage, uploadReviewImages } from "./resizeImage.js";
 import { query, orderBy, where } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-    
+import { LOGIN_URL } from "./config.js";
 // 전역 변수로 poolData 선언
 let poolData = null;
 
@@ -92,7 +92,7 @@ export function initFavoriteButton(data) {
             },
             () => {
                 showToast("로그인이 필요합니다.");
-                window.location.href = "/public/login.html";
+                window.location.href = LOGIN_URL;
             }
         );
     });
@@ -136,7 +136,7 @@ export function initReviewModal() {
                 // 비로그인 상태면 알림 표시 후 로그인 페이지로 이동
                 // console.log("⛔️ 사용자 인증 실패");
                 alert("로그인 후 이용해 주세요.");
-                window.location.href = "/public/login.html";
+                window.location.href = LOGIN_URL;
             }
         );
     });

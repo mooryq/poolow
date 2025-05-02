@@ -1,3 +1,5 @@
+import { LOGIN_URL, MYPAGE_URL } from "./config.js";
+
 // 마이페이지 링크 세션 저장 설정 함수
 export function setupReturnUrlForMypage() {
   const mypageLink = document.getElementById('mypage');
@@ -12,9 +14,9 @@ export function setupReturnUrlForMypage() {
       // 로그인 상태 확인
       const loginSuccess = localStorage.getItem('loginSuccess');
       if (loginSuccess === 'true') {
-        window.location.href = 'mypage.html'; // 로그인됨 -> 마이페이지로
+        window.location.href = MYPAGE_URL; // 로그인됨 -> 마이페이지로
       } else {
-        window.location.href = 'login.html'; // 로그인 안됨 -> 로그인 페이지로
+        window.location.href = LOGIN_URL; // 로그인 안됨 -> 로그인 페이지로
       }
     });
   }

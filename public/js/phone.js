@@ -1,6 +1,7 @@
 import { auth, saveUserToFirestore } from "./firebase.js";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { showToast } from './ui.js';
+import { LOGIN_URL } from './config.js';
 
 // 전역 변수
 let confirmationResult = null; // SMS 인증 결과를 저장
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!userInfo || !userInfo.uid) {
         // console.error("로그인 정보가 없습니다.");
         showToast("로그인이 필요합니다.");
-        window.location.href = "login.html";
+        window.location.href = LOGIN_URL;
         return;
     }
     

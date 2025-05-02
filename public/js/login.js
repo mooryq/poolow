@@ -1,7 +1,7 @@
 import { auth, provider, db } from "./firebase.js";
 import { signInWithPopup } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import { naverConfig } from "./config.js";
+import { naverConfig, INDEX_URL, PHONEFORM_URL } from "./config.js";
 
 
 // 임시 소셜 로그인 정보 저장
@@ -51,16 +51,16 @@ async function handleRedirectAfterLogin(uid) {
         sessionStorage.removeItem('returnUrl'); // 사용 후 삭제
         window.location.href = returnUrl;
       } else {
-        window.location.href = "index.html";
+        window.location.href = INDEX_URL;
       }
     } else {
       // 사용자가 존재하지 않으면 전화번호 등록 페이지로 이동
       // returnUrl 유지
-      window.location.href = "phoneForm.html";
+      window.location.href = PHONEFORM_URL;
     }
   } catch (error) {
     console.error("리다이렉션 처리 오류:", error);
-    window.location.href = "index.html"; // 오류 시 홈으로
+    window.location.href = INDEX_URL; // 오류 시 홈으로
   }
 }
 
