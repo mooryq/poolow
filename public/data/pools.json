@@ -334,11 +334,13 @@
     "address": "서울 송파구 올림픽로 25 서울종합운동장",
     "shortAddress": "서울 송파구",
     "transportation": [
-      "2호선 종합운동장역 6, 7번출구에서 약 600m",
-      "9호선 종합운동장역 9번 출구에서 약 1,000m "
+      "2호선 종합운동장역 7번 출구에서 600m",
+      "9호선 종합운동장역 9번 출구에서 000m"
     ],
     "tags": [
-      "50m"
+      "25m",
+      "50m",
+      "잠수풀"
     ],
     "off_day": "매주 일요일/공휴일 휴관",
     "lat": 37.5115076,
@@ -346,84 +348,82 @@
     "sessions": {
       "monday": [
         {
-          "num": "①",
-          "time": "13:00 - 15:00"
+          "time": "13:00 - 15:00",
+          "admission": ""
         },
         {
-          "num": "②",
-          "time": "16:00 - 18:00"
+          "time": "16:00 - 18:00",
+          "admission": ""
         }
       ],
       "tuesday": [
         {
-          "num": "①",
-          "time": "13:00 - 15:00"
+          "time": "13:00 - 15:00",
+          "admission": ""
         },
         {
-          "num": "②",
-          "time": "16:00 - 18:00"
+          "time": "16:00 - 18:00",
+          "admission": ""
         }
       ],
       "wednesday": [
         {
-          "num": "①",
-          "time": "13:00 - 15:00"
+          "time": "13:00 - 15:00",
+          "admission": ""
         },
         {
-          "num": "②",
-          "time": "16:00 - 18:00"
+          "time": "16:00 - 18:00",
+          "admission": ""
         }
       ],
       "thursday": [
         {
-          "num": "①",
-          "time": "13:00 - 15:00"
+          "time": "13:00 - 15:00",
+          "admission": ""
         },
         {
-          "num": "②",
-          "time": "16:00 - 18:00"
+          "time": "16:00 - 18:00",
+          "admission": ""
         }
       ],
       "friday": [
         {
-          "num": "①",
-          "time": "13:00 - 15:00"
+          "time": "13:00 - 15:00",
+          "admission": ""
         },
         {
-          "num": "②",
-          "time": "16:00 - 18:00"
+          "time": "16:00 - 18:00",
+          "admission": ""
         }
       ],
       "saturday": [
         {
-          "num": "①",
-          "time": "09:00 - 12:00"
+          "time": "09:00 - 12:00",
+          "admission": ""
         },
         {
-          "num": "②",
-          "time": "13:00 - 17:00"
+          "time": "13:00 - 17:00",
+          "admission": ""
         }
       ],
       "sunday": []
     },
     "charge": {
-      "weekday": [
-        "성인: 4,000원",
-        "청소년: 3,000원",
-        "어린이: 2,000원"
-      ],
-      "weekend": [
-        "성인: 5,200원",
-        "청소년: 3,900원",
-        "어린이: 2,600원"
-      ]
+      "weekday": [],
+      "weekend": [],
+      "member-weekday": [],
+      "member-weekend": []
     },
     "website": "https://stadium.seoul.go.kr/lecture/fee",
     "phone": "02-2180-3743",
     "parking": [
       "잠실종합운동장 부설주차장 이용",
       "5분당 200원"
-    ]
+    ],
+    "addressRoad": "",
+    "information": [],
+    "createdAt": "2025-05-04T00:45:10.454Z",
+    "updatedAt": "2025-05-04T00:45:10.478Z"
   },
   {
     "id": 4,
@@ -431,93 +431,87 @@
     "address": "서울 성동구 왕십리로11길 19",
     "addressRoad": "서울 성수동 1가 685-63",
     "transportation": [
-      "2호선 뚝섬역 1번출구 도보5분",
-      "분당선 서울숲역 4번 출구 300m 도보9분"
+      "분당선 서울숲역 4번 출구 300m 도보9분호선 서울숲역 4번 출구에서 300m"
     ],
     "tags": [
-      "25m"
+      "25m",
+      "어린이풀"
     ],
     "off_day": "매주 일요일 정기 휴관",
-    "lat": 37.563322,
-    "lng": 127.0416,
+    "lat": 37.5494903,
+    "lng": 127.0415215,
     "sessions": {
       "monday": [
         {
           "time": "12:10 - 13:00",
-          "admission": "11:50 - 12:20"
+          "admission": ""
         },
         {
           "time": "13:10 - 14:00",
-          "admission": "12:50 - 13:20"
+          "admission": ""
         }
       ],
       "tuesday": [
         {
           "time": "12:10 - 13:00",
-          "admission": "11:50 - 12:20"
+          "admission": ""
         },
         {
           "time": "13:10 - 14:00",
-          "admission": "12:50 - 13:20"
+          "admission": ""
         }
       ],
       "wednesday": [
         {
           "time": "12:10 - 13:00",
-          "admission": "11:50 - 12:20"
+          "admission": ""
         },
         {
           "time": "13:10 - 14:00",
-          "admission": "12:50 - 13:20"
+          "admission": ""
         }
       ],
       "thursday": [
         {
           "time": "12:10 - 13:00",
-          "admission": "11:50 - 12:20"
+          "admission": ""
         },
         {
           "time": "13:10 - 14:00",
-          "admission": "12:50 - 13:20"
+          "admission": ""
         }
       ],
       "friday": [
         {
           "time": "12:10 - 13:00",
-          "admission": "11:50 - 12:20"
+          "admission": ""
         },
         {
           "time": "13:10 - 14:00",
-          "admission": "12:50 - 13:20"
+          "admission": ""
         }
       ],
       "saturday": [
         {
           "time": "16:10 - 17:00",
-          "admission": "15:50 ~ 16:10"
+          "admission": ""
         },
         {
           "time": "17:10 - 18:00",
-          "admission": "16:50 ~ 17:10"
+          "admission": ""
         },
         {
           "time": "18:10 - 19:00",
-          "admission": "17:50 ~ 18:10"
+          "admission": ""
         }
       ],
       "sunday": []
     },
     "charge": {
-      "weekday": [
-        "성인: 4,000원",
-        "중,고생: 2,500원",
-        "유아,초등: 2,000원"
-      ],
-      "weekend": [
-        "성인: 4,000원",
-        "중,고생: 2,500원",
-        "유아,초등: 2,000원"
-      ]
+      "weekday": [],
+      "weekend": [],
+      "member-weekday": [],
+      "member-weekend": []
     },
     "website": "https://sports.happysd.or.kr/fmcs/38",
     "phone": "02-2204-6600",
@@ -537,7 +531,9 @@
       "<li>토요일 자유수영 1부+2부 연속 등록 불가(2부+3부 연속 등록 가능)</li>",
       "<li>대기번호표 수령 후 1회차(16:10), 2회차(17:10), 3회차(18:10)까지 결제 및 발권 완료시에만 입장 유효</li>",
       "<li>자유수영 결제 및 발권은 3층 안내데스크 옆 키오스크에서만 가능합니다.</li>"
-    ]
+    ],
+    "createdAt": "2025-05-04T01:05:44.618Z",
+    "updatedAt": "2025-05-04T01:05:44.623Z"
   },
   {
     "id": 5,
@@ -1162,5 +1158,671 @@
     "lat": 37.491823,
     "lng": 127.0215488,
     "id": 11
+  },
+  {
+    "name": "성일스포렉스",
+    "addressRoad": "서울 강동구 성내로15길 33",
+    "address": "서울 강동구 성내동 531",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "8호선 강동구청 2번 출구에서 723m"
+    ],
+    "off_day": "",
+    "website": "https://heness.imweb.me/31/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=12867380&t=board",
+    "phone": "",
+    "parking": [],
+    "information": [
+      "일요일 1부 (9시-11시50분)는 장비 사용 전용 시간대입니다.",
+      "일요일 3부 (4시-5시50분)는 영상 촬영이 가능합니다.",
+      "일요일 3부 입장 금액은 3만원입니다.",
+      "어린이는 2부에만 입장 가능합니다.",
+      "공휴일은 토요일 시간표를 따릅니다."
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "08:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "09:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 15:50",
+          "admission": ""
+        },
+        {
+          "time": "16:00 - 17:50",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 15000원",
+        "어린이: 10000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T00:26:11.086Z",
+    "updatedAt": "2025-05-04T00:26:11.086Z",
+    "lat": 37.5295144,
+    "lng": 127.128504,
+    "id": 12
+  },
+  {
+    "name": "고덕어울림수영장",
+    "addressRoad": "서울 강동구 고덕로 399 센트럴 푸르지오 지하1층",
+    "address": "서울 강동구 고덕동 210-1",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "5호선 상일동 4번 출구에서 215m"
+    ],
+    "off_day": "일요일 휴관",
+    "website": "https://online.igangdong.or.kr/sindex.do?icode=4004",
+    "phone": "",
+    "parking": [
+      "2시간 무료주차"
+    ],
+    "information": [
+      "일요일 휴관"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "weekend": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T00:48:17.645Z",
+    "updatedAt": "2025-05-04T00:48:17.645Z",
+    "lat": 37.5577308,
+    "lng": 127.1701747,
+    "id": 13
+  },
+  {
+    "name": "온조대왕문화체육관",
+    "addressRoad": "서울 강동구 고덕로 295 고덕평생학습관",
+    "address": "서울 강동구 고덕동 296",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "5호선 고덕역 4번 출구에서 370m"
+    ],
+    "off_day": "일요일 휴관",
+    "website": "",
+    "phone": "",
+    "parking": [],
+    "information": [
+      "일요일 휴관"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "09:00 - 10:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "09:00 - 10:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "weekend": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T00:50:53.931Z",
+    "updatedAt": "2025-05-04T00:50:53.931Z",
+    "lat": 37.5561244,
+    "lng": 127.158011,
+    "id": 14
+  },
+  {
+    "name": "강동유소년스포츠센터",
+    "addressRoad": "서울 강동구 상일로12길 60",
+    "address": "서울 강동구 상일동 483",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "5호선 강일역 4번 출구에서 310m"
+    ],
+    "off_day": "",
+    "website": "https://online.igangdong.or.kr/sindex.do?icode=4004",
+    "phone": "",
+    "parking": [],
+    "information": [
+      "토요일만 자유수영 운영"
+    ],
+    "sessions": {
+      "saturday": [
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:00 - 16:50",
+          "admission": ""
+        }
+      ],
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T00:52:01.058Z",
+    "updatedAt": "2025-05-04T00:52:01.058Z",
+    "lat": 37.5552849,
+    "lng": 127.1742302,
+    "id": 15
+  },
+  {
+    "name": "송파구체육문화회관 수영장",
+    "addressRoad": "서울 송파구 양산로 15",
+    "address": "서울 송파구 거여동 289",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "5호선 거여역 7번 출구에서 270m"
+    ],
+    "off_day": "",
+    "website": "https://www.sgsc.or.kr/bbs/content.php?co_id=03_06_01",
+    "phone": "",
+    "parking": [],
+    "information": [
+      "비회원 자유수영 토요일만 가능"
+    ],
+    "sessions": {
+      "saturday": [
+        {
+          "time": "13:10 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:10 - 16:50",
+          "admission": ""
+        }
+      ],
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 5000원",
+        "청소년: 4500원",
+        "어린이: 3500원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T00:54:20.455Z",
+    "updatedAt": "2025-05-04T00:54:20.455Z",
+    "lat": 37.4907262,
+    "lng": 127.1428442,
+    "id": 16
+  },
+  {
+    "name": "성동구민종합체육센터 수영장",
+    "addressRoad": "서울특별시 성동구 왕십리로 89",
+    "address": "성수1가 685-697번지",
+    "tags": [
+      "25m",
+      "어린이풀"
+    ],
+    "transportation": [
+      "2호선 뚝섬 8번 출구에서 350m",
+      "분당호선 서울숲 4번 출구에서 300m"
+    ],
+    "off_day": "매주 일요일, 법정공휴일 정기휴관",
+    "website": "https://sports.happysd.or.kr/fmcs/18",
+    "phone": "02-2204-7600",
+    "parking": [
+      "성동구민종합체육센터 부설주차장",
+      "5분당 350원",
+      "부설주차장은 회원우선주차장으로 만차시 회원 우선 입차"
+    ],
+    "information": [
+      "토요일만 자유수영 운영",
+      "매주 일요일, 법정공휴일 정기휴관"
+    ],
+    "sessions": {
+      "saturday": [
+        {
+          "time": "17:00 - 18:30",
+          "admission": ""
+        }
+      ],
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 5300원",
+        "청소년: 3800원",
+        "어린이: 2700원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T01:06:16.555Z",
+    "updatedAt": "2025-05-04T01:06:16.559Z",
+    "lat": 37.5458701,
+    "lng": 127.0440144,
+    "id": 17
+  },
+  {
+    "name": "열린금호교육문화관",
+    "addressRoad": "서울특별시 성동구 무수막길 69",
+    "address": "금호2가 511번지",
+    "tags": [
+      "25m",
+      "어린이풀"
+    ],
+    "transportation": [
+      "5호선 신금호 5번 출구에서 300m"
+    ],
+    "off_day": "자유수영 토요일만 운영\n매주 일요일, 법정 공휴일 정기휴관",
+    "website": "https://sports.happysd.or.kr/fmcs/71",
+    "phone": "",
+    "parking": [
+      "공영노외 금호초등학교(건물)",
+      "주차가능면 34면"
+    ],
+    "information": [
+      "매주 일요일, 법정 공휴일 정기휴관"
+    ],
+    "sessions": {
+      "saturday": [
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 4000원",
+        "청소년: 2500원",
+        "어린이: 2000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T01:18:55.682Z",
+    "updatedAt": "2025-05-04T01:18:55.682Z",
+    "lat": 37.5527068,
+    "lng": 127.0198751,
+    "id": 18
+  },
+  {
+    "name": "마장국민체육센터",
+    "addressRoad": "서울특별시 성동구 마조로 11길 6",
+    "address": "마장동 399-98",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [],
+    "off_day": "일요일 및 법정공휴일 휴관",
+    "website": "https://sports.happysd.or.kr/fmcs/102",
+    "phone": "02-2204-7640",
+    "parking": [],
+    "information": [
+      "일요일 및 법정공휴일 휴관"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        },
+        {
+          "time": "16:00 - 16:50",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [
+        "성인: 4000원"
+      ],
+      "weekend": [
+        "성인: 4000원",
+        "청소년: 2500원",
+        "어린이: 2000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T01:21:33.501Z",
+    "updatedAt": "2025-05-04T01:21:33.501Z",
+    "lat": 37.5621277,
+    "lng": 127.0407835,
+    "id": 19
+  },
+  {
+    "name": "성동구립용답체육센터",
+    "addressRoad": "서울특별시 천호대로 78길 15-48",
+    "address": "성동구 용답동 223-5",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [],
+    "off_day": "자유수영 토요일만 운영",
+    "website": "https://sports.happysd.or.kr/fmcs/121",
+    "phone": "02-2204-6620",
+    "parking": [
+      "공영노외 용답제2(주차가능면 35)",
+      "기본 요금(시간) : 150원/5분",
+      "추가 요금(시간) : 150원/5분"
+    ],
+    "information": [],
+    "sessions": {
+      "saturday": [
+        {
+          "time": "07:00 - 07:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        },
+        {
+          "time": "16:00 - 16:50",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 4000원",
+        "청소년: 2500원",
+        "어린이: 2000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T01:32:18.174Z",
+    "updatedAt": "2025-05-04T01:32:18.174Z",
+    "lat": 37.5618304,
+    "lng": 127.057059,
+    "id": 20
   }
 ]
