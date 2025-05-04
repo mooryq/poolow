@@ -331,20 +331,19 @@
   {
     "id": 3,
     "name": "잠실 제1수영장",
-    "address": "서울 송파구 올림픽로 25 서울종합운동장",
+    "address": "서울 송파구 잠실동 10 서울종합운동장",
     "shortAddress": "서울 송파구",
     "transportation": [
       "2호선 종합운동장역 7번 출구에서 600m",
-      "9호선 종합운동장역 9번 출구에서 000m"
+      "9호선 종합운동장역 9번 출구에서 540m"
     ],
     "tags": [
       "25m",
-      "50m",
       "잠수풀"
     ],
     "off_day": "매주 일요일/공휴일 휴관",
-    "lat": 37.5115076,
-    "lng": 127.0731861,
+    "lat": 37.5148022,
+    "lng": 127.0736261,
     "sessions": {
       "monday": [
         {
@@ -409,8 +408,16 @@
       "sunday": []
     },
     "charge": {
-      "weekday": [],
-      "weekend": [],
+      "weekday": [
+        "성인: 4000원",
+        "청소년: 3000원",
+        "어린이: 2000원"
+      ],
+      "weekend": [
+        "성인: 5200원",
+        "청소년: 3900원",
+        "어린이: 2600원"
+      ],
       "member-weekday": [],
       "member-weekend": []
     },
@@ -420,16 +427,18 @@
       "잠실종합운동장 부설주차장 이용",
       "5분당 200원"
     ],
-    "addressRoad": "",
-    "information": [],
-    "createdAt": "2025-05-04T00:45:10.454Z",
-    "updatedAt": "2025-05-04T00:45:10.478Z"
+    "addressRoad": "서울 송파구 올림픽로 25",
+    "information": [
+      "자유수영 월 회원권 등록시 토요일 자유수영 무료입장"
+    ],
+    "createdAt": "2025-05-04T01:56:07.439Z",
+    "updatedAt": "2025-05-04T01:56:07.441Z"
   },
   {
     "id": 4,
     "name": "서울숲복합문화체육센터",
-    "address": "서울 성동구 왕십리로11길 19",
-    "addressRoad": "서울 성수동 1가 685-63",
+    "address": "서울 성수동 1가 685-63",
+    "addressRoad": "서울 성동구 왕십리로11길 19",
     "transportation": [
       "분당선 서울숲역 4번 출구 300m 도보9분호선 서울숲역 4번 출구에서 300m"
     ],
@@ -438,8 +447,8 @@
       "어린이풀"
     ],
     "off_day": "매주 일요일 정기 휴관",
-    "lat": 37.5494903,
-    "lng": 127.0415215,
+    "lat": 37.5490719,
+    "lng": 127.0415013,
     "sessions": {
       "monday": [
         {
@@ -491,20 +500,7 @@
           "admission": ""
         }
       ],
-      "saturday": [
-        {
-          "time": "16:10 - 17:00",
-          "admission": ""
-        },
-        {
-          "time": "17:10 - 18:00",
-          "admission": ""
-        },
-        {
-          "time": "18:10 - 19:00",
-          "admission": ""
-        }
-      ],
+      "saturday": [],
       "sunday": []
     },
     "charge": {
@@ -532,8 +528,8 @@
       "<li>대기번호표 수령 후 1회차(16:10), 2회차(17:10), 3회차(18:10)까지 결제 및 발권 완료시에만 입장 유효</li>",
       "<li>자유수영 결제 및 발권은 3층 안내데스크 옆 키오스크에서만 가능합니다.</li>"
     ],
-    "createdAt": "2025-05-04T01:05:44.618Z",
-    "updatedAt": "2025-05-04T01:05:44.623Z"
+    "createdAt": "2025-05-04T06:04:38.959Z",
+    "updatedAt": "2025-05-04T06:04:38.961Z"
   },
   {
     "id": 5,
@@ -1276,19 +1272,21 @@
     "addressRoad": "서울 강동구 고덕로 399 센트럴 푸르지오 지하1층",
     "address": "서울 강동구 고덕동 210-1",
     "tags": [
-      "25m"
+      "25m",
+      "어린이풀"
     ],
     "transportation": [
       "5호선 상일동 4번 출구에서 215m"
     ],
-    "off_day": "일요일 휴관",
+    "off_day": "일요일, 공휴일, 명절 휴관",
     "website": "https://online.igangdong.or.kr/sindex.do?icode=4004",
-    "phone": "",
+    "phone": "02-2045-7630",
     "parking": [
-      "2시간 무료주차"
+      "고덕센트럴푸르지오 상가 주차장",
+      "안내데스크에서 시설 이용 확인 후 2시간 무료주차 적용"
     ],
     "information": [
-      "일요일 휴관"
+      "일요일, 공휴일, 명절 휴관"
     ],
     "sessions": {
       "monday": [
@@ -1356,8 +1354,8 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T00:48:17.645Z",
-    "updatedAt": "2025-05-04T00:48:17.645Z",
+    "createdAt": "2025-05-04T02:05:35.526Z",
+    "updatedAt": "2025-05-04T02:05:35.528Z",
     "lat": 37.5577308,
     "lng": 127.1701747,
     "id": 13
@@ -1469,10 +1467,13 @@
     "transportation": [
       "5호선 강일역 4번 출구에서 310m"
     ],
-    "off_day": "",
+    "off_day": "토요일만 자유수영 운영",
     "website": "https://online.igangdong.or.kr/sindex.do?icode=4004",
-    "phone": "",
-    "parking": [],
+    "phone": "02-3428-7979",
+    "parking": [
+      "주차장 협소(19면)",
+      "센터 이용시 무료 주차"
+    ],
     "information": [
       "토요일만 자유수영 운영"
     ],
@@ -1504,8 +1505,8 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T00:52:01.058Z",
-    "updatedAt": "2025-05-04T00:52:01.058Z",
+    "createdAt": "2025-05-04T02:09:05.368Z",
+    "updatedAt": "2025-05-04T02:09:05.369Z",
     "lat": 37.5552849,
     "lng": 127.1742302,
     "id": 15
@@ -1563,8 +1564,8 @@
   },
   {
     "name": "성동구민종합체육센터 수영장",
-    "addressRoad": "서울특별시 성동구 왕십리로 89",
-    "address": "성수1가 685-697번지",
+    "addressRoad": "서울 성동구 왕십리로 89",
+    "address": "서울 성동구 성수1가 685-697번지",
     "tags": [
       "25m",
       "어린이풀"
@@ -1609,16 +1610,16 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T01:06:16.555Z",
-    "updatedAt": "2025-05-04T01:06:16.559Z",
+    "createdAt": "2025-05-04T01:56:43.336Z",
+    "updatedAt": "2025-05-04T01:56:43.338Z",
     "lat": 37.5458701,
     "lng": 127.0440144,
     "id": 17
   },
   {
     "name": "열린금호교육문화관",
-    "addressRoad": "서울특별시 성동구 무수막길 69",
-    "address": "금호2가 511번지",
+    "addressRoad": "서울 성동구 무수막길 69",
+    "address": "서울 성동구 금호2가 511번지",
     "tags": [
       "25m",
       "어린이풀"
@@ -1660,16 +1661,16 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T01:18:55.682Z",
-    "updatedAt": "2025-05-04T01:18:55.682Z",
+    "createdAt": "2025-05-04T01:56:55.596Z",
+    "updatedAt": "2025-05-04T01:56:55.598Z",
     "lat": 37.5527068,
     "lng": 127.0198751,
     "id": 18
   },
   {
     "name": "마장국민체육센터",
-    "addressRoad": "서울특별시 성동구 마조로 11길 6",
-    "address": "마장동 399-98",
+    "addressRoad": "서울 성동구 마조로 11길 6",
+    "address": "서울 성동구 마장동 399-98",
     "tags": [
       "25m"
     ],
@@ -1744,16 +1745,16 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T01:21:33.501Z",
-    "updatedAt": "2025-05-04T01:21:33.501Z",
+    "createdAt": "2025-05-04T01:57:05.414Z",
+    "updatedAt": "2025-05-04T01:57:05.416Z",
     "lat": 37.5621277,
     "lng": 127.0407835,
     "id": 19
   },
   {
     "name": "성동구립용답체육센터",
-    "addressRoad": "서울특별시 천호대로 78길 15-48",
-    "address": "성동구 용답동 223-5",
+    "addressRoad": "서울 성동구 천호대로 78길 15-48",
+    "address": "서울 성동구 용답동 223-5",
     "tags": [
       "25m"
     ],
@@ -1819,10 +1820,1333 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T01:32:18.174Z",
-    "updatedAt": "2025-05-04T01:32:18.174Z",
+    "createdAt": "2025-05-04T01:57:39.097Z",
+    "updatedAt": "2025-05-04T01:57:39.099Z",
     "lat": 37.5618304,
     "lng": 127.057059,
     "id": 20
+  },
+  {
+    "name": "천호어울림수영장",
+    "addressRoad": "서울 강동구 올림픽로80길 60 천호2주민센터",
+    "address": "서울 강동구 천호동 422-12 천호2주민센터",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [],
+    "off_day": "일요일, 법정공휴일, 신정, 설연휴, 추석연휴 정기휴무",
+    "website": "https://www.igangdong.or.kr/page/ch/ch_140201.asp",
+    "phone": "02-2045-7690",
+    "parking": [
+      "천호2동 복합청사 공영주차장",
+      "유료주차(5분당 250원)"
+    ],
+    "information": [
+      "일요일, 법정공휴일, 신정, 설연휴, 추석연휴 정기휴무"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "weekend": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T02:13:37.410Z",
+    "updatedAt": "2025-05-04T02:13:37.410Z",
+    "lat": 37.5424126,
+    "lng": 127.1283236,
+    "id": 21
+  },
+  {
+    "name": "강일구민체육센터",
+    "addressRoad": "서울 강동구 아리수로93길 51",
+    "address": "서울 강동구 강일동 665-5",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [],
+    "off_day": "일요일, 법정공휴일, 신정, 설연휴, 추석연휴 정기휴관",
+    "website": "",
+    "phone": "02-2045-7670",
+    "parking": [
+      "지하주차장",
+      "회원 한정 무료주차 30분",
+      "5분당 150원"
+    ],
+    "information": [
+      "2025. 5. 12. ~ 5. 24. 시범운영기간",
+      "2025. 6. 2 ~ 정상운영입니다.",
+      "시범운영 기간 자유수영 1일 1회 이용가능"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "10:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "10:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "10:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "10:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "10:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "10:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "weekend": [
+        "성인: 4400원",
+        "청소년: 3500원",
+        "어린이: 3000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T02:19:37.705Z",
+    "updatedAt": "2025-05-04T02:19:37.705Z",
+    "lat": 37.5668072,
+    "lng": 127.172634,
+    "id": 22
+  },
+  {
+    "name": "광진문화예술회관",
+    "addressRoad": "서울 광진구 능동로 76 광진문화예술회관",
+    "address": "서울 광진구 자양동 227-344",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "2호선 건대입구역 5번 출구에서 150m",
+      "7호선 건대입구역 4번 출구에서 150m"
+    ],
+    "off_day": "둘째/넷째 일요일 및 법정공휴일 정기 휴관",
+    "website": "https://booking.gwangjin.or.kr/fmcs/102?action=read&action-value=c12957df42826f1508a86ef108295670&search_word=%EC%9E%90%EC%9C%A0%EC%88%98%EC%98%81&page_size=20&search_field=ALL",
+    "phone": "",
+    "parking": [
+      "자체 주차장",
+      "자유수영시 3시간 3,000원",
+      "(초과시 10분당 500원)"
+    ],
+    "information": [
+      "평일 자유수영은 초보자/어린이 이용이 제한됩니다.",
+      "토요일 1부(9시-9시50분)는 주2회 강습회원 전용시간입니다.",
+      "티켓팅 및 입장시간은 각 부별 시작시간 20분전부터 가능"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "10:30 - 11:20",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "09:00 - 09:50",
+          "admission": ""
+        },
+        {
+          "time": "10:30 - 11:20",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [
+        "성인: 3500원",
+        "청소년: 2500원"
+      ],
+      "weekend": [
+        "성인: 3500원",
+        "청소년: 2500원",
+        "어린이: 2000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T05:13:25.042Z",
+    "updatedAt": "2025-05-04T05:13:25.044Z",
+    "lat": 37.5374246,
+    "lng": 127.070453,
+    "id": 23
+  },
+  {
+    "name": "광진구민체육센터",
+    "addressRoad": "서울 광진구 구천면로 14",
+    "address": "서울 광진구 광장동 313-3",
+    "tags": [
+      "25m",
+      "어린이풀"
+    ],
+    "transportation": [],
+    "off_day": "",
+    "website": "https://booking.gwangjin.or.kr/fmcs/102?action=read&action-value=fb3bae3c70e9d197f3e1c63bd52fd44e&search_word=%EC%9E%90%EC%9C%A0%EC%88%98%EC%98%81&page_size=20&search_field=ALL",
+    "phone": "",
+    "parking": [
+      "자유수영시 주차 3시간에 3,000원",
+      "이후 10만당 500원"
+    ],
+    "information": [
+      "티켓발권 20분 전부터 가능",
+      "토요일 1부(9시-9시50분)는 화/목반 회원 전용 시간대입니다."
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "10:30 - 11:20",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "09:00 - 09:50",
+          "admission": ""
+        },
+        {
+          "time": "10:30 - 11:20",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [
+        "성인: 3500원",
+        "청소년: 2500원",
+        "어린이: 2000원"
+      ],
+      "weekend": [
+        "성인: 3500원",
+        "청소년: 2500원",
+        "어린이: 2000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T05:11:32.422Z",
+    "updatedAt": "2025-05-04T05:11:32.425Z",
+    "lat": 37.5460013,
+    "lng": 127.1068712,
+    "id": 24
+  },
+  {
+    "name": "중곡문화체육센터",
+    "addressRoad": "서울 광진구 능동로 433",
+    "address": "서울 광진구 중곡동 168-8",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "7호선 중곡역 4번 출구에서 120m"
+    ],
+    "off_day": "매월 1,3번째 일요일, 법정공휴일 정기휴무",
+    "website": "https://booking.gwangjin.or.kr/fmcs/102?action=read&action-value=64bb67d288379d927f222e09815de51c&search_word=%EC%9E%90%EC%9C%A0%EC%88%98%EC%98%81&page_size=20&search_field=ALL",
+    "phone": "02-3408-4900",
+    "parking": [
+      "중곡문화체육센터내 주차장(협소)",
+      "일일 자유수영시 주차비 3천원 (초과시 10분당 500원)",
+      "20분 전부터 발권 가능"
+    ],
+    "information": [
+      "평일 자유수영 25미터 완영 가능자만, 어린이는 입장불가",
+      "토요일 1부 (9시-9시50분)는 화/목 강습회원 전용 시간입니다"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "10:30 - 11:20",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "09:00 - 09:50",
+          "admission": ""
+        },
+        {
+          "time": "10:30 - 11:20",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [
+        "성인: 3500원",
+        "청소년: 2500원"
+      ],
+      "weekend": [
+        "성인: 3500원",
+        "청소년: 2500원",
+        "어린이: 2000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T05:22:37.011Z",
+    "updatedAt": "2025-05-04T05:22:37.014Z",
+    "lat": 37.5678607,
+    "lng": 127.0849273,
+    "id": 25
+  },
+  {
+    "name": "강남스포츠문화센터",
+    "addressRoad": "서울 강남구 밤고개로1길 52",
+    "address": "서울 강남구 수서동 718",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "3호선 수서역 3번 출구에서 370m"
+    ],
+    "off_day": "첫째 주, 셋째 주, 다섯째 주 일요일과 법정휴일 정기휴관",
+    "website": "https://life.gangnam.go.kr/fmcs/341",
+    "phone": "02-2176-0803",
+    "parking": [
+      "센터 내 주차 무료"
+    ],
+    "information": [
+      "첫째 주, 셋째 주, 다섯째 주 일요일과 법정휴일 정기휴관",
+      "강습시작 20분 전 회원카드 또는 일일입장권을 입장게이트에 태그 후 입장"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "12:30 - 13:20",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "16:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "12:30 - 13:20",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "16:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "12:30 - 13:20",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "16:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "12:30 - 13:20",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "16:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "12:30 - 13:20",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "16:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "06:30 - 07:20",
+          "admission": ""
+        },
+        {
+          "time": "07:30 - 08:20",
+          "admission": ""
+        },
+        {
+          "time": "09:30 - 10:20",
+          "admission": ""
+        },
+        {
+          "time": "09:30 - 10:20",
+          "admission": ""
+        },
+        {
+          "time": "10:30 - 11:20",
+          "admission": ""
+        },
+        {
+          "time": "11:30 - 12:20",
+          "admission": ""
+        },
+        {
+          "time": "12:30 - 13:20",
+          "admission": ""
+        },
+        {
+          "time": "14:30 - 15:20",
+          "admission": ""
+        },
+        {
+          "time": "15:30 - 16:20",
+          "admission": ""
+        },
+        {
+          "time": "16:30 - 17:20",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "09:30 - 10:20",
+          "admission": ""
+        },
+        {
+          "time": "10:30 - 10:20",
+          "admission": ""
+        },
+        {
+          "time": "11:30 - 12:20",
+          "admission": ""
+        },
+        {
+          "time": "13:30 - 14:20",
+          "admission": ""
+        },
+        {
+          "time": "14:30 - 15:20",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [
+        "성인: 5000원"
+      ],
+      "weekend": [
+        "성인: 5000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T05:35:27.220Z",
+    "updatedAt": "2025-05-04T05:35:27.220Z",
+    "lat": 37.4890024,
+    "lng": 127.1052805,
+    "id": 26
+  },
+  {
+    "name": "자곡문화센터",
+    "addressRoad": "서울 강남구 자곡로 100",
+    "address": "서울 강남구 자곡동 628",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [],
+    "off_day": "주말과 공휴일 휴관",
+    "website": "",
+    "phone": "02-6712-0580",
+    "parking": [
+      "센터 내 주차장",
+      "일일수영 이용시 150분 무료주차 할인도장"
+    ],
+    "information": [
+      "평일만 자유수영 운영",
+      "일일 자유수영은 운영시간 20분전부터 현장 구매, 30분전부터 번호표 배부"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [
+        "성인: 5000원"
+      ],
+      "weekend": [
+        "성인: 5000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T05:41:19.769Z",
+    "updatedAt": "2025-05-04T05:41:19.769Z",
+    "lat": 37.4714961,
+    "lng": 127.0944958,
+    "id": 27
+  },
+  {
+    "name": "강남주민편익시설",
+    "addressRoad": "서울 강남구 남부순환로 3318 강남주민편익시설",
+    "address": "서울 강남구 일원동 4-1",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [],
+    "off_day": "일요일, 법정공휴일, 대체공휴일 정기휴관",
+    "website": "https://ykasports.com/program/2",
+    "phone": "02-3412-2171",
+    "parking": [
+      "센터 이용시 3시간 무료주차"
+    ],
+    "information": [
+      "일일수영은 토요일만 가능합니다\r"
+    ],
+    "sessions": {
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "saturday": [
+        {
+          "time": "10:20 - 12:00",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:00",
+          "admission": ""
+        },
+        {
+          "time": "15:20 - 17:00",
+          "admission": ""
+        }
+      ],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 6000원",
+        "청소년: 5000원",
+        "어린이: 4000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T05:47:41.793Z",
+    "updatedAt": "2025-05-04T05:47:41.793Z",
+    "lat": 37.4942316,
+    "lng": 127.0935988,
+    "id": 28
+  },
+  {
+    "name": "서일체육문화센터",
+    "addressRoad": "서울 서초구 서운로21길 2 서일체육문화센터",
+    "address": "서울 서초구 서초동 1313",
+    "tags": [
+      "25m",
+      "어린이풀"
+    ],
+    "transportation": [
+      "2호선 강남역 10번 출구에서 450m"
+    ],
+    "off_day": "",
+    "website": "",
+    "phone": "02-3478-8870",
+    "parking": [
+      "센터 내 주차 가능, 이용시 2시간 무료"
+    ],
+    "information": [
+      "매주 일요일 휴무, 공휴일은 운영",
+      "월화수목금 12시-13시 자유수영 입장 불가",
+      "월수금 7시-8시, 19시-21시50분 사이 자유수영 입장 불가 (유아풀만 이용가능)",
+      "그 외 시간제한 없이 입/퇴장 가능"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "06:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "06:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "06:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "06:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "06:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "09:00 - 18:00",
+          "admission": ""
+        }
+      ],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [
+        "성인: 12000원"
+      ],
+      "weekend": [
+        "성인: 12000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T06:12:12.772Z",
+    "updatedAt": "2025-05-04T06:12:12.772Z",
+    "lat": 37.4992506,
+    "lng": 127.022082,
+    "id": 29
+  },
+  {
+    "name": "더논현 스포츠센터",
+    "addressRoad": "서울특별시 강남구 강남대로120길 33",
+    "address": "서울 강남구 논현동 168",
+    "tags": [
+      "25m",
+      "어린이풀"
+    ],
+    "transportation": [],
+    "off_day": "4,5,10,11월 준성수기 기간\n첫째 셋째주 일요일 센터 휴관",
+    "website": "https://thenhsports.modoo.at/",
+    "phone": "02-543-9633",
+    "parking": [
+      "논현초교 공영주차장",
+      "5분당 300원"
+    ],
+    "information": [
+      "자유수영(수영과 헬스 공통사용) 쿠폰제로 운영합니다",
+      "비회원",
+      "5매 55,000원 ",
+      "10매 105,000원",
+      "회원",
+      "5매 45,000원",
+      "10매 85,000원"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "21:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "21:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "21:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "21:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "21:00 - 21:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "10:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "16:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "10:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "16:00 - 17:50",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 55000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T06:19:07.134Z",
+    "updatedAt": "2025-05-04T06:19:07.134Z",
+    "lat": 37.5084606,
+    "lng": 127.0263309,
+    "id": 30
+  },
+  {
+    "name": "도곡스포츠센터",
+    "addressRoad": "서울특별시 강남구 선릉로64길 33 도곡초등학교내",
+    "address": "서울 강남구 대치동 924-10",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "수인분당호선 한티 2번 출구에서 300m"
+    ],
+    "off_day": "",
+    "website": "",
+    "phone": "02-563-6777",
+    "parking": [],
+    "information": [
+      "쿠폰 10매 구입시 77,000원",
+      "어린이는 10매 55,000원",
+      "비회원 1일입장은 수건 이용시 이용료 1,000원"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "22:00 - 22:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "22:00 - 22:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "22:00 - 22:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "22:00 - 22:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
+          "time": "22:00 - 22:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "06:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "15:00 - 19:50",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "10:00 - 12:00",
+          "admission": ""
+        },
+        {
+          "time": "13:00 - 15:00",
+          "admission": ""
+        },
+        {
+          "time": "16:00 - 17:50",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [
+        "성인: 10000원",
+        "어린이: 7000원"
+      ],
+      "weekend": [
+        "성인: 10000원",
+        "어린이: 7000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T08:43:02.671Z",
+    "updatedAt": "2025-05-04T08:43:02.671Z",
+    "lat": 37.4994952,
+    "lng": 127.0544678,
+    "id": 31
   }
 ]
