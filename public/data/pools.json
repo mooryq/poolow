@@ -2879,7 +2879,7 @@
   },
   {
     "name": "더논현 스포츠센터",
-    "addressRoad": "서울특별시 강남구 강남대로120길 33",
+    "addressRoad": "서울 강남구 강남대로120길 33",
     "address": "서울 강남구 논현동 168",
     "tags": [
       "25m",
@@ -2998,15 +2998,15 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T06:19:07.134Z",
-    "updatedAt": "2025-05-04T06:19:07.134Z",
+    "createdAt": "2025-05-04T10:51:01.333Z",
+    "updatedAt": "2025-05-04T10:51:01.336Z",
     "lat": 37.5084606,
     "lng": 127.0263309,
     "id": 30
   },
   {
     "name": "도곡스포츠센터",
-    "addressRoad": "서울특별시 강남구 선릉로64길 33 도곡초등학교내",
+    "addressRoad": "서울 강남구 선릉로64길 33 도곡초등학교내",
     "address": "서울 강남구 대치동 924-10",
     "tags": [
       "25m"
@@ -3052,6 +3052,10 @@
           "admission": ""
         },
         {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
           "time": "22:00 - 22:50",
           "admission": ""
         }
@@ -3084,6 +3088,10 @@
           "admission": ""
         },
         {
+          "time": "13:00 - 13:50",
+          "admission": ""
+        },
+        {
           "time": "22:00 - 22:50",
           "admission": ""
         }
@@ -3106,16 +3114,7 @@
           "admission": ""
         }
       ],
-      "saturday": [
-        {
-          "time": "06:00 - 08:50",
-          "admission": ""
-        },
-        {
-          "time": "15:00 - 19:50",
-          "admission": ""
-        }
-      ],
+      "saturday": [],
       "sunday": [
         {
           "time": "10:00 - 12:00",
@@ -3143,10 +3142,343 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T08:43:02.671Z",
-    "updatedAt": "2025-05-04T08:43:02.671Z",
+    "createdAt": "2025-05-04T10:51:12.036Z",
+    "updatedAt": "2025-05-04T10:51:12.039Z",
     "lat": 37.4994952,
     "lng": 127.0544678,
     "id": 31
+  },
+  {
+    "name": "시립수서청소년센터",
+    "addressRoad": "서울 강남구 광평로 144",
+    "address": "서울 강남구 수서동 749",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "3호선 일원역 4번 출구에서 345m"
+    ],
+    "off_day": "",
+    "website": "https://www.youtra.or.kr/",
+    "phone": "02-2226-3611",
+    "parking": [],
+    "information": [
+      "비회원은 토요일 1타임만 가능합니다.",
+      "초중고생만 입장 가능합니다."
+    ],
+    "sessions": {
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "saturday": [
+        {
+          "time": "13:00 - 14:50",
+          "admission": ""
+        }
+      ],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "청소년: 4000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T10:53:47.551Z",
+    "updatedAt": "2025-05-04T10:53:47.551Z",
+    "lat": 37.4835664,
+    "lng": 127.0886532,
+    "id": 32
+  },
+  {
+    "name": "언북문화체육센터",
+    "addressRoad": "서울 강남구 삼성로135길 42",
+    "address": "서울 강남구 청담동 27",
+    "tags": [
+      "25m",
+      "어린이풀"
+    ],
+    "transportation": [
+      "7호선 강남구청 4번 출구에서 500m"
+    ],
+    "off_day": "",
+    "website": "",
+    "phone": "02-514-5985",
+    "parking": [
+      "언북초교 공영주차장",
+      "회원에 한해 최대 150분 무료"
+    ],
+    "information": [
+      "1일 자유수영은 주말만 가능",
+      "토요일 1부는 어린이 입장 불가"
+    ],
+    "sessions": {
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "saturday": [
+        {
+          "time": "09:00 - 22:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 14:50",
+          "admission": ""
+        }
+      ],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 15000원",
+        "청소년: 10000원",
+        "어린이: 6000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T11:01:24.078Z",
+    "updatedAt": "2025-05-04T11:01:24.078Z",
+    "lat": 37.5198294,
+    "lng": 127.04514,
+    "id": 33
+  },
+  {
+    "name": "역삼청소년센터",
+    "addressRoad": "서울 강남구 논현로64길 7 역삼청소년센터",
+    "address": "서울 강남구 역삼동 776-8",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [
+      "2호선 역삼 1번 출구에서 870m"
+    ],
+    "off_day": "",
+    "website": "https://www.gangnam.go.kr/office/gyyc/board/gyyc_21/list.do?mid=gyyc_swimming",
+    "phone": "02-550-3600",
+    "parking": [],
+    "information": [
+      "일일입장은 토요일 4시, 5시 타임만 이용 가능합니다",
+      "기타 자유수영 전용 회원권 구매 가능"
+    ],
+    "sessions": {
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
+      "saturday": [
+        {
+          "time": "16:00 - 16:50",
+          "admission": ""
+        },
+        {
+          "time": "17:00 - 17:50",
+          "admission": ""
+        }
+      ],
+      "sunday": []
+    },
+    "charge": {
+      "weekday": [],
+      "weekend": [
+        "성인: 5500원",
+        "청소년: 3000원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T11:07:11.972Z",
+    "updatedAt": "2025-05-04T11:07:11.972Z",
+    "lat": 37.4939621,
+    "lng": 127.0409471,
+    "id": 34
+  },
+  {
+    "name": "강북종합체육센터",
+    "addressRoad": "서울특별시 강북구 솔샘로48길 14",
+    "address": "서울특별시 강북구 미아동 811-2",
+    "tags": [
+      "25m"
+    ],
+    "transportation": [],
+    "off_day": "",
+    "website": "https://www.sports-island-gb.co.kr/Gangbuk/program/",
+    "phone": "02-6958-8101",
+    "parking": [
+      "강북종합체육센터 24면",
+      "서울문화예술교육센터 강북 33면",
+      "5분당 시간주차요금 150원 부과.",
+      "프로그램 수강 시 수강시간+1시간 무료. 이후에는 5분당 150원."
+    ],
+    "information": [
+      "일일 자유수영은 시간대별 시작 20분전~ 정각까지만 입장이 가능"
+    ],
+    "sessions": {
+      "monday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "thursday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "friday": [
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
+      "saturday": [
+        {
+          "time": "06:00 - 06:50",
+          "admission": ""
+        },
+        {
+          "time": "07:00 - 07:50",
+          "admission": ""
+        },
+        {
+          "time": "08:00 - 08:50",
+          "admission": ""
+        },
+        {
+          "time": "10:00 - 10:50",
+          "admission": ""
+        },
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        },
+        {
+          "time": "16:00 - 16:50",
+          "admission": ""
+        }
+      ],
+      "sunday": [
+        {
+          "time": "09:00 - 09:50",
+          "admission": ""
+        },
+        {
+          "time": "10:00 - 10:50",
+          "admission": ""
+        },
+        {
+          "time": "11:00 - 11:50",
+          "admission": ""
+        },
+        {
+          "time": "12:00 - 12:50",
+          "admission": ""
+        },
+        {
+          "time": "14:00 - 14:50",
+          "admission": ""
+        },
+        {
+          "time": "15:00 - 15:50",
+          "admission": ""
+        },
+        {
+          "time": "16:00 - 16:50",
+          "admission": ""
+        }
+      ]
+    },
+    "charge": {
+      "weekday": [
+        "성인: 4000원",
+        "청소년: 3000원",
+        "어린이: 2000원"
+      ],
+      "weekend": [
+        "성인: 4800원",
+        "청소년: 3600원",
+        "어린이: 2400원"
+      ],
+      "member-weekday": [],
+      "member-weekend": []
+    },
+    "createdAt": "2025-05-04T11:23:24.754Z",
+    "updatedAt": "2025-05-04T11:23:24.759Z",
+    "lat": 37.6195628,
+    "lng": 127.0176947,
+    "id": 35
   }
 ]

@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // 세션이 없거나 빈 배열인 경우 휴무일 표시
     if (!sessions || sessions.length === 0) {
-        container.innerHTML = '<div class="flex no-sessions">휴무일입니다.</div>';
+        container.innerHTML = '<div class="flex no-sessions">미운영요일</div>';
         return;
     }
     

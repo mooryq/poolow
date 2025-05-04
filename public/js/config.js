@@ -1,6 +1,9 @@
 const currentHost = window.location.origin;
 const isProduction = currentHost.includes('vercel.app') || currentHost.includes('poolow.net');
 
+// Google Maps API 키 (Geocoding API 활성화 필요)
+export const GOOGLE_MAPS_API_KEY = "AIzaSyCOrWIMMzj31-aM2pLI0BuzDlWlxrDxgJc";
+
 export const naverConfig = {
     clientId: "Fhq__Qo4pzeZka3tYTHt",
     callbackUrl: isProduction 

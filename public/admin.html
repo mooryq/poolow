@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title></title>
+    <meta name="description" content="풀로우">
+
+
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.png" type="image/png">
+    
+    <script type="text/javascript"  
+        src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2c569m0l5t">
+    </script>
+
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <script type="module" src="./js/config.js"></script>
+    <script type="module" src="./admin.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        
+        <h1>수영장 정보 수정</h1>
+        <div class="back-to-list-container">
+        <a href="list.html" class="back-to-list">← 목록으로 돌아가기</a>
+      </div>
+        <div class="save-button-container">
+          <button type="submit" form="poolForm" class="save-button">저장</button>
+        </div>
+        <form id="poolForm">
+          <div class="flex">
+            <div class="field">수영장이름</div>
+            <input type="text" id="name" />
+          </div>
+          <div class="flex">
+            <div class="field">도로명 주소</div>
+            <input type="text" id="roadAddr" />
+          </div>
+          <div class="flex">
+            <div class="field">지번 주소</div>
+            <input type="text" id="jibunAddr" />
+          </div>
+          <div class="flex">
+            <div class="field">수영장 옵션</div>
+            <div class="pool-options-container">
+              <label><input type="checkbox" name="poolOption" value="25m" checked>25m</label>
+              <label><input type="checkbox" name="poolOption" value="50m">50m</label>
+              <label><input type="checkbox" name="poolOption" value="잠수풀">잠수풀</label>
+              <label><input type="checkbox" name="poolOption" value="어린이풀">어린이풀</label>
+            </div>
+          </div>
+          <div class="flex">
+            <div class="field">대중교통 정보</div>
+            <div class="transit-container">
+              <div class="transit-form">
+                <div class="transit-input-group">
+                  <input type="text" class="line-input" placeholder="호선">
+                  <input type="text" class="station-input" placeholder="지하철역명">
+                  <input type="number" class="exit-input" placeholder="번 출구">
+                  <input type="number" class="distance-input" placeholder="m">
+                </div>
+              </div>
+              <div class="transit-form">
+                <div class="transit-input-group">
+                  <input type="text" class="line-input" placeholder="호선">
+                  <input type="text" class="station-input" placeholder="지하철역명">
+                  <input type="number" class="exit-input" placeholder="번 출구">
+                  <input type="number" class="distance-input" placeholder="m">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex">
+            <div class="field">웹사이트</div>
+            <input type="url" id="website" placeholder="웹사이트 주소를 입력하세요" />
+          </div>
+          <div class="flex">
+            <div class="field">전화번호</div>
+            <input type="tel" id="phone" placeholder="전화번호를 입력하세요" />
+          </div>
+          <div class="flex">
+            <div class="field">주차정보</div>
+            <textarea id="parkingInfo" placeholder="주차정보를 입력하세요"></textarea>
+          </div>
+          <div class="flex">
+            <div class="field">정보</div>
+            <textarea id="information" placeholder="추가 정보를 입력하세요"></textarea>
+          </div>
+          <div class="flex">
+            <div class="field">평일 자유수영 시간표</div>
+            <div class="time-table-container">
+              <div id="tablesContainer">
+                <div class="time-table-wrapper">
+                  <div class="table-day-checkbox-container">
+                    <label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>
+                    <label><input type="checkbox" class="table-day-checkbox" value="월" checked style="width:22px;height:22px;">월</label>
+                    <label><input type="checkbox" class="table-day-checkbox" value="화" checked style="width:22px;height:22px;">화</label>
+                    <label><input type="checkbox" class="table-day-checkbox" value="수" checked style="width:22px;height:22px;">수</label>
+                    <label><input type="checkbox" class="table-day-checkbox" value="목" checked style="width:22px;height:22px;">목</label>
+                    <label><input type="checkbox" class="table-day-checkbox" value="금" checked style="width:22px;height:22px;">금</label>
+                  </div>
+                  <table class="time-table">
+                    <thead>
+                      <tr>
+                        <th>부</th>
+                        <th>시작시간</th>
+                        <th>종료시간</th>
+                        <th>삭제</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1부</td>
+                        <td><input type="time" class="start-time"></td>
+                        <td><input type="time" class="end-time"></td>
+                        <td><button type="button" class="delete-row">삭제</button></td>
+                      </tr>
+                      <tr>
+                        <td>2부</td>
+                        <td><input type="time" class="start-time"></td>
+                        <td><input type="time" class="end-time"></td>
+                        <td><button type="button" class="delete-row">삭제</button></td>
+                      </tr>
+                      <tr>
+                        <td>3부</td>
+                        <td><input type="time" class="start-time"></td>
+                        <td><input type="time" class="end-time"></td>
+                        <td><button type="button" class="delete-row">삭제</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button type="button" class="add-row">+ 행 추가</button>
+                </div>
+              </div>
+              <button type="button" id="addTable">+ 테이블 추가</button>
+            </div>
+          </div>
+
+          <div class="flex">
+            <div class="field">평일 자유수영 가격정보</div>
+            <div class="price-container">
+              <div class="price-section">
+                <h4>일반 요금</h4>
+                <div class="price-row">
+                  <label>성인</label>
+                  <input type="number" id="weekdayAdultPrice" placeholder="성인 가격">
+                </div>
+                <div class="price-row">
+                  <label>청소년</label>
+                  <input type="number" id="weekdayYouthPrice" placeholder="청소년 가격">
+                </div>
+                <div class="price-row">
+                  <label>유아</label>
+                  <input type="number" id="weekdayChildPrice" placeholder="유아 가격">
+                </div>
+              </div>
+              <div class="price-section">
+                <h4>회원 요금</h4>
+                <div class="price-row">
+                  <label>성인</label>
+                  <input type="number" id="weekdayMemberAdultPrice" placeholder="성인 회원 가격">
+                </div>
+                <div class="price-row">
+                  <label>청소년</label>
+                  <input type="number" id="weekdayMemberYouthPrice" placeholder="청소년 회원 가격">
+                </div>
+                <div class="price-row">
+                  <label>유아</label>
+                  <input type="number" id="weekdayMemberChildPrice" placeholder="유아 회원 가격">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex">
+            <div class="field">주말 자유수영 시간표</div>
+            <div class="time-table-container">
+              <div id="weekendTablesContainer">
+                <div class="time-table-wrapper">
+                  <div class="table-day-checkbox-container">
+                    <label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>
+                    <label><input type="checkbox" class="table-day-checkbox" value="토" checked style="width:22px;height:22px;">토</label>
+                    <label><input type="checkbox" class="table-day-checkbox" value="일" checked style="width:22px;height:22px;">일</label>
+                  </div>
+                  <table class="time-table">
+                    <thead>
+                      <tr>
+                        <th>부</th>
+                        <th>시작시간</th>
+                        <th>종료시간</th>
+                        <th>삭제</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1부</td>
+                        <td><input type="time" class="start-time"></td>
+                        <td><input type="time" class="end-time"></td>
+                        <td><button type="button" class="delete-row">삭제</button></td>
+                      </tr>
+                      <tr>
+                        <td>2부</td>
+                        <td><input type="time" class="start-time"></td>
+                        <td><input type="time" class="end-time"></td>
+                        <td><button type="button" class="delete-row">삭제</button></td>
+                      </tr>
+                      <tr>
+                        <td>3부</td>
+                        <td><input type="time" class="start-time"></td>
+                        <td><input type="time" class="end-time"></td>
+                        <td><button type="button" class="delete-row">삭제</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button type="button" class="add-row">+ 행 추가</button>
+                </div>
+              </div>
+              <button type="button" id="addWeekendTable">+ 테이블 추가</button>
+            </div>
+          </div>
+          <div class="flex">
+            <div class="field">주말 자유수영 가격정보</div>
+            <div class="price-container">
+              <div class="price-section">
+                <h4>일반 요금</h4>
+                <div class="price-row">
+                  <label>성인</label>
+                  <input type="number" id="weekendAdultPrice" placeholder="성인 가격">
+                </div>
+                <div class="price-row">
+                  <label>청소년</label>
+                  <input type="number" id="weekendYouthPrice" placeholder="청소년 가격">
+                </div>
+                <div class="price-row">
+                  <label>유아</label>
+                  <input type="number" id="weekendChildPrice" placeholder="유아 가격">
+                </div>
+              </div>
+              <div class="price-section">
+                <h4>회원 요금</h4>
+                <div class="price-row">
+                  <label>성인</label>
+                  <input type="number" id="weekendMemberAdultPrice" placeholder="성인 회원 가격">
+                </div>
+                <div class="price-row">
+                  <label>청소년</label>
+                  <input type="number" id="weekendMemberYouthPrice" placeholder="청소년 회원 가격">
+                </div>
+                <div class="price-row">
+                  <label>유아</label>
+                  <input type="number" id="weekendMemberChildPrice" placeholder="유아 회원 가격">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex">
+            <div class="field">정기휴관일</div>
+            <textarea id="closed" placeholder="정기휴관일을 입력하세요"></textarea>
+          </div>
+        </form>
+    </div>
+</body>
+</html>
