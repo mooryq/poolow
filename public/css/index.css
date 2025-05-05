@@ -161,25 +161,56 @@ input:focus {
     position: relative;
     margin: auto;
     height: 8rem;
-    bottom: 15rem;
+    bottom: 13rem;
     background-color: transparent;
     margin-bottom: 1rem;
-    
+    overflow: hidden;    
   }
 
 
   .swiper-slide {
-    position: relative;
     text-align: center;
     align-items: center;
     background-color: #fff;
     width: 68% !important;
+    height: auto !important;
     padding: 1rem 1rem  0 1rem;
     border-radius: 1rem;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 2px 12px 0px;
-
   }
 
-  .hidden{
-    display:none;
-  }
+.filter-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 8px 0;
+    display: flex;
+    gap: 5px;
+    z-index: 1000;
+}
+
+
+.filter-btn {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #e0e0e0;
+    background: white;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn.active {
+    background: #C8F575;
+    color: #383838;
+    border-color: #C8F575;
+}
+
+.filter-btn:hover {
+    background: #f0f0f0;
+}
+
+.filter-btn.active:hover {
+    background: #d0fa83;
+}

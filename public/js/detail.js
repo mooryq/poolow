@@ -289,7 +289,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // 요금 정보 표시
     if (Array.isArray(chargeList) && chargeList.length > 0) {
-        const chargesHTML = `<div class="charge-info">비회원 1일 요금<div class="charge-row">${chargeList.map(charge => `<div class="charge">${charge}</div>`).join('')}</div></div>`;
+        const formatCharge = (charge) => {
+            // 숫자만 추출
+            const numbers = charge.match(/\d+/g);
+            if (numbers) {
+                // 숫자를 천 단위로 콤마 추가
+                const formattedNumbers = numbers.map(num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+                // 원래 문자열에서 숫자를 포맷된 숫자로 교체
+                let formattedCharge = charge;
+                numbers.forEach((num, index) => {
+                    formattedCharge = formattedCharge.replace(num, formattedNumbers[index]);
+                });
+                return formattedCharge;
+            }
+            return charge;
+        };
+
+        const chargesHTML = `<div class="charge-row">${chargeList.map(charge => `<div class="charge">${formatCharge(charge)}</div>`).join('')}</div>`;
         container.innerHTML = chargesHTML;
     } else {
         container.innerHTML = '<div class="charge-info"><div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div></div>';

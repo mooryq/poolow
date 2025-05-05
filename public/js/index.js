@@ -11,6 +11,7 @@ let myLocationBtn; // 내 위치 버튼 요소
 let loadingIndicator; // 로딩 인디케이터 요소
 let isMapMoving = false; // 지도 이동 중인지 여부 (불필요한 업데이트 방지)
 let isMarkerClicked = false; // 마커 클릭 시 지도 이동 이벤트 구분용
+let activeFilter = null; // 초기에는 필터가 선택되지 않은 상태
 
 // DOM 요소 캐싱 🔍
 const searchInput = document.getElementById("searchInput");
@@ -32,6 +33,7 @@ function initApp() {
     .then(() => {
       initMyLocationButton();// 현재 위치 버튼 초기화
       setupSearchEvents();// 검색 이벤트 설정
+      setupFilterEvents(); // 필터 이벤트 설정 추가
     })
     .catch(error => {
       console.error("앱 초기화 중 오류 발생:", error);
@@ -176,7 +178,11 @@ async function loadPools() {
     pools = await response.json();
     console.log(`${pools.length}개 수영장 데이터 로드 완료`);
     
-    updateMarkersAndCards(); // 초기 마커와 카드 생성
+    // 초기 필터링 적용
+    poolsInView = filterPools(pools);
+    console.log('초기 필터링된 수영장 수:', poolsInView.length);
+    
+    updateMarkersAndCards();
     
     hideLoading();
     return pools;
@@ -205,16 +211,7 @@ function updateMarkersAndCards() {
 // 지도 마커 업데이트
  
 function updateMarkers() {
-  if (!map || !pools || pools.length === 0) return;
-  
-  // 지도 영역 가져오기
-  const bounds = map.getBounds();
-  if (!bounds) return;
-  
-  // 현재 보이는 범위 내 수영장 필터링
-  poolsInView = pools.filter(pool => 
-    bounds.hasLatLng(new naver.maps.LatLng(pool.lat, pool.lng))
-  );
+  if (!map || !poolsInView || poolsInView.length === 0) return;
   
   // 기존 마커 제거
   markers.forEach(marker => marker.setMap(null));
@@ -317,7 +314,7 @@ function updateSwiperSlides(poolList) {
       </div>
       <div class="poolTitle">
         <div class="pool-name">${pool.name}</div>
-        ${pool.tags.map(tag => `<div class="tag">${tag}</div>`).join('')}
+        ${(pool.tags || []).map(tag => `<div class="tag">${tag}</div>`).join('')}
       </div>
       <div class="noti">${pool.off_day || ""}</div>
     `;
@@ -347,7 +344,6 @@ function focusMarkerByName(poolName, lat, lng) {
     // 지도 이동 (마커 클릭 시에만)
     if (isMarkerClicked) {
       map.setCenter(new naver.maps.LatLng(lat, lng));
-      map.setZoom(12);
     }
   }
 }
@@ -555,6 +551,104 @@ function setViewportHeight() {
   document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
+// 필터링 함수 수정
+function filterPools(pools) {
+    console.log('현재 활성화된 필터:', activeFilter);
+    
+    // 필터가 선택되지 않은 경우 모든 수영장 표시
+    if (!activeFilter) return pools;
+    
+    // 현재 요일 가져오기
+    const today = new Date().getDay();
+    const dayMap = {
+        0: 'sunday',
+        1: 'monday',
+        2: 'tuesday',
+        3: 'wednesday',
+        4: 'thursday',
+        5: 'friday',
+        6: 'saturday'
+    };
+    const todayKey = dayMap[today];
+    
+    return pools.filter(pool => {
+        // 필터 조건 체크
+        const conditions = {
+            'today': () => {
+                const hasToday = pool.sessions && 
+                    pool.sessions[todayKey] && 
+                    pool.sessions[todayKey].length > 0;
+                console.log(`${pool.name} 오늘 체크:`, hasToday);
+                return hasToday;
+            },
+            '50m': () => {
+                const has50m = pool.tags && pool.tags.includes('50m');
+                console.log(`${pool.name} 50m 체크:`, has50m);
+                return has50m;
+            },
+            'weekday': () => {
+                const hasWeekday = pool.sessions && 
+                    ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].some(day => 
+                        pool.sessions[day] && pool.sessions[day].length > 0
+                    );
+                console.log(`${pool.name} 평일 체크:`, hasWeekday);
+                return hasWeekday;
+            },
+            'weekend': () => {
+                const hasWeekend = pool.sessions && 
+                    ['saturday', 'sunday'].some(day => 
+                        pool.sessions[day] && pool.sessions[day].length > 0
+                    );
+                console.log(`${pool.name} 주말 체크:`, hasWeekend);
+                return hasWeekend;
+            }
+        };
+
+        // 선택된 필터의 조건만 체크
+        const condition = conditions[activeFilter];
+        const result = condition ? condition() : true;
+        
+        console.log(`${pool.name} 최종 결과:`, result);
+        return result;
+    });
+}
+
+// 필터 버튼 클릭 이벤트 핸들러 수정
+function setupFilterEvents() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    console.log('필터 버튼 개수:', filterButtons.length);
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const filter = button.dataset.filter;
+            console.log('클릭된 필터:', filter);
+            
+            // 같은 필터를 다시 클릭한 경우
+            if (activeFilter === filter) {
+                // 필터 해제
+                button.classList.remove('active');
+                activeFilter = null;
+            } else {
+                // 다른 필터를 클릭한 경우
+                // 모든 버튼의 active 클래스 제거
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // 클릭된 버튼만 active 클래스 추가
+                button.classList.add('active');
+                
+                // 활성화된 필터 업데이트
+                activeFilter = filter;
+            }
+            
+            console.log('업데이트된 활성 필터:', activeFilter);
+            
+            // 필터링된 결과로 마커와 카드 업데이트
+            poolsInView = filterPools(pools);
+            console.log('필터링된 수영장 수:', poolsInView.length);
+            updateMarkersAndCards();
+        });
+    });
+}
 
 // 이벤트 리스너 🎉
 
