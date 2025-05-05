@@ -133,3 +133,10 @@
     margin-top: 0.5rem;
   }
   
+
+  .review-like{
+    padding: 0.5rem 0;
+    font-size: 1.1rem;
+    display: flex;
+    gap: 0.7rem;
+  }

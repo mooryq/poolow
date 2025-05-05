@@ -22,9 +22,13 @@ function executeSearch(keyword, poolsData) {
     pool.address.toLowerCase().includes(keyword) ||
     (pool.addressRoad && pool.addressRoad.toLowerCase().includes(keyword)) ||
     (pool.tags && pool.tags.some(tag => tag.toLowerCase().includes(keyword))) ||
-    (pool.transportation && pool.transportation.some(trans => 
-      trans.toLowerCase().includes(keyword) ||
-      trans.toLowerCase().includes(keyword.replace('역', ''))
+    (pool.transportation && (Array.isArray(pool.transportation) 
+      ? pool.transportation.some(trans => 
+          trans.toLowerCase().includes(keyword) ||
+          trans.toLowerCase().includes(keyword.replace('역', ''))
+        )
+      : pool.transportation.toLowerCase().includes(keyword) ||
+        pool.transportation.toLowerCase().includes(keyword.replace('역', ''))
     ))
   );
   

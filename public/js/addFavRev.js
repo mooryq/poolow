@@ -367,318 +367,353 @@ export function initReviewModal() {
 
     
             
-       //리뷰 수정 함수
-       async function updateReview(reviewId, reviewContent) {
-        if (!poolData) {
-            showToast("수영장 정보가 없습니다.");
-            return;
-        }
-    
-        // poolData.id를 문자열로 변환
-        const poolId = String(poolData.id);
-     
-        return new Promise((resolve, reject) => {
-            authUser(async (userId) => {
-                try {
-                    // 미리보기에 표시된 모든 이미지 컨테이너 가져오기
-                    const imageContainers = document.querySelectorAll('.preview-img-container');
-                    let imageUrls = [];
-                    
-                    console.log("미리보기 이미지 컨테이너 수:", imageContainers.length);
-                    
-                    if (imageContainers.length > 0) {
-                        // 미리보기에 있는 모든 이미지 처리
-                        const previewImages = Array.from(imageContainers).map(container => {
-                            const img = container.querySelector('img');
-                            // index 속성이 있으면 기존 이미지, 없으면 새 이미지
-                            const isExisting = container.dataset.index !== undefined;
-                            
-                            return {
-                                src: img.src,
-                                name: container.dataset.file || 'image.jpg',
-                                isExisting: isExisting,
-                                index: container.dataset.index
-                            };
-                        });
-                        
-                        // 기존 이미지 URL과 새 이미지 분리
-                        const existingImages = previewImages.filter(img => img.isExisting);
-                        const newImages = previewImages.filter(img => !img.isExisting);
-                        
-                        console.log("기존 이미지 수:", existingImages.length);
-                        console.log("새 이미지 수:", newImages.length);
-                        
-                        // 기존 이미지의 URL 추출
-                        const existingUrls = existingImages.map(img => img.src);
-                        
-                        // 새 이미지만 업로드 처리
-                        if (newImages.length > 0) {
-                            const uploadPromises = newImages.map(async (img) => {
-                                try {
-                                    // Base64 데이터를 Blob으로 변환
-                                    const response = await fetch(img.src);
-                                    const blob = await response.blob();
-                                    const file = new File([blob], img.name, { type: 'image/jpeg' });
-                                    
-                                    // 이미지 업로드
-                                    const urls = await uploadReviewImages([file], poolId, userId);
-                                    return urls[0];
-                                } catch (error) {
-                                    console.error("이미지 업로드 중 오류:", error);
-                                    return null;
-                                }
-                            });
-                            
-                            const newUrls = (await Promise.all(uploadPromises)).filter(url => url !== null);
-                            
-                            // 기존 이미지 URL과 새 이미지 URL 합치기
-                            imageUrls = [...existingUrls, ...newUrls];
-                        } else {
-                            // 새 이미지가 없으면 기존 이미지 URL만 사용
-                            imageUrls = existingUrls;
-                        }
-                    } else {
-                        // 미리보기에 이미지가 하나도 없는 경우 (모든 이미지 삭제)
-                        imageUrls = [];
-                    }
-    
-                    console.log("최종 이미지 URL 수:", imageUrls.length);
-                    console.log("최종 이미지 URL:", imageUrls);
-    
-                    // 업데이트할 데이터 준비
-                    const updateData = {
-                        review: reviewContent,
-                        updatedAt: serverTimestamp()
-                    };
-    
-                    // 이미지 URL 업데이트 (빈 배열이어도 명시적으로 설정)
-                    updateData.reviewImage = imageUrls;
-    
-                    // 리뷰 업데이트
-                    await updateDoc(doc(db, "pools", poolId, "reviews", reviewId), updateData); 
-                    
-                    // 사용자 리뷰 컬렉션에서도 업데이트
-                    const userReviewsRef = collection(db, "users", userId, "reviews");
-                    const q = query(userReviewsRef, where("reviewId", "==", reviewId));
-                    const snap = await getDocs(q);
-                    if (!snap.empty) {
-                        await updateDoc(snap.docs[0].ref, updateData);
-                    }
-    
-                    // 리뷰목록 새로고침
-                    loadReviews();
-                    // 성공메시지
-                    showToast("리뷰가 수정되었습니다.");
-                    // 전역변수 정리
-                    delete window.existingImageUrls;
-                    
-                    resolve(); // Promise 완료
-                } catch (error) {
-                    console.error("리뷰 수정 중 오류:", error);
-                    showToast("리뷰 수정 중 오류가 발생했습니다.");
-                    reject(error); // Promise 실패
-                }
-            }, () => {
-                showToast("로그인이 필요합니다.");
-                reject(new Error("로그인 필요")); // Promise 실패
-            });
-        });
-    }
-
-   
-    const reviewInput = document.getElementById("reviewText");
-    reviewInput.addEventListener("input", checkInputs);
-    
-    // 초기 리뷰 로드
-    loadReviews();
+//리뷰 수정 함수
+async function updateReview(reviewId, reviewContent) {
+if (!poolData) {
+    showToast("수영장 정보가 없습니다.");
+    return;
 }
 
-    // 리뷰 로드 함수
-    export async function loadReviews() {
-    if (!poolData) return;
-    
-    // reviewList 요소 가져오기
-    const reviewList = document.getElementById("reviewList");
-    if (!reviewList) return;
-    
-    // poolData.id를 문자열로 변환
-    const poolId = String(poolData.id);
+// poolData.id를 문자열로 변환
+const poolId = String(poolData.id);
 
-    // 현재 로그인한 사용자 ID 가져오기
-    let currentUserId = null;
-    const loginSuccess = localStorage.getItem("loginSuccess");
-    const localUser = JSON.parse(localStorage.getItem("user"));
-  
-    if (loginSuccess === "true" && localUser && localUser.phone) {
-        // 로컬 스토리지에 전화번호가 있으면 사용
-        currentUserId = localUser.phone;
-        console.log("📱 로컬 스토리지에서 사용자 ID 가져옴:", currentUserId);
-      }
-      // 캐시에 정보가 있는지 확인
-      else if (authCache.isAuthenticated && authCache.userId) {
-        currentUserId = authCache.userId;
-        console.log("✅ 캐시된 인증 정보 사용:", currentUserId);
-      }
-    
-
-    try {
-        // 리뷰 목록 먼저 불러오기 
-        const reviewsRef = collection(db, "pools", poolId, "reviews");
-        const q = query(reviewsRef, orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
-
-        if (snap.empty) {
-            reviewList.innerHTML = "<p class='gray-text'>아직 리뷰가 없습니다.</p>";
-            return;
-        }
-            // 로컬 스토리지나 캐시에서 사용자 ID를 찾지 못한 경우에만 authUser 호출
-    if (!currentUserId) {
+return new Promise((resolve, reject) => {
+    authUser(async (userId) => {
         try {
-          currentUserId = await new Promise((resolve, reject) => {
-            // 1초 타임아웃으로 줄임 (원래 2초)
-            const timeout = setTimeout(() => {
-              console.log("로그인 상태 확인 타임아웃");
-              resolve(null);
-            }, 1000);
-  
-            authUser(
-              (userId, userData) => {
-                clearTimeout(timeout);
-                // 캐시 업데이트
-                authCache.isAuthenticated = true;
-                authCache.userId = userId;
-                authCache.userData = userData;
-                authCache.timestamp = Date.now();
-                
-                console.log("현재 로그인 사용자 ID", userId);
-                resolve(userId);
-              },
-              () => {
-                clearTimeout(timeout);
-                console.log("로그인 된 사용자 없음");
-                resolve(null);
-              }
-            );
-          });
-        } catch (authError) {
-          console.error("사용자 인증 확인 중 오류:", authError);
-          currentUserId = null;
-        }
-      }
-  
-        // 캐시된 인증 정보가 있는지 먼저 확인
-        const now = Date.now();
-        if (authCache.isAuthenticated && authCache.timestamp && 
-            (now - authCache.timestamp < authCache.ttl)) {
-            console.log("✅ 캐시된 인증 정보 사용:", authCache.userId);
-            currentUserId = authCache.userId;
-        } else {
-            // 로컬 스토리지에서 사용자 정보 확인
-            const loginSuccess = localStorage.getItem("loginSuccess");
-            const localUser = JSON.parse(localStorage.getItem("user"));
+            // 미리보기에 표시된 모든 이미지 컨테이너 가져오기
+            const imageContainers = document.querySelectorAll('.preview-img-container');
+            let imageUrls = [];
             
-            if (loginSuccess === "true" && localUser && localUser.phone) {
-                // 로컬 스토리지에 전화번호가 있으면 사용
-                currentUserId = localUser.phone;
-                console.log("📱 로컬 스토리지에서 사용자 ID 가져옴:", currentUserId);
-            } else {
-                // 없으면 authUser로 가져오기 (최후의 수단)
-                try {
-                    currentUserId = await new Promise((resolve, reject) => {
-                        // 2초 타임아웃 설정 (5초에서 2초로 줄임)
-                        const timeout = setTimeout(() => {
-                            console.log("로그인 상태 확인 타임아웃");
-                            resolve(null);
-                        }, 2000);
-
-                        authUser(
-                            (userId, userData) => {
-                                clearTimeout(timeout);
-                                // 캐시 업데이트
-                                authCache.isAuthenticated = true;
-                                authCache.userId = userId;
-                                authCache.userData = userData;
-                                authCache.timestamp = Date.now();
-                                
-                                console.log("현재 로그인 사용자 ID", userId);
-                                resolve(userId);
-                            },
-                            () => {
-                                clearTimeout(timeout);
-                                console.log("로그인 된 사용자 없음");
-                                resolve(null);
-                            }
-                        );
+            console.log("미리보기 이미지 컨테이너 수:", imageContainers.length);
+            
+            if (imageContainers.length > 0) {
+                // 미리보기에 있는 모든 이미지 처리
+                const previewImages = Array.from(imageContainers).map(container => {
+                    const img = container.querySelector('img');
+                    // index 속성이 있으면 기존 이미지, 없으면 새 이미지
+                    const isExisting = container.dataset.index !== undefined;
+                    
+                    return {
+                        src: img.src,
+                        name: container.dataset.file || 'image.jpg',
+                        isExisting: isExisting,
+                        index: container.dataset.index
+                    };
+                });
+                
+                // 기존 이미지 URL과 새 이미지 분리
+                const existingImages = previewImages.filter(img => img.isExisting);
+                const newImages = previewImages.filter(img => !img.isExisting);
+                
+                console.log("기존 이미지 수:", existingImages.length);
+                console.log("새 이미지 수:", newImages.length);
+                
+                // 기존 이미지의 URL 추출
+                const existingUrls = existingImages.map(img => img.src);
+                
+                // 새 이미지만 업로드 처리
+                if (newImages.length > 0) {
+                    const uploadPromises = newImages.map(async (img) => {
+                        try {
+                            // Base64 데이터를 Blob으로 변환
+                            const response = await fetch(img.src);
+                            const blob = await response.blob();
+                            const file = new File([blob], img.name, { type: 'image/jpeg' });
+                            
+                            // 이미지 업로드
+                            const urls = await uploadReviewImages([file], poolId, userId);
+                            return urls[0];
+                        } catch (error) {
+                            console.error("이미지 업로드 중 오류:", error);
+                            return null;
+                        }
                     });
-                } catch (authError) {
-                    console.error("사용자 인증 확인 중 오류:", authError);
-                    currentUserId = null;
+                    
+                    const newUrls = (await Promise.all(uploadPromises)).filter(url => url !== null);
+                    
+                    // 기존 이미지 URL과 새 이미지 URL 합치기
+                    imageUrls = [...existingUrls, ...newUrls];
+                } else {
+                    // 새 이미지가 없으면 기존 이미지 URL만 사용
+                    imageUrls = existingUrls;
                 }
+            } else {
+                // 미리보기에 이미지가 하나도 없는 경우 (모든 이미지 삭제)
+                imageUrls = [];
+            }
+
+            console.log("최종 이미지 URL 수:", imageUrls.length);
+            console.log("최종 이미지 URL:", imageUrls);
+
+            // 업데이트할 데이터 준비
+            const updateData = {
+                review: reviewContent,
+                updatedAt: serverTimestamp()
+            };
+
+            // 이미지 URL 업데이트 (빈 배열이어도 명시적으로 설정)
+            updateData.reviewImage = imageUrls;
+
+            // 리뷰 업데이트
+            await updateDoc(doc(db, "pools", poolId, "reviews", reviewId), updateData); 
+            
+            // 사용자 리뷰 컬렉션에서도 업데이트
+            const userReviewsRef = collection(db, "users", userId, "reviews");
+            const q = query(userReviewsRef, where("reviewId", "==", reviewId));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                await updateDoc(snap.docs[0].ref, updateData);
+            }
+
+            // 리뷰목록 새로고침
+            loadReviews();
+            // 성공메시지
+            showToast("리뷰가 수정되었습니다.");
+            // 전역변수 정리
+            delete window.existingImageUrls;
+            
+            resolve(); // Promise 완료
+        } catch (error) {
+            console.error("리뷰 수정 중 오류:", error);
+            showToast("리뷰 수정 중 오류가 발생했습니다.");
+            reject(error); // Promise 실패
+        }
+    }, () => {
+        showToast("로그인이 필요합니다.");
+        reject(new Error("로그인 필요")); // Promise 실패
+    });
+});
+}
+
+
+const reviewInput = document.getElementById("reviewText");
+reviewInput.addEventListener("input", checkInputs);
+
+// 초기 리뷰 로드
+loadReviews();
+}
+
+// 리뷰 로드 함수
+export async function loadReviews() {
+if (!poolData) return;
+
+// reviewList 요소 가져오기
+const reviewList = document.getElementById("reviewList");
+if (!reviewList) return;
+
+// poolData.id를 문자열로 변환
+const poolId = String(poolData.id);
+
+// 현재 로그인한 사용자 ID 가져오기
+let currentUserId = null;
+const loginSuccess = localStorage.getItem("loginSuccess");
+const localUser = JSON.parse(localStorage.getItem("user"));
+
+if (loginSuccess === "true" && localUser && localUser.phone) {
+    // 로컬 스토리지에 전화번호가 있으면 사용
+    currentUserId = localUser.phone;
+    console.log("📱 로컬 스토리지에서 사용자 ID 가져옴:", currentUserId);
+    }
+    // 캐시에 정보가 있는지 확인
+    else if (authCache.isAuthenticated && authCache.userId) {
+    currentUserId = authCache.userId;
+    console.log("✅ 캐시된 인증 정보 사용:", currentUserId);
+    }
+
+
+try {
+    // 리뷰 목록 먼저 불러오기 
+    const reviewsRef = collection(db, "pools", poolId, "reviews");
+    const q = query(reviewsRef, orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+        reviewList.innerHTML = "<p class='gray-text'>아직 리뷰가 없습니다.</p>";
+        return;
+    }
+        // 로컬 스토리지나 캐시에서 사용자 ID를 찾지 못한 경우에만 authUser 호출
+if (!currentUserId) {
+    try {
+        currentUserId = await new Promise((resolve, reject) => {
+        // 1초 타임아웃으로 줄임 (원래 2초)
+        const timeout = setTimeout(() => {
+            console.log("로그인 상태 확인 타임아웃");
+            resolve(null);
+        }, 1000);
+
+        authUser(
+            (userId, userData) => {
+            clearTimeout(timeout);
+            // 캐시 업데이트
+            authCache.isAuthenticated = true;
+            authCache.userId = userId;
+            authCache.userData = userData;
+            authCache.timestamp = Date.now();
+            
+            console.log("현재 로그인 사용자 ID", userId);
+            resolve(userId);
+            },
+            () => {
+            clearTimeout(timeout);
+            console.log("로그인 된 사용자 없음");
+            resolve(null);
+            }
+        );
+        });
+    } catch (authError) {
+        console.error("사용자 인증 확인 중 오류:", authError);
+        currentUserId = null;
+    }
+    }
+
+    // 캐시된 인증 정보가 있는지 먼저 확인
+    const now = Date.now();
+    if (authCache.isAuthenticated && authCache.timestamp && 
+        (now - authCache.timestamp < authCache.ttl)) {
+        console.log("✅ 캐시된 인증 정보 사용:", authCache.userId);
+        currentUserId = authCache.userId;
+    } else {
+        // 로컬 스토리지에서 사용자 정보 확인
+        const loginSuccess = localStorage.getItem("loginSuccess");
+        const localUser = JSON.parse(localStorage.getItem("user"));
+        
+        if (loginSuccess === "true" && localUser && localUser.phone) {
+            // 로컬 스토리지에 전화번호가 있으면 사용
+            currentUserId = localUser.phone;
+            console.log("📱 로컬 스토리지에서 사용자 ID 가져옴:", currentUserId);
+        } else {
+            // 없으면 authUser로 가져오기 (최후의 수단)
+            try {
+                currentUserId = await new Promise((resolve, reject) => {
+                    // 2초 타임아웃 설정 (5초에서 2초로 줄임)
+                    const timeout = setTimeout(() => {
+                        console.log("로그인 상태 확인 타임아웃");
+                        resolve(null);
+                    }, 2000);
+
+                    authUser(
+                        (userId, userData) => {
+                            clearTimeout(timeout);
+                            // 캐시 업데이트
+                            authCache.isAuthenticated = true;
+                            authCache.userId = userId;
+                            authCache.userData = userData;
+                            authCache.timestamp = Date.now();
+                            
+                            console.log("현재 로그인 사용자 ID", userId);
+                            resolve(userId);
+                        },
+                        () => {
+                            clearTimeout(timeout);
+                            console.log("로그인 된 사용자 없음");
+                            resolve(null);
+                        }
+                    );
+                });
+            } catch (authError) {
+                console.error("사용자 인증 확인 중 오류:", authError);
+                currentUserId = null;
             }
         }
-            
-            let html = "";
-
-            snap.forEach(doc => {
-                const r = doc.data();
-                const reviewId = doc.id;
-
-                //날짜포맷팅
-                let dateText="날짜 정보 없음"
-                if(r.createdAt){
-                    const date = r.createdAt.toDate();
-                    dateText = date.toLocaleDateString('ko-KR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        
-                    });                
-                }
-
-                // 현재 사용자가 작성한 리뷰인지 확인
-                const isMyReview = currentUserId && currentUserId === r.userId;
-                console.log("리뷰 ID:", reviewId, "사용자 일치 여부:", isMyReview, 
-                    "현재 사용자:", currentUserId, "리뷰 작성자:", r.userId);
-
-                html += `
-                    <div class="reviewCard myCard" data-review-id="${reviewId}">
-                        <div class="review-header">
-                            <div class="review-user-info">
-                                <span class="review-name">${r.userName}</span>
-                                <span class="review-date">${dateText}</span>
-                            </div>
-                            ${isMyReview ? `
-                                <div class="review-actions">
-                                <button class="more-action-btn">⋮</button>
-                                <div class="actions-dropdown">
-                                    <button class="edit-review">수정하기</button>    
-                                    <button class="delete-review">삭제하기</button>
-                                </div>
-                            </div>
-                            ` : ""}
-                        </div>
-                        ${(Array.isArray(r.reviewImage) && r.reviewImage.length > 0) || (!Array.isArray(r.reviewImage) && r.reviewImage) 
-                            ? `<div class="review-images-container">
-                                ${Array.isArray(r.reviewImage)
-                                    ? r.reviewImage.map(url => `<img src="${url}" class="review-img" />`).join('')
-                                    : `<img src="${r.reviewImage}" class="review-img" />`}
-                            </div>`
-                            : ""}
-                        <div class="review-content">${r.review}</div>
-                    </div>
-                `;
-            });
-            
-            reviewList.innerHTML = html;
-        
-            // 리뷰 수정, 삭제 버튼 이벤트 리스너 등록
-            ReviewEditListeners();
-
-        } catch (error) {
-            console.error("리뷰 로딩 중 오류:", error);
-            reviewList.innerHTML = "<p class='gray-text'>리뷰를 불러오는 중 오류가 발생했습니다.</p>";
-        }
     }
+        
+        let html = "";
+
+        snap.forEach(doc => {
+            const r = doc.data();
+            const reviewId = doc.id;
+
+            //날짜포맷팅
+            let dateText="날짜 정보 없음"
+            if(r.createdAt){
+                const date = r.createdAt.toDate();
+                dateText = date.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    
+                });                
+            }
+
+            const likes = r.likes || [];
+            const isLiked = currentUserId && likes.includes(currentUserId);
+            const likeCount = likes.length;
+
+            // 현재 사용자가 작성한 리뷰인지 확인
+            const isMyReview = currentUserId && currentUserId === r.userId;
+            console.log("리뷰 ID:", reviewId, "사용자 일치 여부:", isMyReview, 
+                "현재 사용자:", currentUserId, "리뷰 작성자:", r.userId);
+
+            html += `
+                <div class="reviewCard myCard" data-review-id="${reviewId}">
+                    <div class="review-header">
+                        <div class="review-user-info">
+                            <span class="review-name">${r.userName}</span>
+                            <span class="review-date">${dateText}</span>
+                        </div>
+                        ${isMyReview ? `
+                            <div class="review-actions">
+                            <button class="more-action-btn">⋮</button>
+                            <div class="actions-dropdown">
+                                <button class="edit-review">수정하기</button>    
+                                <button class="delete-review">삭제하기</button>
+                            </div>
+                        </div>
+                        ` : ""}
+                    </div>
+                    ${(Array.isArray(r.reviewImage) && r.reviewImage.length > 0) || (!Array.isArray(r.reviewImage) && r.reviewImage) 
+                        ? `<div class="review-images-container">
+                            ${Array.isArray(r.reviewImage)
+                                ? r.reviewImage.map(url => `<img src="${url}" class="review-img" />`).join('')
+                                : `<img src="${r.reviewImage}" class="review-img" />`}
+                        </div>`
+                        : ""}
+                    <div class="review-content">${r.review}</div>
+                        <div class="review-like">
+                        <span class="heart" style="cursor:pointer;">${isLiked ? '❤️' : '🤍'}</span>
+                        <span class="like-count">${likeCount}</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        reviewList.innerHTML = html;
+    
+        // 리뷰 수정, 삭제 버튼 이벤트 리스너 등록
+        ReviewEditListeners();
+
+
+    // ✅ 하트 이벤트 바인딩
+    document.querySelectorAll('.reviewCard').forEach(card => {
+        const reviewId = card.dataset.reviewId;
+        const heartEl = card.querySelector('.heart');
+        const countEl = card.querySelector('.like-count');
+  
+        if (!heartEl || !countEl || !currentUserId) return;
+  
+        heartEl.addEventListener('click', async () => {
+          const reviewRef = doc(db, "pools", poolId, "reviews", reviewId);
+          const reviewSnap = await getDoc(reviewRef);
+          const data = reviewSnap.data();
+          const likes = data.likes || [];
+  
+          const hasLiked = likes.includes(currentUserId);
+          const updatedLikes = hasLiked
+            ? likes.filter(id => id !== currentUserId)
+            : [...likes, currentUserId];
+  
+          await updateDoc(reviewRef, { likes: updatedLikes });
+  
+          heartEl.textContent = hasLiked ? '🤍' : '❤️';
+          countEl.textContent = updatedLikes.length;
+        });
+      });
+
+    } catch (error) {
+        console.error("리뷰 로딩 중 오류:", error);
+        reviewList.innerHTML = "<p class='gray-text'>리뷰를 불러오는 중 오류가 발생했습니다.</p>";
+    }
+}
 
     //리뷰 수정 모달 열기
     export async function openEditReviewModal(reviewId, reviewContent) {
@@ -907,3 +942,22 @@ export function initReviewModal() {
             showToast("로그인이 필요합니다.");
         });
     }
+
+// 좋아요 토글 함수
+export async function toggleReviewLike(poolId, reviewId, userId, heartEl, countEl) {
+    const reviewRef = doc(db, "pools", poolId, "reviews", reviewId);
+    const reviewSnap = await getDoc(reviewRef);
+    const reviewData = reviewSnap.data();
+    const currentLikes = reviewData.likes || [];
+  
+    const hasLiked = currentLikes.includes(userId);
+    const updatedLikes = hasLiked
+      ? currentLikes.filter(id => id !== userId)
+      : [...currentLikes, userId];
+  
+    await updateDoc(reviewRef, { likes: updatedLikes });
+  
+    heartEl.textContent = hasLiked ? "🤍" : "❤️";
+    countEl.textContent = updatedLikes.length;
+  }
+  

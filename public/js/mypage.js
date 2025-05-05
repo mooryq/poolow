@@ -20,9 +20,9 @@ import {
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-import { authUser, } from './global.js';
+import { authUser, authCache } from './global.js';
 import { updateHeaderHeight, showToast } from './ui.js';
-import { ReviewEditListeners } from './addFavRev.js';
+import { ReviewEditListeners, toggleReviewLike } from './addFavRev.js';
 import { LOGIN_URL, PHONEFORM_URL, getPageUrl } from './config.js';
 
 const localUser = JSON.parse(localStorage.getItem("user")); // 네이버 또는 구글 공통
@@ -280,22 +280,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   
   // 리뷰 렌더링 함수 
-  function renderReviews() {
+  async function renderReviews() {
+    const currentUserId = authCache?.userId || null;
+  
     if (userData.reviews.length === 0) {
-      reviewContainer.innerHTML = "<p style='text-align:center;' style='text-align:center;'>작성한 리뷰가 없습니다.</p>";
+      reviewContainer.innerHTML = "<p style='text-align:center;'>작성한 리뷰가 없습니다.</p>";
       return;
     }
   
     let html = "";
-    userData.reviews.forEach(r => {
+  
+    for (const r of userData.reviews) {
+      const reviewId = r.reviewId || r.id;
+  
       // 날짜 포맷팅
       const date = r.createdAt?.toDate().toLocaleDateString("ko-KR", {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+        year: 'numeric', month: 'long', day: 'numeric'
       }) || "";
-      
-      // 주소 처리 - poolAddress가 있을 때만 처리
+  
+      // 주소 처리
       let shortAddress = "";
       if (r.poolAddress) {
         const addressParts = r.poolAddress.split(' ');
@@ -304,8 +307,8 @@ document.addEventListener("DOMContentLoaded", () => {
           ? addressParts.slice(0, dongIndex + 1).join(' ')
           : r.poolAddress;
       }
-      
-      // 이미지 HTML 생성
+  
+      // 이미지 처리
       let imagesHtml = '';
       if (r.reviewImage) {
         const images = Array.isArray(r.reviewImage) ? r.reviewImage : [r.reviewImage];
@@ -313,35 +316,52 @@ document.addEventListener("DOMContentLoaded", () => {
           imagesHtml = images.map(img => `<img src="${img}" alt="review image">`).join('');
         }
       }
-      
+  
+      // likes 원본에서 조회
+      let likes = [];
+      try {
+        const snap = await getDoc(doc(db, "pools", r.poolId, "reviews", reviewId));
+        likes = snap.exists() ? (snap.data().likes || []) : [];
+      } catch (err) {
+        console.warn("likes 조회 실패:", r.poolId, reviewId);
+      }
+  
+      const isLiked = currentUserId && likes.includes(currentUserId);
+      const likeCount = likes.length;
+  
       html += `
-        <div class="reviewCard myCard flex-column" data-pool-id="${r.poolId}" data-review-id="${r.reviewId || r.id}">           
-              <div class="flex-between" style="width:100%;">
-                <span class="write-date">${date}</span>         
-                <div class="review-actions">
-                  <button class="more-action-btn">⋮</button>
-                  <div class="actions-dropdown">
-                    <button class="delete-review">삭제하기</button>
-                  </div>
-                </div>
-              </div>  
-              <div class="pool-name">${r.poolName || '이름 없음'}</div>
-              <div class="short-address">${shortAddress}</div>
+        <div class="reviewCard myCard flex-column" data-pool-id="${r.poolId}" data-review-id="${reviewId}">           
+          <div class="flex-between" style="width:100%;">
+            <span class="write-date">${date}</span>         
+            <div class="review-actions">
+              <button class="more-action-btn">⋮</button>
+              <div class="actions-dropdown">
+                <button class="delete-review">삭제하기</button>
+              </div>
+            </div>
+          </div>  
+          <div class="pool-name">${r.poolName || '이름 없음'}</div>
+          <div class="short-address">${shortAddress}</div>
           <div class="review-content">
             ${imagesHtml ? `<div class="review-image">${imagesHtml}</div>` : ''}
             <div class="review-text">
               <p>${r.review || ''}</p>
             </div>
+            <div class="review-like">
+              <span class="heart">${isLiked ? '❤️' : '🤍'}</span>
+              <span class="like-count">${likeCount}</span>
+            </div>
           </div>
         </div>
       `;
-    });
+    }
   
     reviewContainer.innerHTML = html;
-    
-    // addFavRev.js에서 가져온 ReviewEditListeners 함수 호출
+  
+    // 삭제 기능만 활성화 (클릭 이벤트 없음)
     ReviewEditListeners();
   }
+  
 
     // 수영장 카드와 리뷰 아이템 클릭 시 상세 페이지로 이동하는 통합 함수
     document.addEventListener('click', (e) => {

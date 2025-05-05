@@ -198,9 +198,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     // 대중교통 정보 표시
-    if (pool.transportation && pool.transportation.length > 0) {
+    if (pool.transportation) {
         const transportationInfo = document.querySelector('.transportation-info');
-        transportationInfo.innerHTML = pool.transportation.map(transportation => `<div class="transportation-item">🚌 ${transportation}</div>`).join('');
+        // transportation이 배열인지 확인하고, 배열이 아니면 배열로 변환
+        const transportationArray = Array.isArray(pool.transportation) 
+            ? pool.transportation 
+            : [pool.transportation];
+        
+        if (transportationArray.length > 0) {
+            transportationInfo.innerHTML = transportationArray.map(transportation => 
+                `<div class="transportation-item">🚌 ${transportation}</div>`
+            ).join('');
+        }
     }
     
     
