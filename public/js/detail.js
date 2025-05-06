@@ -352,8 +352,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     dayTabs.forEach(tab => {
         const dayKey = tab.dataset.day;
         
-        // 휴관일인 경우 스타일 적용
-        if (!pool.sessions[dayKey] || pool.sessions[dayKey].length === 0) {
+        // sessions 객체가 존재하고, 해당 요일의 세션이 정의되어 있는지 확인
+        if (!pool.sessions || !pool.sessions[dayKey] || pool.sessions[dayKey].length === 0) {
             tab.classList.add('closed');
         }
         
@@ -361,8 +361,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (dayKey === todayKey) {
             tab.classList.add('today');
             tab.classList.add('active');
-            displaySessions(pool.sessions[dayKey], timeTable);
-            updateChargeInfo(dayKey, pool.charge, chargeInfo);
+            if (pool.sessions && pool.sessions[dayKey]) {
+                displaySessions(pool.sessions[dayKey], timeTable);
+                updateChargeInfo(dayKey, pool.charge, chargeInfo);
+            } else {
+                // 초기화 시에도 세션이 없는 경우 메시지 표시
+                timeTable.innerHTML = '<div class="flex no-sessions">아직 정보가 등록되지 않았어요</div>';
+                chargeInfo.innerHTML = '<div class="charge-info"><div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div></div>';
+            }
         }
         
         // 탭 클릭 이벤트
@@ -373,11 +379,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 현재 탭 활성화
             tab.classList.add('active');
             
-            // 해당 요일 세션 표시
-            displaySessions(pool.sessions[dayKey], timeTable);
-            
-            // 요일에 따른 요금 정보 업데이트
-            updateChargeInfo(dayKey, pool.charge, chargeInfo);
+            // 해당 요일 세션 표시 (세션이 존재하는 경우에만)
+            if (pool.sessions && pool.sessions[dayKey]) {
+                displaySessions(pool.sessions[dayKey], timeTable);
+                updateChargeInfo(dayKey, pool.charge, chargeInfo);
+            } else {
+                // 세션이 없는 경우 빈 시간표 표시
+                timeTable.innerHTML = '<div class="flex no-sessions">아직 정보가 등록되지 않았어요</div>';
+                chargeInfo.innerHTML = '<div class="charge-info"><div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div></div>';
+            }
         });
     });
   }
