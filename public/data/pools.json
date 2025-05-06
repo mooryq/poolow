@@ -6114,10 +6114,16 @@
           "time": "12:00~12:50"
         }
       ],
+      "tuesday": [
+        
+      ],
       "wednesday": [
         {
           "time": "12:00~12:50"
         }
+      ],
+      "thursday": [
+        
       ],
       "friday": [
         {

@@ -267,12 +267,148 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   
   
+  
+  // 요일별 탭 초기화 및 표시
+  function initDayTabs(pool) {
+    const dayTabs = document.querySelectorAll('.day-tab');
+    const timeTable = document.querySelector('.time-table');
+    const chargeInfo = document.querySelector('.chargeInfo');
+    
+    // 요일에 해당하는 영어 키 매핑
+    const dayMapping = {
+        0: 'sunday',    // 일요일
+        1: 'monday',    // 월요일
+        2: 'tuesday',   // 화요일
+        3: 'wednesday', // 수요일
+        4: 'thursday',  // 목요일
+        5: 'friday',    // 금요일
+        6: 'saturday'   // 토요일
+    };
+    
+    // 현재 요일 가져오기 (0: 일요일, 1: 월요일, ...)
+    const today = new Date().getDay();
+    const todayKey = dayMapping[today];
+
+    // 모든 요일의 세션 정보 체크
+    const hasAnySessions = pool.sessions && Object.values(pool.sessions).some(sessions => sessions && sessions.length > 0);
+    
+    // timeTable 내용 초기화 함수
+    const clearTimeTable = () => {
+        while (timeTable.firstChild) {
+            timeTable.removeChild(timeTable.firstChild);
+        }
+    };
+    
+    // 요일 탭에 이벤트 및 스타일 적용
+    dayTabs.forEach(tab => {
+        const dayKey = tab.dataset.day;
+        
+        // sessions 객체가 존재하고, 해당 요일의 세션이 정의되어 있는지 확인
+        if (!pool.sessions || !pool.sessions[dayKey] || pool.sessions[dayKey].length === 0) {
+            tab.classList.add('closed');
+        }
+        
+        // 오늘 요일인 경우 표시
+        if (dayKey === todayKey) {
+            tab.classList.add('today');
+            tab.classList.add('active');
+            
+            clearTimeTable();
+            if (!hasAnySessions) {
+                // 모든 요일에 세션이 없는 경우
+                const noSessionsDiv = document.createElement('div');
+                noSessionsDiv.className = 'flex no-sessions';
+                noSessionsDiv.textContent = '아직 정보가 업데이트되지 않았습니다.';
+                timeTable.appendChild(noSessionsDiv);
+            } else if (pool.sessions && pool.sessions[dayKey]) {
+                displaySessions(pool.sessions[dayKey], timeTable);
+            } else {
+                const noSessionsDiv = document.createElement('div');
+                noSessionsDiv.className = 'flex no-sessions';
+                noSessionsDiv.textContent = '미운영 요일';
+                timeTable.appendChild(noSessionsDiv);
+            }
+            updateChargeInfo(dayKey, pool.charge, chargeInfo);
+        }
+        
+        // 탭 클릭 이벤트
+        tab.addEventListener('click', () => {
+            // 기존 활성 탭 제거
+            dayTabs.forEach(t => t.classList.remove('active'));
+            
+            // 현재 탭 활성화
+            tab.classList.add('active');
+            
+            clearTimeTable();
+            if (!hasAnySessions) {
+                // 모든 요일에 세션이 없는 경우
+                const noSessionsDiv = document.createElement('div');
+                noSessionsDiv.className = 'flex no-sessions';
+                noSessionsDiv.textContent = '아직 정보가 업데이트되지 않았습니다.';
+                timeTable.appendChild(noSessionsDiv);
+            } else if (pool.sessions && pool.sessions[dayKey]) {
+                displaySessions(pool.sessions[dayKey], timeTable);
+            } else {
+                const noSessionsDiv = document.createElement('div');
+                noSessionsDiv.className = 'flex no-sessions';
+                noSessionsDiv.textContent = '미운영 요일';
+                timeTable.appendChild(noSessionsDiv);
+            }
+            updateChargeInfo(dayKey, pool.charge, chargeInfo);
+        });
+    });
+  }
+  
+  // 세션 정보 표시
+  function displaySessions(sessions, container) {
+    // 기존 세션 요소들 제거 (innerHTML 대신)
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+
+    // 세션이 없거나 빈 배열인 경우 휴무일 표시
+    if (!sessions || sessions.length === 0) {
+        const noSessionsDiv = document.createElement('div');
+        noSessionsDiv.className = 'flex no-sessions';
+        noSessionsDiv.textContent = '미운영요일';
+        container.appendChild(noSessionsDiv);
+        return;
+    }
+
+    // 세션 정보 표시
+    sessions.forEach(session => {
+        const sessionDiv = document.createElement('div');
+        sessionDiv.className = 'session-row';
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'time';
+        timeDiv.textContent = session.time;
+        
+        const typeDiv = document.createElement('div');
+        typeDiv.className = 'type';
+        typeDiv.textContent = session.type;
+        
+        sessionDiv.appendChild(timeDiv);
+        sessionDiv.appendChild(typeDiv);
+        container.appendChild(sessionDiv);
+    });
+  }
+  
+
   // 요일에 따른 요금 정보 업데이트
   function updateChargeInfo(dayKey, charges, container) {
-    // 컨테이너 초기화
-    container.innerHTML = '';
+    // 기존 요금 정보 요소들 제거
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
     
-    if (!charges) return;
+    if (!charges) {
+        const noChargeDiv = document.createElement('div');
+        noChargeDiv.className = 'charge-info';
+        noChargeDiv.innerHTML = '<div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div>';
+        container.appendChild(noChargeDiv);
+        return;
+    }
     
     // 요일에 따른 요금 선택 (weekday/weekend)
     const isWeekend = (dayKey === 'saturday' || dayKey === 'sunday');
@@ -296,132 +432,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     
-    // 요금 정보 표시
+    // 일반 요금 정보 표시
     if (Array.isArray(chargeList) && chargeList.length > 0) {
-        const formatCharge = (charge) => {
-            // 숫자만 추출
-            const numbers = charge.match(/\d+/g);
-            if (numbers) {
-                // 숫자를 천 단위로 콤마 추가
-                const formattedNumbers = numbers.map(num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
-                // 원래 문자열에서 숫자를 포맷된 숫자로 교체
-                let formattedCharge = charge;
-                numbers.forEach((num, index) => {
-                    formattedCharge = formattedCharge.replace(num, formattedNumbers[index]);
-                });
-                return formattedCharge;
-            }
-            return charge;
-        };
-
-        const chargesHTML = `<div class="charge-row">${chargeList.map(charge => `<div class="charge">${formatCharge(charge)}</div>`).join('')}</div>`;
-        container.innerHTML = chargesHTML;
+        const chargeRow = document.createElement('div');
+        chargeRow.className = 'charge-row';
+        
+        chargeList.forEach(charge => {
+            const chargeDiv = document.createElement('div');
+            chargeDiv.className = 'charge';
+            chargeDiv.textContent = formatCharge(charge);
+            chargeRow.appendChild(chargeDiv);
+        });
+        
+        container.appendChild(chargeRow);
     } else {
-        container.innerHTML = '<div class="charge-info"><div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div></div>';
+        const noChargeDiv = document.createElement('div');
+        noChargeDiv.className = 'charge-info';
+        noChargeDiv.innerHTML = '<div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div>';
+        container.appendChild(noChargeDiv);
     }
     
     // 회원 요금 정보 표시 (있는 경우)
     if (Array.isArray(memberChargeList) && memberChargeList.length > 0) {
-        const memberChargesHTML = `<div class="charge-info">멤버십(강습/자유수영) 회원 1일 요금<div class="charge-row">${memberChargeList.map(charge => `<div class="charge">${charge}</div>`).join('')}</div></div>`;
-        container.innerHTML += memberChargesHTML;
-    }
-  }
-  
-  // 요일별 탭 초기화 및 표시
-  function initDayTabs(pool) {
-    const dayTabs = document.querySelectorAll('.day-tab');
-    const timeTable = document.querySelector('.time-table');
-    const chargeInfo = document.querySelector('.chargeInfo');
-    
-    // 요일에 해당하는 영어 키 매핑
-    const dayMapping = {
-        0: 'sunday',    // 일요일
-        1: 'monday',    // 월요일
-        2: 'tuesday',   // 화요일
-        3: 'wednesday', // 수요일
-        4: 'thursday',  // 목요일
-        5: 'friday',    // 금요일
-        6: 'saturday'   // 토요일
-    };
-    
-    // 현재 요일 가져오기 (0: 일요일, 1: 월요일, ...)
-    const today = new Date().getDay();
-    const todayKey = dayMapping[today];
-    
-    // 요일 탭에 이벤트 및 스타일 적용
-    dayTabs.forEach(tab => {
-        const dayKey = tab.dataset.day;
+        const memberInfoDiv = document.createElement('div');
+        memberInfoDiv.className = 'charge-info';
         
-        // sessions 객체가 존재하고, 해당 요일의 세션이 정의되어 있는지 확인
-        if (!pool.sessions || !pool.sessions[dayKey] || pool.sessions[dayKey].length === 0) {
-            tab.classList.add('closed');
-        }
+        const memberTitle = document.createElement('div');
+        memberTitle.textContent = '멤버십(강습/자유수영) 회원 1일 요금';
         
-        // 오늘 요일인 경우 표시
-        if (dayKey === todayKey) {
-            tab.classList.add('today');
-            tab.classList.add('active');
-            if (pool.sessions && pool.sessions[dayKey]) {
-                displaySessions(pool.sessions[dayKey], timeTable);
-                updateChargeInfo(dayKey, pool.charge, chargeInfo);
-            } else {
-                // 초기화 시에도 세션이 없는 경우 메시지 표시
-                timeTable.innerHTML = '<div class="flex no-sessions">아직 정보가 등록되지 않았어요</div>';
-                chargeInfo.innerHTML = '<div class="charge-info"><div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div></div>';
-            }
-        }
+        const memberRow = document.createElement('div');
+        memberRow.className = 'charge-row';
         
-        // 탭 클릭 이벤트
-        tab.addEventListener('click', () => {
-            // 기존 활성 탭 제거
-            dayTabs.forEach(t => t.classList.remove('active'));
-            
-            // 현재 탭 활성화
-            tab.classList.add('active');
-            
-            // 해당 요일 세션 표시 (세션이 존재하는 경우에만)
-            if (pool.sessions && pool.sessions[dayKey]) {
-                displaySessions(pool.sessions[dayKey], timeTable);
-                updateChargeInfo(dayKey, pool.charge, chargeInfo);
-            } else {
-                // 세션이 없는 경우 빈 시간표 표시
-                timeTable.innerHTML = '<div class="flex no-sessions">아직 정보가 등록되지 않았어요</div>';
-                chargeInfo.innerHTML = '<div class="charge-info"><div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div></div>';
-            }
+        memberChargeList.forEach(charge => {
+            const chargeDiv = document.createElement('div');
+            chargeDiv.className = 'charge';
+            chargeDiv.textContent = charge;
+            memberRow.appendChild(chargeDiv);
         });
-    });
-  }
-  
-  // 세션 정보 표시
-  function displaySessions(sessions, container) {
-    // 컨테이너 초기화
-    container.innerHTML = '';
-    
-    // 세션이 없거나 빈 배열인 경우 휴무일 표시
-    if (!sessions || sessions.length === 0) {
-        container.innerHTML = '<div class="flex no-sessions">미운영요일</div>';
-        return;
+        
+        memberInfoDiv.appendChild(memberTitle);
+        memberInfoDiv.appendChild(memberRow);
+        container.appendChild(memberInfoDiv);
     }
-    
-    // 세션 목록 표시
-    sessions.forEach((session, index) => {
-        const sessionDiv = document.createElement('div');
-        sessionDiv.className = 'flex-bottom';
-        
-        // 기본 세션 정보 표시
-        let sessionHTML = `
-                <span class="session-num">${index + 1}부:</span>
-                <span class="session-time">${session.time}</span>
-        `;
-        
-        // 입장 시간 정보가 있는 경우 추가
-        if (session.admission) {
-            sessionHTML += `<span class="session-admission">입장 ${session.admission}</span>`;
-        }
-        
-        sessionDiv.innerHTML = sessionHTML;
-        container.appendChild(sessionDiv);
-    });
   }
   
   // 주소로 지도 좌표 검색 (geocoding)
