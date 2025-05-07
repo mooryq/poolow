@@ -554,74 +554,19 @@
     ],
     "sessions": {
       "monday": [
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        }
+       
       ],
       "tuesday": [
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        }
+      
       ],
       "wednesday": [
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        }
+       
       ],
       "thursday": [
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        }
+        
       ],
       "friday": [
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        },
-        {
-          "time": " - ",
-          "admission": ""
-        }
+       
       ],
       "saturday": [
         {

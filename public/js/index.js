@@ -153,9 +153,9 @@ function updateMarkers() {
       title: pool.name,
       icon: {
         url: "images/marker.png",
-        size: new naver.maps.Size(23, 23),
-        anchor: new naver.maps.Point(11, 20),
-        scaledSize: new naver.maps.Size(23, 23)
+        size: new naver.maps.Size(22.5, 14.8), // 5:3.3 비율에 곱하기 4.5
+        anchor: new naver.maps.Point(10, 10),
+        scaledSize: new naver.maps.Size(22.5, 14.8)
       }
     });
 
@@ -178,6 +178,35 @@ function updateMarkers() {
     if (marker) highlightMarker(marker);
   }
 }
+
+
+function focusMarkerByName(name, lat, lng) {
+  resetMarkerStyles();
+  const marker = markers.find(m => m.getTitle() === name);
+  if (marker) {
+    highlightMarker(marker);
+    if (isMarkerClicked) map.panTo(new naver.maps.LatLng(lat, lng));
+  }
+}
+
+function resetMarkerStyles() {
+  markers.forEach(marker => marker.setIcon({
+    url: "images/marker.png",
+    size: new naver.maps.Size(22.5, 14.8),
+    anchor: new naver.maps.Point(10, 10),
+    scaledSize: new naver.maps.Size(22.5, 14.8)
+  }));
+}
+
+function highlightMarker(marker) {
+  marker.setIcon({
+    url: "images/marker2.png",
+    size: new naver.maps.Size(27.5, 18.15), // 5:3.3 비율에 곱하기 5.5
+    anchor: new naver.maps.Point(10, 10),
+    scaledSize: new naver.maps.Size(27.5, 18.15)
+  });
+}
+
 
 function updateCardUI() {
   if (!poolsInView.length) {
@@ -221,33 +250,6 @@ function updateSwiperSlides(poolList) {
     wrapper.appendChild(slide);
   });
   swiper.update();
-}
-
-function focusMarkerByName(name, lat, lng) {
-  resetMarkerStyles();
-  const marker = markers.find(m => m.getTitle() === name);
-  if (marker) {
-    highlightMarker(marker);
-    if (isMarkerClicked) map.panTo(new naver.maps.LatLng(lat, lng));
-  }
-}
-
-function resetMarkerStyles() {
-  markers.forEach(marker => marker.setIcon({
-    url: "images/marker.png",
-    size: new naver.maps.Size(23, 23),
-    anchor: new naver.maps.Point(11, 20),
-    scaledSize: new naver.maps.Size(23, 23)
-  }));
-}
-
-function highlightMarker(marker) {
-  marker.setIcon({
-    url: "images/marker.png",
-    size: new naver.maps.Size(35, 35),
-    anchor: new naver.maps.Point(17, 30),
-    scaledSize: new naver.maps.Size(35, 35)
-  });
 }
 
 function setupMapEvents() {
