@@ -19,6 +19,8 @@ import { initFavoriteButton, initReviewModal } from './addFavRev.js';
 import { resizeImage, uploadReviewImages } from "./resizeImage.js";
 import { query, orderBy } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
+// 전역 변수로 pool 선언
+let pool;
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 헤더 높이 설정
@@ -52,20 +54,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         .then(response => response.json())
         .then(pools => {
             // poolId에 맞는 수영장 정보 찾기
-            const pool = Array.isArray(pools) 
+            const poolData = Array.isArray(pools) 
                 ? pools.find(pool => String(pool.id) === poolId)
                 : pools; // 단일 객체인 경우
             
-            if (!pool) {
+            if (!poolData) {
                 console.error("해당 Pool ID에 맞는 수영장 정보를 찾지 못했습니다.");
                 return;
             }
             
+            // 전역 변수에 pool 할당
+            pool = poolData;
+            
             // 풀 정보 표시
-            displayPoolInfo(pool);
+            displayPoolInfo(poolData);
             
             // 현재 요일에 해당하는 탭 활성화 및 시간표 표시
-            initDayTabs(pool);
+            initDayTabs(poolData);
             
             // 지도 표시
             if (pool.lat && pool.lng) {
@@ -76,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // 즐겨찾기 버튼 초기화
-            initFavoriteButton(pool);
+            initFavoriteButton(poolData);
             
             // 리뷰 모달 초기화
             initReviewModal();
@@ -93,7 +98,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   // 수영장 기본 정보 표시
-  function displayPoolInfo(pool) {
+  function displayPoolInfo(poolData) {
+    // 전역 변수에 pool 할당
+    pool = poolData;
+    
     // 이름 및 주소 정보
     const poolNameElements = document.querySelectorAll('.pool-name');
     poolNameElements.forEach(element => {
@@ -376,9 +384,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 세션 정보 표시
-    sessions.forEach(session => {
+    sessions.forEach((session, index) => {
         const sessionDiv = document.createElement('div');
         sessionDiv.className = 'session-row';
+        
+        const sessionNumDiv = document.createElement('div');
+        sessionNumDiv.className = 'session-num';
+        sessionNumDiv.textContent = `${index + 1}부`;
         
         const timeDiv = document.createElement('div');
         timeDiv.className = 'time';
@@ -388,6 +400,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         typeDiv.className = 'type';
         typeDiv.textContent = session.type;
         
+        sessionDiv.appendChild(sessionNumDiv);
         sessionDiv.appendChild(timeDiv);
         sessionDiv.appendChild(typeDiv);
         container.appendChild(sessionDiv);
@@ -400,6 +413,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 기존 요금 정보 요소들 제거
     while (container.firstChild) {
         container.removeChild(container.firstChild);
+    }
+    
+    // 해당 요일의 시간표가 있는지 확인
+    const sessions = pool.sessions[dayKey];
+    if (!sessions || sessions.length === 0) {
+        const noChargeDiv = document.createElement('div');
+        noChargeDiv.className = 'charge-info';
+        noChargeDiv.innerHTML = '<div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div>';
+        container.appendChild(noChargeDiv);
+        return;
     }
     
     if (!charges) {

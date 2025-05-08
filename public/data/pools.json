@@ -553,21 +553,11 @@
       "비회원 자유수영 토요일만 가능"
     ],
     "sessions": {
-      "monday": [
-       
-      ],
-      "tuesday": [
-      
-      ],
-      "wednesday": [
-       
-      ],
-      "thursday": [
-        
-      ],
-      "friday": [
-       
-      ],
+      "monday": [],
+      "tuesday": [],
+      "wednesday": [],
+      "thursday": [],
+      "friday": [],
       "saturday": [
         {
           "time": "13:10 - 14:50",
@@ -1590,7 +1580,12 @@
       "wednesday": [],
       "thursday": [],
       "friday": [],
-      "saturday": [],
+      "saturday": [
+        {
+          "time": "18:00 - 18:50",
+          "admission": ""
+        }
+      ],
       "sunday": []
     },
     "charge": {
@@ -1603,8 +1598,8 @@
       "member-weekday": [],
       "member-weekend": []
     },
-    "createdAt": "2025-05-04T14:04:32.416Z",
-    "updatedAt": "2025-05-04T14:04:32.420Z",
+    "createdAt": "2025-05-08T23:13:13.009Z",
+    "updatedAt": "2025-05-08T23:13:13.019Z",
     "lat": 37.5527068,
     "lng": 127.0198751,
     "id": 18,
@@ -6059,17 +6054,13 @@
           "time": "12:00~12:50"
         }
       ],
-      "tuesday": [
-        
-      ],
+      "tuesday": [],
       "wednesday": [
         {
           "time": "12:00~12:50"
         }
       ],
-      "thursday": [
-        
-      ],
+      "thursday": [],
       "friday": [
         {
           "time": "12:00~12:50"

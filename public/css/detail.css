@@ -162,15 +162,6 @@
 }
 
 
-.session-num, .session-time{
-    font-weight: 500;
-}
-
-.session-admission {
-    margin-left: auto;
-    color: #999;
-    font-size: 0.9rem;
-}
 
 .day-tab.closed {
     background-color: #f5f5f5;
@@ -182,9 +173,6 @@
     color: #000;
 }
 
-.session-num{
-    margin-right: 0.375rem;
-}
 
 .charge:not(:last-child)::after {
     content: "|";
@@ -289,3 +277,30 @@ li {
   b{
     font-weight: 500;
   }
+
+.session-row {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.session-row:last-child{
+    border-bottom: none;
+}
+
+.session-num {
+    min-width: 30px;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+.session-time {
+    flex: 1;
+}
+
+.session-admission {
+    margin-left: auto;
+    color: #999;
+    font-size: 0.9rem;
+}
