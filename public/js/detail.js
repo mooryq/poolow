@@ -415,32 +415,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const chargeType = isWeekend ? 'weekend' : 'weekday';
     const memberChargeType = isWeekend ? 'member-weekend' : 'member-weekday';
     
-    // 요금 목록이 배열인 경우와 객체인 경우 처리
-    let chargeList = [];
-    let memberChargeList = [];
-    
-    if (Array.isArray(charges)) {
-        // charges가 배열인 경우 (구버전)
-        chargeList = charges;
-    } else {
-        // charges가 객체인 경우 (신버전)
-        if (charges[chargeType]) {
-            chargeList = charges[chargeType];
-        }
-        if (charges[memberChargeType]) {
-            memberChargeList = charges[memberChargeType];
-        }
-    }
+    // 요금 목록 가져오기
+    const chargeList = charges[chargeType] || [];
+    const memberChargeList = charges[memberChargeType] || [];
     
     // 일반 요금 정보 표시
-    if (Array.isArray(chargeList) && chargeList.length > 0) {
+    if (chargeList.length > 0) {
         const chargeRow = document.createElement('div');
         chargeRow.className = 'charge-row';
         
         chargeList.forEach(charge => {
             const chargeDiv = document.createElement('div');
             chargeDiv.className = 'charge';
-            chargeDiv.textContent = formatCharge(charge);
+            chargeDiv.textContent = charge;
             chargeRow.appendChild(chargeDiv);
         });
         
@@ -453,7 +440,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     // 회원 요금 정보 표시 (있는 경우)
-    if (Array.isArray(memberChargeList) && memberChargeList.length > 0) {
+    if (memberChargeList.length > 0) {
         const memberInfoDiv = document.createElement('div');
         memberInfoDiv.className = 'charge-info';
         
