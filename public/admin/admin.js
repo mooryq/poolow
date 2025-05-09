@@ -416,6 +416,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
       }
 
+      console.log('sessions 원본:', pool.sessions);
+
+      const sessions = pool.sessions || {};
+      console.log('weekdaySessions:', sessions.monday || []);
+      console.log('weekendSessions:', sessions.saturday || []);
+
       fillPoolForm(pool);
       console.log('폼 데이터 채우기 완료');
       
@@ -473,107 +479,146 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('information').value = pool.information?.join('\n') || '';
     
     // 운영 시간표 설정
+    // 세션 필드가 없거나, 모든 요일이 빈 배열이면 안내 메시지
+    const sessionDays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+    const hasSessionData = pool.sessions && sessionDays.some(day => Array.isArray(pool.sessions[day]) && pool.sessions[day].length > 0);
+    if (!pool.sessions || !hasSessionData) {
+      return;
+    }
+
     if (pool.sessions) {
       // 평일 시간표
       const tablesContainer = document.getElementById('tablesContainer');
       if (tablesContainer) {
         tablesContainer.innerHTML = '';
         
-        // 새로운 데이터 구조 (weekdayTables)가 있으면 사용
-        if (pool.weekdayTables && pool.weekdayTables.length > 0) {
-          pool.weekdayTables.forEach(tableData => {
-            const tableWrapper = document.createElement('div');
-            tableWrapper.className = 'time-table-wrapper';
-            
-            // 요일 체크박스
-            const dayBox = document.createElement('div');
-            dayBox.className = 'table-day-checkbox-container';
-            dayBox.innerHTML = `
-              <label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>
-              <label><input type="checkbox" class="table-day-checkbox" value="월" ${tableData.days.includes('월') ? 'checked' : ''} style="width:22px;height:22px;">월</label>
-              <label><input type="checkbox" class="table-day-checkbox" value="화" ${tableData.days.includes('화') ? 'checked' : ''} style="width:22px;height:22px;">화</label>
-              <label><input type="checkbox" class="table-day-checkbox" value="수" ${tableData.days.includes('수') ? 'checked' : ''} style="width:22px;height:22px;">수</label>
-              <label><input type="checkbox" class="table-day-checkbox" value="목" ${tableData.days.includes('목') ? 'checked' : ''} style="width:22px;height:22px;">목</label>
-              <label><input type="checkbox" class="table-day-checkbox" value="금" ${tableData.days.includes('금') ? 'checked' : ''} style="width:22px;height:22px;">금</label>
-            `;
-            tableWrapper.appendChild(dayBox);
-            
-            // 시간표
-            const table = document.createElement('table');
-            table.className = 'time-table';
-            const thead = document.createElement('thead');
-            thead.innerHTML = `
-              <tr>
-                <th>부</th>
-                <th>시작시간</th>
-                <th>종료시간</th>
-                <th>삭제</th>
-              </tr>
-            `;
-            const tbody = document.createElement('tbody');
-            
-            tableData.times.forEach((time, index) => {
-              const [startTime, endTime] = time.split(' - ');
-              const row = document.createElement('tr');
-              row.innerHTML = `
-                <td>${index + 1}부</td>
-                <td><input type="time" class="start-time" value="${startTime || ''}"></td>
-                <td><input type="time" class="end-time" value="${endTime || ''}"></td>
-                <td><button type="button" class="delete-row">삭제</button></td>
-              `;
-              tbody.appendChild(row);
-            });
-            
-            table.appendChild(thead);
-            table.appendChild(tbody);
-            tableWrapper.appendChild(table);
-            
-            // 행 추가 버튼
-            const addRowButton = document.createElement('button');
-            addRowButton.type = 'button';
-            addRowButton.className = 'add-row';
-            addRowButton.textContent = '+ 행 추가';
-            tableWrapper.appendChild(addRowButton);
-            
-            // 테이블 삭제 버튼
-            const deleteTableButton = document.createElement('button');
-            deleteTableButton.type = 'button';
-            deleteTableButton.className = 'delete-table';
-            deleteTableButton.textContent = '테이블 삭제';
-            tableWrapper.appendChild(deleteTableButton);
-            
-            tablesContainer.appendChild(tableWrapper);
-          });
-        } else {
-          // 기존 데이터 구조 (sessions)를 사용하여 테이블 생성
-          const weekdaySessions = {
-            '월': pool.sessions.monday || [],
-            '화': pool.sessions.tuesday || [],
-            '수': pool.sessions.wednesday || [],
-            '목': pool.sessions.thursday || [],
-            '금': pool.sessions.friday || []
-          };
+        // 1. 요일별 시간표를 문자열로 변환해서 비교
+        function sessionListToString(sessionList) {
+          return (sessionList || [])
+            .map(s => (s.time || '').replace(/\s/g, '').replace('~', '-'))
+            .sort()
+            .join('|');
+        }
 
-          // 각 요일별로 테이블 생성
-          Object.entries(weekdaySessions).forEach(([day, sessions]) => {
-            if (sessions.length > 0) {
+        // 2. 요일별로 시간표 그룹화
+        function groupWeekdaySessions(sessions) {
+          const days = ['월', '화', '수', '목', '금'];
+          const dayKey = { '월': 'monday', '화': 'tuesday', '수': 'wednesday', '목': 'thursday', '금': 'friday' };
+          const sessionMap = {};
+
+          days.forEach(day => {
+            sessionMap[day] = (sessions[dayKey[day]] || []);
+          });
+
+          // 시간표 문자열 기준으로 그룹화
+          const groupMap = {};
+          days.forEach(day => {
+            const key = sessionListToString(sessionMap[day]);
+            if (!groupMap[key]) groupMap[key] = [];
+            groupMap[key].push(day);
+          });
+
+          // [{ days: [...], sessions: [...] }, ...]
+          return Object.entries(groupMap).map(([key, daysArr]) => ({
+            days: daysArr,
+            sessions: sessionMap[daysArr[0]]
+          }));
+        }
+
+        // 3. 요일별로 공통 시간표에 없는 세션만 추출
+        function getExtraSessions(sessions, commonSessions) {
+          // 시간만 비교 (admission 등은 무시)
+          const commonTimes = new Set((commonSessions || []).map(s => (s.time || '').replace(/\s/g, '').replace('~', '-')));
+          return (sessions || []).filter(s => !commonTimes.has((s.time || '').replace(/\s/g, '').replace('~', '-')));
+        }
+
+        // 1) 공통 시간표 그룹화
+        const weekdayGroups = groupWeekdaySessions(pool.sessions);
+
+        // 2) 공통 시간표 테이블 생성
+        weekdayGroups.forEach(group => {
+          if (group.sessions.length === 0) return;
+          // 체크박스: group.days
+          // 행: group.sessions
+          // 시간 split: - 또는 ~ 모두 지원
+          const tableWrapper = document.createElement('div');
+          tableWrapper.className = 'time-table-wrapper';
+
+          // 체크박스
+          const dayBox = document.createElement('div');
+          dayBox.className = 'table-day-checkbox-container';
+          dayBox.innerHTML = `<label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>` +
+            ['월', '화', '수', '목', '금'].map(day =>
+              `<label><input type="checkbox" class="table-day-checkbox" value="${day}" ${group.days.includes(day) ? 'checked' : ''} style="width:22px;height:22px;">${day}</label>`
+            ).join('');
+          tableWrapper.appendChild(dayBox);
+
+          // 테이블
+          const table = document.createElement('table');
+          table.className = 'time-table';
+          const thead = document.createElement('thead');
+          thead.innerHTML = `
+            <tr>
+              <th>부</th>
+              <th>시작시간</th>
+              <th>종료시간</th>
+              <th>삭제</th>
+            </tr>
+          `;
+          const tbody = document.createElement('tbody');
+          group.sessions.forEach((session, idx) => {
+            let [start, end] = (session.time || '').replace(/\s/g, '').split('-');
+            if (!end && session.time) [start, end] = session.time.replace(/\s/g, '').split('~');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${idx + 1}부</td>
+              <td><input type="time" class="start-time" value="${start || ''}"></td>
+              <td><input type="time" class="end-time" value="${end || ''}"></td>
+              <td><button type="button" class="delete-row">삭제</button></td>
+            `;
+            tbody.appendChild(row);
+          });
+          table.appendChild(thead);
+          table.appendChild(tbody);
+          tableWrapper.appendChild(table);
+
+          // 행 추가/테이블 삭제 버튼
+          const addRowButton = document.createElement('button');
+          addRowButton.type = 'button';
+          addRowButton.className = 'add-row';
+          addRowButton.textContent = '+ 행 추가';
+          tableWrapper.appendChild(addRowButton);
+
+          const deleteTableButton = document.createElement('button');
+          deleteTableButton.type = 'button';
+          deleteTableButton.className = 'delete-table';
+          deleteTableButton.textContent = '테이블 삭제';
+          tableWrapper.appendChild(deleteTableButton);
+
+          tablesContainer.appendChild(tableWrapper);
+        });
+
+        // 3) 각 요일별로 공통 시간표에 없는 세션이 있으면 별도 테이블 생성
+        const days = ['월', '화', '수', '목', '금'];
+        const dayKey = { '월': 'monday', '화': 'tuesday', '수': 'wednesday', '목': 'thursday', '금': 'friday' };
+        weekdayGroups.forEach(group => {
+          group.days.forEach(day => {
+            const extra = getExtraSessions(pool.sessions[dayKey[day]], group.sessions);
+            if (extra.length > 0) {
+              // 요일만 체크된 테이블
               const tableWrapper = document.createElement('div');
               tableWrapper.className = 'time-table-wrapper';
-              
-              // 요일 체크박스
+
+              // 체크박스
               const dayBox = document.createElement('div');
               dayBox.className = 'table-day-checkbox-container';
-              dayBox.innerHTML = `
-                <label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>
-                <label><input type="checkbox" class="table-day-checkbox" value="월" ${day === '월' ? 'checked' : ''} style="width:22px;height:22px;">월</label>
-                <label><input type="checkbox" class="table-day-checkbox" value="화" ${day === '화' ? 'checked' : ''} style="width:22px;height:22px;">화</label>
-                <label><input type="checkbox" class="table-day-checkbox" value="수" ${day === '수' ? 'checked' : ''} style="width:22px;height:22px;">수</label>
-                <label><input type="checkbox" class="table-day-checkbox" value="목" ${day === '목' ? 'checked' : ''} style="width:22px;height:22px;">목</label>
-                <label><input type="checkbox" class="table-day-checkbox" value="금" ${day === '금' ? 'checked' : ''} style="width:22px;height:22px;">금</label>
-              `;
+              dayBox.innerHTML = `<label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>` +
+                ['월', '화', '수', '목', '금'].map(d =>
+                  `<label><input type="checkbox" class="table-day-checkbox" value="${d}" ${d === day ? 'checked' : ''} style="width:22px;height:22px;">${d}</label>`
+                ).join('');
               tableWrapper.appendChild(dayBox);
-              
-              // 시간표
+
+              // 테이블
               const table = document.createElement('table');
               table.className = 'time-table';
               const thead = document.createElement('thead');
@@ -586,180 +631,210 @@ document.addEventListener('DOMContentLoaded', async function() {
                 </tr>
               `;
               const tbody = document.createElement('tbody');
-              
-              sessions.forEach((session, index) => {
-                const [startTime, endTime] = session.time.split(' - ');
+              extra.forEach((session, idx) => {
+                let [start, end] = (session.time || '').replace(/\s/g, '').split('-');
+                if (!end && session.time) [start, end] = session.time.replace(/\s/g, '').split('~');
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                  <td>${index + 1}부</td>
-                  <td><input type="time" class="start-time" value="${startTime || ''}"></td>
-                  <td><input type="time" class="end-time" value="${endTime || ''}"></td>
+                  <td>${idx + 1}부</td>
+                  <td><input type="time" class="start-time" value="${start || ''}"></td>
+                  <td><input type="time" class="end-time" value="${end || ''}"></td>
                   <td><button type="button" class="delete-row">삭제</button></td>
                 `;
                 tbody.appendChild(row);
               });
-              
               table.appendChild(thead);
               table.appendChild(tbody);
               tableWrapper.appendChild(table);
-              
-              // 행 추가 버튼
+
+              // 행 추가/테이블 삭제 버튼
               const addRowButton = document.createElement('button');
               addRowButton.type = 'button';
               addRowButton.className = 'add-row';
               addRowButton.textContent = '+ 행 추가';
               tableWrapper.appendChild(addRowButton);
-              
-              // 테이블 삭제 버튼
+
               const deleteTableButton = document.createElement('button');
               deleteTableButton.type = 'button';
               deleteTableButton.className = 'delete-table';
               deleteTableButton.textContent = '테이블 삭제';
               tableWrapper.appendChild(deleteTableButton);
-              
+
               tablesContainer.appendChild(tableWrapper);
             }
           });
-        }
+        });
       }
-      
+
       // 주말 시간표
       const weekendTablesContainer = document.getElementById('weekendTablesContainer');
       if (weekendTablesContainer) {
         weekendTablesContainer.innerHTML = '';
-        
-        // 새로운 데이터 구조 (weekendTables)가 있으면 사용
-        if (pool.weekendTables && pool.weekendTables.length > 0) {
-          pool.weekendTables.forEach(tableData => {
-            const tableWrapper = document.createElement('div');
-            tableWrapper.className = 'time-table-wrapper';
-            
-            // 요일 체크박스
-            const dayBox = document.createElement('div');
-            dayBox.className = 'table-day-checkbox-container';
-            dayBox.innerHTML = `
-              <label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>
-              <label><input type="checkbox" class="table-day-checkbox" value="토" ${tableData.days.includes('토') ? 'checked' : ''} style="width:22px;height:22px;">토</label>
-              <label><input type="checkbox" class="table-day-checkbox" value="일" ${tableData.days.includes('일') ? 'checked' : ''} style="width:22px;height:22px;">일</label>
+        const dayKey = { '토': 'saturday', '일': 'sunday' };
+        // 1. 시간만 추출 (형식 통일)
+        const satSessionsRaw = pool.sessions.saturday || [];
+        const sunSessionsRaw = pool.sessions.sunday || [];
+        const satTimes = satSessionsRaw.map(s => (s.time || '').replace(/\s/g, '').replace('~', '-'));
+        const sunTimes = sunSessionsRaw.map(s => (s.time || '').replace(/\s/g, '').replace('~', '-'));
+        // 2. 공통 시간표(토/일 모두 있는 시간)
+        const commonTimes = satTimes.filter(time => sunTimes.includes(time));
+        // 3. 개별 시간표(각 요일에만 있는 시간)
+        const satOnlyTimes = satTimes.filter(time => !commonTimes.includes(time));
+        const sunOnlyTimes = sunTimes.filter(time => !commonTimes.includes(time));
+        // 4. 세션 객체 추출 함수
+        const getSessionByTime = (sessions, time) => (sessions || []).find(s => (s.time || '').replace(/\s/g, '').replace('~', '-') === time);
+        const commonSessions = commonTimes.map(time => getSessionByTime(satSessionsRaw, time)); // 토/일 아무 쪽이나 사용
+        const satOnlySessions = satOnlyTimes.map(time => getSessionByTime(satSessionsRaw, time));
+        const sunOnlySessions = sunOnlyTimes.map(time => getSessionByTime(sunSessionsRaw, time));
+        // 5-1. 공통 시간표 테이블 (토/일 체크)
+        if (commonSessions.length > 0) {
+          const tableWrapper = document.createElement('div');
+          tableWrapper.className = 'time-table-wrapper';
+          const dayBox = document.createElement('div');
+          dayBox.className = 'table-day-checkbox-container';
+          dayBox.innerHTML = `<label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>` +
+            ['토', '일'].map(day =>
+              `<label><input type="checkbox" class="table-day-checkbox" value="${day}" checked style="width:22px;height:22px;">${day}</label>`
+            ).join('');
+          tableWrapper.appendChild(dayBox);
+          const table = document.createElement('table');
+          table.className = 'time-table';
+          const thead = document.createElement('thead');
+          thead.innerHTML = `
+            <tr>
+              <th>부</th>
+              <th>시작시간</th>
+              <th>종료시간</th>
+              <th>삭제</th>
+            </tr>
+          `;
+          const tbody = document.createElement('tbody');
+          commonSessions.forEach((session, idx) => {
+            let [start, end] = (session.time || '').replace(/\s/g, '').split('-');
+            if (!end && session.time) [start, end] = session.time.replace(/\s/g, '').split('~');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${idx + 1}부</td>
+              <td><input type="time" class="start-time" value="${start || ''}"></td>
+              <td><input type="time" class="end-time" value="${end || ''}"></td>
+              <td><button type="button" class="delete-row">삭제</button></td>
             `;
-            tableWrapper.appendChild(dayBox);
-            
-            // 시간표
-            const table = document.createElement('table');
-            table.className = 'time-table';
-            const thead = document.createElement('thead');
-            thead.innerHTML = `
-              <tr>
-                <th>부</th>
-                <th>시작시간</th>
-                <th>종료시간</th>
-                <th>삭제</th>
-              </tr>
+            tbody.appendChild(row);
+          });
+          table.appendChild(thead);
+          table.appendChild(tbody);
+          tableWrapper.appendChild(table);
+          const addRowButton = document.createElement('button');
+          addRowButton.type = 'button';
+          addRowButton.className = 'add-row';
+          addRowButton.textContent = '+ 행 추가';
+          tableWrapper.appendChild(addRowButton);
+          const deleteTableButton = document.createElement('button');
+          deleteTableButton.type = 'button';
+          deleteTableButton.className = 'delete-table';
+          deleteTableButton.textContent = '테이블 삭제';
+          tableWrapper.appendChild(deleteTableButton);
+          weekendTablesContainer.appendChild(tableWrapper);
+        }
+        // 5-2. 토요일만 시간표 (있으면)
+        if (satOnlySessions.length > 0) {
+          const tableWrapper = document.createElement('div');
+          tableWrapper.className = 'time-table-wrapper';
+          const dayBox = document.createElement('div');
+          dayBox.className = 'table-day-checkbox-container';
+          dayBox.innerHTML = `<label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>` +
+            ['토', '일'].map(day =>
+              `<label><input type="checkbox" class="table-day-checkbox" value="${day}" ${day === '토' ? 'checked' : ''} style="width:22px;height:22px;">${day}</label>`
+            ).join('');
+          tableWrapper.appendChild(dayBox);
+          const table = document.createElement('table');
+          table.className = 'time-table';
+          const thead = document.createElement('thead');
+          thead.innerHTML = `
+            <tr>
+              <th>부</th>
+              <th>시작시간</th>
+              <th>종료시간</th>
+              <th>삭제</th>
+            </tr>
+          `;
+          const tbody = document.createElement('tbody');
+          satOnlySessions.forEach((session, idx) => {
+            let [start, end] = (session.time || '').replace(/\s/g, '').split('-');
+            if (!end && session.time) [start, end] = session.time.replace(/\s/g, '').split('~');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${idx + 1}부</td>
+              <td><input type="time" class="start-time" value="${start || ''}"></td>
+              <td><input type="time" class="end-time" value="${end || ''}"></td>
+              <td><button type="button" class="delete-row">삭제</button></td>
             `;
-            const tbody = document.createElement('tbody');
-            
-            tableData.times.forEach((time, index) => {
-              const [startTime, endTime] = time.split(' - ');
-              const row = document.createElement('tr');
-              row.innerHTML = `
-                <td>${index + 1}부</td>
-                <td><input type="time" class="start-time" value="${startTime || ''}"></td>
-                <td><input type="time" class="end-time" value="${endTime || ''}"></td>
-                <td><button type="button" class="delete-row">삭제</button></td>
-              `;
-              tbody.appendChild(row);
-            });
-            
-            table.appendChild(thead);
-            table.appendChild(tbody);
-            tableWrapper.appendChild(table);
-            
-            // 행 추가 버튼
-            const addRowButton = document.createElement('button');
-            addRowButton.type = 'button';
-            addRowButton.className = 'add-row';
-            addRowButton.textContent = '+ 행 추가';
-            tableWrapper.appendChild(addRowButton);
-            
-            // 테이블 삭제 버튼
-            const deleteTableButton = document.createElement('button');
-            deleteTableButton.type = 'button';
-            deleteTableButton.className = 'delete-table';
-            deleteTableButton.textContent = '테이블 삭제';
-            tableWrapper.appendChild(deleteTableButton);
-            
-            weekendTablesContainer.appendChild(tableWrapper);
+            tbody.appendChild(row);
           });
-        } else {
-          // 기존 데이터 구조 (sessions)를 사용하여 테이블 생성
-          const weekendSessions = {
-            '토': pool.sessions.saturday || [],
-            '일': pool.sessions.sunday || []
-          };
-
-          // 각 요일별로 테이블 생성
-          Object.entries(weekendSessions).forEach(([day, sessions]) => {
-            if (sessions.length > 0) {
-              const tableWrapper = document.createElement('div');
-              tableWrapper.className = 'time-table-wrapper';
-              
-              // 요일 체크박스
-              const dayBox = document.createElement('div');
-              dayBox.className = 'table-day-checkbox-container';
-              dayBox.innerHTML = `
-                <label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>
-                <label><input type="checkbox" class="table-day-checkbox" value="토" ${day === '토' ? 'checked' : ''} style="width:22px;height:22px;">토</label>
-                <label><input type="checkbox" class="table-day-checkbox" value="일" ${day === '일' ? 'checked' : ''} style="width:22px;height:22px;">일</label>
-              `;
-              tableWrapper.appendChild(dayBox);
-              
-              // 시간표
-              const table = document.createElement('table');
-              table.className = 'time-table';
-              const thead = document.createElement('thead');
-              thead.innerHTML = `
-                <tr>
-                  <th>부</th>
-                  <th>시작시간</th>
-                  <th>종료시간</th>
-                  <th>삭제</th>
-                </tr>
-              `;
-              const tbody = document.createElement('tbody');
-              
-              sessions.forEach((session, index) => {
-                const [startTime, endTime] = session.time.split(' - ');
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                  <td>${index + 1}부</td>
-                  <td><input type="time" class="start-time" value="${startTime || ''}"></td>
-                  <td><input type="time" class="end-time" value="${endTime || ''}"></td>
-                  <td><button type="button" class="delete-row">삭제</button></td>
-                `;
-                tbody.appendChild(row);
-              });
-              
-              table.appendChild(thead);
-              table.appendChild(tbody);
-              tableWrapper.appendChild(table);
-              
-              // 행 추가 버튼
-              const addRowButton = document.createElement('button');
-              addRowButton.type = 'button';
-              addRowButton.className = 'add-row';
-              addRowButton.textContent = '+ 행 추가';
-              tableWrapper.appendChild(addRowButton);
-              
-              // 테이블 삭제 버튼
-              const deleteTableButton = document.createElement('button');
-              deleteTableButton.type = 'button';
-              deleteTableButton.className = 'delete-table';
-              deleteTableButton.textContent = '테이블 삭제';
-              tableWrapper.appendChild(deleteTableButton);
-              
-              weekendTablesContainer.appendChild(tableWrapper);
-            }
+          table.appendChild(thead);
+          table.appendChild(tbody);
+          tableWrapper.appendChild(table);
+          const addRowButton = document.createElement('button');
+          addRowButton.type = 'button';
+          addRowButton.className = 'add-row';
+          addRowButton.textContent = '+ 행 추가';
+          tableWrapper.appendChild(addRowButton);
+          const deleteTableButton = document.createElement('button');
+          deleteTableButton.type = 'button';
+          deleteTableButton.className = 'delete-table';
+          deleteTableButton.textContent = '테이블 삭제';
+          tableWrapper.appendChild(deleteTableButton);
+          weekendTablesContainer.appendChild(tableWrapper);
+        }
+        // 5-3. 일요일만 시간표 (있으면)
+        if (sunOnlySessions.length > 0) {
+          const tableWrapper = document.createElement('div');
+          tableWrapper.className = 'time-table-wrapper';
+          const dayBox = document.createElement('div');
+          dayBox.className = 'table-day-checkbox-container';
+          dayBox.innerHTML = `<label><input type="checkbox" class="table-day-checkbox-all" style="width:22px;height:22px;">전체</label>` +
+            ['토', '일'].map(day =>
+              `<label><input type="checkbox" class="table-day-checkbox" value="${day}" ${day === '일' ? 'checked' : ''} style="width:22px;height:22px;">${day}</label>`
+            ).join('');
+          tableWrapper.appendChild(dayBox);
+          const table = document.createElement('table');
+          table.className = 'time-table';
+          const thead = document.createElement('thead');
+          thead.innerHTML = `
+            <tr>
+              <th>부</th>
+              <th>시작시간</th>
+              <th>종료시간</th>
+              <th>삭제</th>
+            </tr>
+          `;
+          const tbody = document.createElement('tbody');
+          sunOnlySessions.forEach((session, idx) => {
+            let [start, end] = (session.time || '').replace(/\s/g, '').split('-');
+            if (!end && session.time) [start, end] = session.time.replace(/\s/g, '').split('~');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${idx + 1}부</td>
+              <td><input type="time" class="start-time" value="${start || ''}"></td>
+              <td><input type="time" class="end-time" value="${end || ''}"></td>
+              <td><button type="button" class="delete-row">삭제</button></td>
+            `;
+            tbody.appendChild(row);
           });
+          table.appendChild(thead);
+          table.appendChild(tbody);
+          tableWrapper.appendChild(table);
+          const addRowButton = document.createElement('button');
+          addRowButton.type = 'button';
+          addRowButton.className = 'add-row';
+          addRowButton.textContent = '+ 행 추가';
+          tableWrapper.appendChild(addRowButton);
+          const deleteTableButton = document.createElement('button');
+          deleteTableButton.type = 'button';
+          deleteTableButton.className = 'delete-table';
+          deleteTableButton.textContent = '테이블 삭제';
+          tableWrapper.appendChild(deleteTableButton);
+          weekendTablesContainer.appendChild(tableWrapper);
         }
       }
     }
@@ -1060,6 +1135,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     // 이벤트 바인딩
     bindTableDayCheckboxEvents(wrapper);
     
+    console.log('테이블 생성 - days:', days, 'time:', time);
+    
     return wrapper;
   }
 
@@ -1069,4 +1146,19 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.querySelectorAll('.time-table-wrapper').forEach(wrapper => {
     bindTableDayCheckboxEvents(wrapper);
   });
+
+  function updateChargeInfo(pool) {
+    const sessions = pool.sessions || {};
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    days.forEach(day => {
+      const daySessions = sessions[day] || [];
+      // ...이하 로직...
+    });
+    // 또는, 세션이 아예 없으면 안내 메시지
+    if (!pool.sessions) {
+      // 안내 메시지 표시
+      alert('아직 정보가 업데이트되지 않았습니다.');
+      return;
+    }
+  }
 });

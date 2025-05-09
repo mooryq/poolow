@@ -19,42 +19,64 @@ const clearSearchBtn = document.getElementById("clearSearch");
 const swiperContainer = document.querySelector('.cardUI');
 
 function initApp() {
+  console.log('앱 초기화 시작');
   setViewportHeight();
   initSwiper();
   initMap()
-    .then(() => loadPools())
     .then(() => {
+      console.log('지도 초기화 완료');
+      return loadPools();
+    })
+    .then(() => {
+      console.log('수영장 데이터 로드 완료:', pools);
       initMyLocationButton();
       setupSearchEvents();
       setupFilterEvents();
     })
-    .catch(console.error);
+    .catch(err => {
+      console.error('앱 초기화 중 오류 발생:', err);
+    });
 }
 
 function initMap() {
+  console.log('지도 초기화 시작');
   return new Promise((resolve, reject) => {
     try {
       const defaultLatLng = new naver.maps.LatLng(37.5665, 126.9780);
       map = new naver.maps.Map("map", { center: defaultLatLng, zoom: 13 });
+      console.log('기본 지도 생성 완료');
       setupMapEvents();
-      if (navigator.geolocation) {
-        loadingIndicator = document.getElementById("loadingIndicator");
-        showLoading();
-        navigator.geolocation.getCurrentPosition(pos => {
-          const userLatLng = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-          map.panTo(userLatLng);
-          map.setZoom(13);
-          hideLoading();
-          resolve();
-        }, err => {
-          console.warn("위치 실패:", err.message);
-          hideLoading();
-          resolve();
-        });
-      } else {
-        resolve();
-      }
+
+      // 위치 정보를 즉시 요청하고 지도 초기화는 계속 진행
+      const locationPromise = new Promise((resolveLocation) => {
+        if (navigator.geolocation) {
+          loadingIndicator = document.getElementById("loadingIndicator");
+          showLoading();
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              console.log('사용자 위치 획득 성공:', pos.coords);
+              const userLatLng = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+              map.panTo(userLatLng);
+              map.setZoom(13);
+              hideLoading();
+              resolveLocation();
+            },
+            err => {
+              console.warn("위치 획득 실패:", err.message);
+              hideLoading();
+              resolveLocation();
+            }
+          );
+        } else {
+          console.log('지오로케이션 지원 안됨');
+          resolveLocation();
+        }
+      });
+
+      // 지도 초기화는 즉시 완료
+      resolve();
     } catch (err) {
+      console.error('지도 초기화 중 오류:', err);
       reject(err);
     }
   });
@@ -101,28 +123,36 @@ function initMyLocationButton() {
 }
 
 async function loadPools() {
+  console.log('수영장 데이터 로드 시작');
   showLoading();
   try {
     const res = await fetch("data/pools.json");
     if (!res.ok) throw new Error(`HTTP 오류: ${res.status}`);
     pools = await res.json();
+    console.log('수영장 데이터 로드 성공:', pools.length, '개');
     poolsInView = filterPools(pools);
+    console.log('현재 뷰에 표시될 수영장:', poolsInView.length, '개');
     updateMarkersAndCards();
   } catch (err) {
-    console.error("로드 실패:", err);
+    console.error("수영장 데이터 로드 실패:", err);
   } finally {
     hideLoading();
   }
 }
 
 function filterPools(poolList) {
-  if (!map || typeof map.getBounds !== 'function') return [];
+  console.log('수영장 필터링 시작');
+  if (!map || typeof map.getBounds !== 'function') {
+    console.warn('지도가 초기화되지 않았거나 getBounds 함수가 없음');
+    return [];
+  }
   const bounds = map.getBounds();
   const today = new Date().getDay();
   const dayMap = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
   const key = dayMap[today];
+  console.log('현재 요일:', key, '활성 필터:', activeFilter);
 
-  return poolList.filter(pool => {
+  const filtered = poolList.filter(pool => {
     const inBounds = bounds.hasLatLng(new naver.maps.LatLng(pool.lat, pool.lng));
     if (!inBounds) return false;
     if (!activeFilter) return true;
@@ -135,31 +165,37 @@ function filterPools(poolList) {
     };
     return cond[activeFilter]?.() ?? true;
   });
+  console.log('필터링 결과:', filtered.length, '개');
+  return filtered;
 }
 
 function updateMarkersAndCards() {
+  console.log('마커와 카드 업데이트 시작');
   updateMarkers();
   updateCardUI();
 }
 
 function updateMarkers() {
+  console.log('마커 업데이트 시작');
   markers.forEach(m => m.setMap(null));
   markers = [];
 
   poolsInView.forEach(pool => {
+    console.log('마커 생성:', pool.name);
     const marker = new naver.maps.Marker({
       position: new naver.maps.LatLng(pool.lat, pool.lng),
       map,
       title: pool.name,
       icon: {
         url: "images/marker.png",
-        size: new naver.maps.Size(22.5, 14.8), // 5:3.3 비율에 곱하기 4.5
+        size: new naver.maps.Size(22.5, 14.8),
         anchor: new naver.maps.Point(10, 10),
         scaledSize: new naver.maps.Size(22.5, 14.8)
       }
     });
 
     naver.maps.Event.addListener(marker, 'click', () => {
+      console.log('마커 클릭:', pool.name);
       isMarkerClicked = true;
       selectedPoolName = pool.name;
       focusMarkerByName(pool.name, pool.lat, pool.lng);
@@ -172,13 +208,13 @@ function updateMarkers() {
 
     markers.push(marker);
   });
+  console.log('생성된 마커 수:', markers.length);
 
   if (selectedPoolName) {
     const marker = markers.find(m => m.getTitle() === selectedPoolName);
     if (marker) highlightMarker(marker);
   }
 }
-
 
 function focusMarkerByName(name, lat, lng) {
   resetMarkerStyles();
@@ -206,7 +242,6 @@ function highlightMarker(marker) {
     scaledSize: new naver.maps.Size(27.5, 18.15)
   });
 }
-
 
 function updateCardUI() {
   if (!poolsInView.length) {
@@ -253,9 +288,15 @@ function updateSwiperSlides(poolList) {
 }
 
 function setupMapEvents() {
-  if (!map) return;
+  console.log('지도 이벤트 설정 시작');
+  if (!map) {
+    console.warn('지도가 초기화되지 않음');
+    return;
+  }
   naver.maps.Event.addListener(map, 'idle', () => {
+    console.log('지도 이동 완료');
     if (isMarkerClicked) {
+      console.log('마커 클릭으로 인한 이동 무시');
       isMarkerClicked = false;
       return;
     }
@@ -264,6 +305,7 @@ function setupMapEvents() {
     updateMarkersAndCards();
     const currentInView = poolsInView.map(p => p.name);
     if (!currentInView.includes(prevSelected)) {
+      console.log('이전 선택된 수영장이 현재 뷰에서 벗어남');
       selectedPoolName = null;
     }
     searchInput.blur();

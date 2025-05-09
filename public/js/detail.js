@@ -415,6 +415,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         container.removeChild(container.firstChild);
     }
     
+    // pool.sessions가 존재하는지 먼저 확인
+    if (!pool || !pool.sessions) {
+        const noChargeDiv = document.createElement('div');
+        noChargeDiv.className = 'charge-info';
+        noChargeDiv.innerHTML = '<div class="charge-row"><div class="charge">요금 정보가 없습니다.</div></div>';
+        container.appendChild(noChargeDiv);
+        return;
+    }
+    
     // 해당 요일의 시간표가 있는지 확인
     const sessions = pool.sessions[dayKey];
     if (!sessions || sessions.length === 0) {
