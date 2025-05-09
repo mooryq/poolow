@@ -549,3 +549,63 @@ input[type="tel"]::placeholder {
 .checkbox-container label:hover {
     background-color: #f0f0f0;
 } 
+
+.session-table-container {
+  margin-bottom: 20px;
+}
+
+.session-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.session-table th {
+  background-color: #f5f5f5;
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.session-table td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.session-table input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.session-table tr:last-child td {
+  background-color: #f9f9f9;
+  font-weight: 500;
+}
+
+.time-table-wrapper {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.time-table-wrapper h3 {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  color: #333;
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.table-day-checkbox-container {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.table-day-checkbox-container label {
+  margin-right: 10px;
+} 

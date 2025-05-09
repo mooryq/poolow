@@ -1,29 +1,11 @@
-// 인증 상태 모니터링
-let isAuthenticated = true; // 임시로 true로 설정
+import { geocodeAddress } from './geocode.js';
+import { handleFormSubmit, getSessionsData, getChargeData, getPoolIdFromUrl} from './form.js';
 
-// 관리자 권한 확인 함수
-async function checkAdminAuth() {
-  return true; // 임시로 true 반환
-}
-
-// 사용자 권한 확인 함수
-async function checkUserPermission() {
-  try {
-    // 관리자 권한 확인
-    const isAdmin = await checkAdminAuth();
-    if (!isAdmin) {
-      alert('관리자 권한이 필요합니다.');
-      return false;
-    }
-    return true;
-  } catch (error) {
-    console.error('권한 확인 중 오류 발생:', error);
-    alert('권한 확인 중 오류가 발생했습니다.');
-    return false;
-  }
-}
+// 로그인 상태 설정
+let isAuthenticated = true;
 
 document.addEventListener('DOMContentLoaded', async function() {
+  console.log('페이지 로드됨');
   const tablesContainer = document.getElementById('tablesContainer');
   const weekendTablesContainer = document.getElementById('weekendTablesContainer');
   const addTableButton = document.getElementById('addTable');
@@ -31,6 +13,20 @@ document.addEventListener('DOMContentLoaded', async function() {
   const form = document.getElementById('poolForm');
   const saveButton = document.querySelector('.save-button');
   
+  console.log('DOM 요소들:', {
+    tablesContainer,
+    weekendTablesContainer,
+    addTableButton,
+    addWeekendTableButton,
+    form,
+    saveButton
+  });
+
+  // 수영장 데이터 로드
+  console.log('수영장 데이터 로드 시작');
+  await loadPoolData();
+  console.log('수영장 데이터 로드 완료');
+
   // 전체 선택/해제 기능
   document.querySelectorAll('.all-checkbox-input').forEach(checkbox => {
     checkbox.addEventListener('change', function() {
@@ -293,37 +289,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // 주소를 위도, 경도로 변환하는 함수
-  async function geocodeAddress(address) {
-    if (!address) return null;
-
-    try {
-      const response = await fetch(`http://localhost:3001/api/geocode?address=${encodeURIComponent(address)}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.addresses && data.addresses.length > 0) {
-        const location = data.addresses[0];
-        console.log('Geocoding 성공:', location);
-        return {
-          lat: parseFloat(location.y),
-          lng: parseFloat(location.x)
-        };
-      } else {
-        console.error('Geocoding 실패:', data);
-        alert('주소를 찾을 수 없습니다.');
-        return null;
-      }
-    } catch (error) {
-      console.error('Geocoding 에러:', error);
-      alert('주소 변환 중 오류가 발생했습니다. API 키 설정을 확인해주세요.');
-      return null;
-    }
-  }
 
   // 저장 버튼 클릭 이벤트
   saveButton.addEventListener('click', async function(e) {
@@ -333,12 +298,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       // 인증 상태 확인
       if (!isAuthenticated) {
         alert('로그인이 필요합니다. 먼저 로그인해주세요.');
-        return;
-      }
-
-      // 사용자 권한 확인
-      const hasPermission = await checkUserPermission();
-      if (!hasPermission) {
         return;
       }
 
@@ -416,7 +375,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       
       alert(`${poolId ? '수정' : '저장'}되었습니다! (ID: ${result.id})`);
       console.log('현재 URL:', window.location.href);
-      const newUrl = window.location.origin + '/public/list.html';
+      const newUrl = window.location.origin + '/public/admin/list.html';
       console.log('이동할 URL:', newUrl);
       setTimeout(() => {
         window.location.href = newUrl;
@@ -428,231 +387,41 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // getSessionsData 함수 수정: 각 테이블별로 체크된 요일과 시간 정보를 저장
-  function getSessionsData() {
-    const sessions = {
-      monday: [],
-      tuesday: [],
-      wednesday: [],
-      thursday: [],
-      friday: [],
-      saturday: [],
-      sunday: []
-    };
-    
-    // 평일 시간표 처리
-    const weekdayTableWrappers = document.getElementById('tablesContainer').querySelectorAll('.time-table-wrapper');
-    weekdayTableWrappers.forEach(wrapper => {
-      const checkedDays = Array.from(wrapper.querySelectorAll('.table-day-checkbox:checked')).map(cb => cb.value);
-      const times = Array.from(wrapper.querySelectorAll('tbody tr')).map(row => {
-        const startTime = row.querySelector('.start-time').value;
-        const endTime = row.querySelector('.end-time').value;
-        return startTime && endTime ? { time: `${startTime} - ${endTime}`, admission: "" } : null;
-      }).filter(Boolean);
-
-      // 각 체크된 요일에 대해 시간표 데이터 설정
-      checkedDays.forEach(day => {
-        const dayKey = {
-          '월': 'monday',
-          '화': 'tuesday',
-          '수': 'wednesday',
-          '목': 'thursday',
-          '금': 'friday'
-        }[day];
-        if (dayKey) {
-          sessions[dayKey] = [...sessions[dayKey], ...times];
-        }
-      });
-    });
-
-    // 주말 시간표 처리
-    const weekendTableWrappers = document.getElementById('weekendTablesContainer').querySelectorAll('.time-table-wrapper');
-    weekendTableWrappers.forEach(wrapper => {
-      const checkedDays = Array.from(wrapper.querySelectorAll('.table-day-checkbox:checked')).map(cb => cb.value);
-      const times = Array.from(wrapper.querySelectorAll('tbody tr')).map(row => {
-        const startTime = row.querySelector('.start-time').value;
-        const endTime = row.querySelector('.end-time').value;
-        return startTime && endTime ? { time: `${startTime} - ${endTime}`, admission: "" } : null;
-      }).filter(Boolean);
-
-      // 각 체크된 요일에 대해 시간표 데이터 설정
-      checkedDays.forEach(day => {
-        const dayKey = {
-          '토': 'saturday',
-          '일': 'sunday'
-        }[day];
-        if (dayKey) {
-          sessions[dayKey] = [...sessions[dayKey], ...times];
-        }
-      });
-    });
-
-    // 각 요일별로 시간순 정렬
-    Object.keys(sessions).forEach(day => {
-      sessions[day].sort((a, b) => {
-        const aStartTime = a.time.split(' - ')[0];
-        const bStartTime = b.time.split(' - ')[0];
-        return aStartTime.localeCompare(bStartTime);
-      });
-    });
-
-    return sessions;
-  }
-
-  // 요금 데이터 수집 함수
-  function getChargeData() {
-    const weekdayPrices = [];
-    const weekendPrices = [];
-    const memberWeekdayPrices = [];
-    const memberWeekendPrices = [];
-
-    // 평일 요금
-    const weekdayAdultPrice = document.getElementById('weekdayAdultPrice').value;
-    const weekdayYouthPrice = document.getElementById('weekdayYouthPrice').value;
-    const weekdayChildPrice = document.getElementById('weekdayChildPrice').value;
-
-    if (weekdayAdultPrice) weekdayPrices.push(`성인: ${weekdayAdultPrice}원`);
-    if (weekdayYouthPrice) weekdayPrices.push(`청소년: ${weekdayYouthPrice}원`);
-    if (weekdayChildPrice) weekdayPrices.push(`어린이: ${weekdayChildPrice}원`);
-
-    // 주말 요금
-    const weekendAdultPrice = document.getElementById('weekendAdultPrice').value;
-    const weekendYouthPrice = document.getElementById('weekendYouthPrice').value;
-    const weekendChildPrice = document.getElementById('weekendChildPrice').value;
-
-    if (weekendAdultPrice) weekendPrices.push(`성인: ${weekendAdultPrice}원`);
-    if (weekendYouthPrice) weekendPrices.push(`청소년: ${weekendYouthPrice}원`);
-    if (weekendChildPrice) weekendPrices.push(`어린이: ${weekendChildPrice}원`);
-
-    // 평일 회원 요금
-    const memberWeekdayAdultPrice = document.getElementById('memberWeekdayAdultPrice')?.value;
-    const memberWeekdayYouthPrice = document.getElementById('memberWeekdayYouthPrice')?.value;
-    const memberWeekdayChildPrice = document.getElementById('memberWeekdayChildPrice')?.value;
-
-    if (memberWeekdayAdultPrice) memberWeekdayPrices.push(`성인: ${memberWeekdayAdultPrice}원`);
-    if (memberWeekdayYouthPrice) memberWeekdayPrices.push(`청소년: ${memberWeekdayYouthPrice}원`);
-    if (memberWeekdayChildPrice) memberWeekdayPrices.push(`어린이: ${memberWeekdayChildPrice}원`);
-
-    // 주말 회원 요금
-    const memberWeekendAdultPrice = document.getElementById('memberWeekendAdultPrice')?.value;
-    const memberWeekendYouthPrice = document.getElementById('memberWeekendYouthPrice')?.value;
-    const memberWeekendChildPrice = document.getElementById('memberWeekendChildPrice')?.value;
-
-    if (memberWeekendAdultPrice) memberWeekendPrices.push(`성인: ${memberWeekendAdultPrice}원`);
-    if (memberWeekendYouthPrice) memberWeekendPrices.push(`청소년: ${memberWeekendYouthPrice}원`);
-    if (memberWeekendChildPrice) memberWeekendPrices.push(`어린이: ${memberWeekendChildPrice}원`);
-
-    return {
-      weekday: weekdayPrices,
-      weekend: weekendPrices,
-      "member-weekday": memberWeekdayPrices,
-      "member-weekend": memberWeekendPrices
-    };
-  }
-
-  // URL에서 ID 가져오기
-  function getPoolIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('id');
-  }
+  
 
   // 수영장 데이터 로드 함수
   async function loadPoolData() {
     const poolId = getPoolIdFromUrl();
+    console.log('현재 poolId:', poolId);
+
     if (!poolId) {
       console.error('수영장 ID가 없습니다.');
       return;
     }
 
     try {
-      const response = await fetch('data/pools.json');
+      console.log('데이터 요청 시작...');
+      const response = await fetch('http://localhost:3001/api/pools/' + poolId);
+      console.log('서버 응답:', response);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const pools = await response.json();
       
-      if (!Array.isArray(pools)) {
-        throw new Error('데이터 형식이 올바르지 않습니다.');
-      }
-
-      const pool = pools.find(p => p.id === parseInt(poolId));
+      const pool = await response.json();
+      console.log('받아온 수영장 데이터:', pool);
+      
       if (!pool) {
         console.error('해당 ID의 수영장을 찾을 수 없습니다:', poolId);
         return;
       }
 
       fillPoolForm(pool);
+      console.log('폼 데이터 채우기 완료');
       
-      // 시간표 테이블 생성
-      const weekdayContainer = document.getElementById('tablesContainer');
-      const weekendContainer = document.getElementById('weekendTablesContainer');
-      
-      if (!weekdayContainer || !weekendContainer) {
-        console.error('시간표 컨테이너를 찾을 수 없습니다.');
-        return;
-      }
-      
-      weekdayContainer.innerHTML = '';
-      weekendContainer.innerHTML = '';
-      
-      // 평일 시간표 생성
-      const weekdaySessions = groupSessionsByTime(pool.sessions).weekday;
-      if (weekdaySessions.length > 0) {
-        // 화목 공통 시간 찾기
-        const tueThuSessions = weekdaySessions.filter(session => {
-          const hasTue = session.days.includes('tuesday');
-          const hasThu = session.days.includes('thursday');
-          return hasTue && hasThu && session.days.length === 2;
-        });
-
-        // 나머지 시간 찾기
-        const otherSessions = weekdaySessions.filter(session => !tueThuSessions.includes(session));
-
-        // 나머지 시간 테이블 생성 (평일 테이블)
-        if (otherSessions.length > 0) {
-          const otherTable = createTable(otherSessions, '평일');
-          weekdayContainer.appendChild(otherTable);
-        }
-
-        // 화목 공통 시간 테이블 생성
-        if (tueThuSessions.length > 0) {
-          const tueThuTable = createTable(tueThuSessions, '화목');
-          weekdayContainer.appendChild(tueThuTable);
-        }
-      }
-      
-      // 주말 시간표 생성
-      const weekendSessions = groupSessionsByTime(pool.sessions).weekend;
-      if (weekendSessions.length > 0) {
-        // 토일 공통 시간 찾기
-        const satSunSessions = weekendSessions.filter(session => {
-          const hasSat = session.days.includes('saturday');
-          const hasSun = session.days.includes('sunday');
-          return hasSat && hasSun && session.days.length === 2;
-        });
-
-        // 일요일만 있는 시간 찾기
-        const sunOnlySessions = weekendSessions.filter(session => {
-          const hasSat = session.days.includes('saturday');
-          const hasSun = session.days.includes('sunday');
-          return !hasSat && hasSun;
-        });
-
-        // 토일 공통 시간 테이블 생성
-        if (satSunSessions.length > 0) {
-          const satSunTable = createTable(satSunSessions, '토일');
-          weekendContainer.appendChild(satSunTable);
-        }
-
-        // 일요일만 있는 시간 테이블 생성
-        if (sunOnlySessions.length > 0) {
-          const sunOnlyTable = createTable(sunOnlySessions, '일요일');
-          weekendContainer.appendChild(sunOnlyTable);
-        }
-      }
     } catch (error) {
-      console.error('Error loading pool data:', error);
-      alert('수영장 데이터를 불러오는데 실패했습니다. 페이지를 새로고침해주세요.');
+      console.error('수영장 데이터 로드 중 오류:', error);
+      alert('수영장 데이터를 불러오는데 실패했습니다.');
     }
   }
 
@@ -1129,51 +898,93 @@ document.addEventListener('DOMContentLoaded', async function() {
     titleElement.textContent = title;
     headerDiv.appendChild(titleElement);
     
-    // 체크박스 컨테이너 추가
-    const checkboxContainer = document.createElement('div');
-    checkboxContainer.className = 'table-day-checkbox-container';
-    
-    // 전체 선택 체크박스 추가
-    const allCheckboxLabel = document.createElement('label');
-    const allCheckbox = document.createElement('input');
-    allCheckbox.type = 'checkbox';
-    allCheckbox.className = 'table-day-checkbox-all';
-    allCheckbox.style.width = '22px';
-    allCheckbox.style.height = '22px';
-    allCheckboxLabel.appendChild(allCheckbox);
-    allCheckboxLabel.appendChild(document.createTextNode('전체'));
-    checkboxContainer.appendChild(allCheckboxLabel);
-    
-    // 요일별 체크박스 추가
-    const days = ['월', '화', '수', '목', '금', '토', '일'];
-    days.forEach(day => {
-      const label = document.createElement('label');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'table-day-checkbox';
-      checkbox.value = day;
-      checkbox.style.width = '22px';
-      checkbox.style.height = '22px';
-      
-      // 체크박스 체크 상태 설정
-      const dayMap = {
-        '월': 'monday',
-        '화': 'tuesday',
-        '수': 'wednesday',
-        '목': 'thursday',
-        '금': 'friday',
-        '토': 'saturday',
-        '일': 'sunday'
-      };
-      const isChecked = sessions.some(session => session.days.includes(dayMap[day]));
-      checkbox.checked = isChecked;
-      
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(day));
-      checkboxContainer.appendChild(label);
-    });
-    
-    headerDiv.appendChild(checkboxContainer);
+    // 요일 체크박스는 평일(월~금) 또는 주말(토/일)에 맞게 표시
+    const weekdayTitles = ['월', '화', '수', '목', '금'];
+    const weekendTitles = ['토', '일'];
+    if (weekdayTitles.includes(title)) {
+      // 기존 평일 체크박스 코드 유지
+      const checkboxContainer = document.createElement('div');
+      checkboxContainer.className = 'table-day-checkbox-container';
+      const allCheckboxLabel = document.createElement('label');
+      const allCheckbox = document.createElement('input');
+      allCheckbox.type = 'checkbox';
+      allCheckbox.className = 'table-day-checkbox-all';
+      allCheckbox.style.width = '22px';
+      allCheckbox.style.height = '22px';
+      allCheckboxLabel.appendChild(allCheckbox);
+      allCheckboxLabel.appendChild(document.createTextNode('전체'));
+      checkboxContainer.appendChild(allCheckboxLabel);
+      const days = ['월', '화', '수', '목', '금'];
+      days.forEach(day => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'table-day-checkbox';
+        checkbox.value = day;
+        checkbox.style.width = '22px';
+        checkbox.style.height = '22px';
+        const dayMap = {
+          '월': 'monday',
+          '화': 'tuesday',
+          '수': 'wednesday',
+          '목': 'thursday',
+          '금': 'friday'
+        };
+        const isChecked = Array.isArray(sessions) && sessions.some(session => session.days && session.days.includes(dayMap[day]));
+        checkbox.checked = isChecked;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(day));
+        checkboxContainer.appendChild(label);
+      });
+      headerDiv.appendChild(checkboxContainer);
+    } else if (weekendTitles.includes(title)) {
+      // 주말 체크박스: 전체, 토, 일만 표시
+      const checkboxContainer = document.createElement('div');
+      checkboxContainer.className = 'table-day-checkbox-container';
+      // 전체 체크박스
+      const allCheckboxLabel = document.createElement('label');
+      const allCheckbox = document.createElement('input');
+      allCheckbox.type = 'checkbox';
+      allCheckbox.className = 'table-day-checkbox-all';
+      allCheckbox.style.width = '22px';
+      allCheckbox.style.height = '22px';
+      allCheckboxLabel.appendChild(allCheckbox);
+      allCheckboxLabel.appendChild(document.createTextNode('전체'));
+      checkboxContainer.appendChild(allCheckboxLabel);
+      // 토, 일 체크박스
+      const days = ['토', '일'];
+      days.forEach(day => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'table-day-checkbox';
+        checkbox.value = day;
+        checkbox.style.width = '22px';
+        checkbox.style.height = '22px';
+        const dayMap = {
+          '토': 'saturday',
+          '일': 'sunday'
+        };
+        const isChecked = Array.isArray(sessions) && sessions.some(session => session.days && session.days.includes(dayMap[day]));
+        checkbox.checked = isChecked;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(day));
+        checkboxContainer.appendChild(label);
+      });
+      headerDiv.appendChild(checkboxContainer);
+      // 전체 체크박스가 토/일을 제어하도록 이벤트 바인딩
+      setTimeout(() => {
+        const dayCheckboxes = checkboxContainer.querySelectorAll('.table-day-checkbox');
+        allCheckbox.addEventListener('change', function() {
+          dayCheckboxes.forEach(cb => { cb.checked = allCheckbox.checked; });
+        });
+        dayCheckboxes.forEach(cb => {
+          cb.addEventListener('change', function() {
+            allCheckbox.checked = Array.from(dayCheckboxes).every(c => c.checked);
+          });
+        });
+      }, 0);
+    }
     wrapper.appendChild(headerDiv);
     
     // 테이블 생성
@@ -1193,43 +1004,49 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // 테이블 본문
     const tbody = document.createElement('tbody');
-    sessions.forEach((session, index) => {
-      const row = document.createElement('tr');
-      
-      // 부
-      const partCell = document.createElement('td');
-      partCell.textContent = `${index + 1}부`;
-      row.appendChild(partCell);
-      
-      // 시작시간
-      const startTimeCell = document.createElement('td');
-      const startTimeInput = document.createElement('input');
-      startTimeInput.type = 'time';
-      startTimeInput.className = 'start-time';
-      startTimeInput.value = session.time.split(' - ')[0];
-      startTimeCell.appendChild(startTimeInput);
-      row.appendChild(startTimeCell);
-      
-      // 종료시간
-      const endTimeCell = document.createElement('td');
-      const endTimeInput = document.createElement('input');
-      endTimeInput.type = 'time';
-      endTimeInput.className = 'end-time';
-      endTimeInput.value = session.time.split(' - ')[1];
-      endTimeCell.appendChild(endTimeInput);
-      row.appendChild(endTimeCell);
-      
-      // 삭제 버튼
-      const deleteCell = document.createElement('td');
-      const deleteButton = document.createElement('button');
-      deleteButton.type = 'button';
-      deleteButton.className = 'delete-row';
-      deleteButton.textContent = '삭제';
-      deleteCell.appendChild(deleteButton);
-      row.appendChild(deleteCell);
-      
-      tbody.appendChild(row);
-    });
+    if (Array.isArray(sessions)) {
+      sessions.forEach((session, index) => {
+        const row = document.createElement('tr');
+        
+        // 부
+        const partCell = document.createElement('td');
+        partCell.textContent = `${index + 1}부`;
+        row.appendChild(partCell);
+        
+        // 시작시간
+        const startTimeCell = document.createElement('td');
+        const startTimeInput = document.createElement('input');
+        startTimeInput.type = 'time';
+        startTimeInput.className = 'start-time';
+        if (session.time) {
+          startTimeInput.value = session.time.split(' - ')[0];
+        }
+        startTimeCell.appendChild(startTimeInput);
+        row.appendChild(startTimeCell);
+        
+        // 종료시간
+        const endTimeCell = document.createElement('td');
+        const endTimeInput = document.createElement('input');
+        endTimeInput.type = 'time';
+        endTimeInput.className = 'end-time';
+        if (session.time) {
+          endTimeInput.value = session.time.split(' - ')[1];
+        }
+        endTimeCell.appendChild(endTimeInput);
+        row.appendChild(endTimeCell);
+        
+        // 삭제 버튼
+        const deleteCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'delete-row';
+        deleteButton.textContent = '삭제';
+        deleteCell.appendChild(deleteButton);
+        row.appendChild(deleteCell);
+        
+        tbody.appendChild(row);
+      });
+    }
     table.appendChild(tbody);
     wrapper.appendChild(table);
     
@@ -1246,25 +1063,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     return wrapper;
   }
 
-  // 권한 확인
-  const hasPermission = await checkUserPermission();
-  if (!hasPermission) {
-      window.location.href = 'index.html';
-      return;
-  }
-
-  const poolId = getPoolIdFromUrl();
-  if (poolId) {
-    // 수정 모드
-    const pools = await loadPoolData();
-    const pool = pools.find(p => p.id === parseInt(poolId));
-    if (pool) {
-      fillPoolForm(pool);
-    } else {
-      alert('수영장 정보를 찾을 수 없습니다.');
-      window.location.href = 'list.html';
-    }
-  }
   // 새로 추가 모드인 경우 폼은 비어있는 상태로 시작
 
   // 페이지 최초 로드시 기존 테이블에도 이벤트 바인딩 (여기서 바로!)

@@ -1,28 +1,10 @@
-// 관리자 권한 확인 함수
-async function checkAdminAuth() {
-    return true; // 임시로 true 반환
-}
-
-// 사용자 권한 확인 함수
-async function checkUserPermission() {
-    try {
-        const isAdmin = await checkAdminAuth();
-        if (!isAdmin) {
-            alert('관리자 권한이 필요합니다.');
-            return false;
-        }
-        return true;
-    } catch (error) {
-        console.error('권한 확인 중 오류 발생:', error);
-        alert('권한 확인 중 오류가 발생했습니다.');
-        return false;
-    }
-}
+// 로그인 상태 설정
+let isAuthenticated = true;
 
 // 수영장 데이터 로드 함수
 async function loadPoolData() {
     try {
-        const response = await fetch('data/pools.json');
+        const response = await fetch('../data/pools.json');
         if (!response.ok) {
             throw new Error('데이터를 불러오는데 실패했습니다.');
         }
@@ -96,7 +78,7 @@ function createPoolRow(pool) {
     // 수정 버튼에 이벤트 리스너 추가
     const editButton = row.querySelector('.edit-button');
     editButton.addEventListener('click', () => {
-        window.location.href = `admin.html?id=${pool.id}`;
+        window.open(`admin.html?id=${pool.id}`, '_blank');
     });
     
     return row;
@@ -307,13 +289,6 @@ function setupDistrictListeners(pools, selectedCities) {
 
 // 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', async function() {
-    // 권한 확인
-    const hasPermission = await checkUserPermission();
-    if (!hasPermission) {
-        window.location.href = 'index.html';
-        return;
-    }
-
     // 수영장 데이터 로드 및 표시
     const pools = await loadPoolData();
     

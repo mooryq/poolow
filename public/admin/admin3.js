@@ -1,4 +1,4 @@
-import { db } from './js/config.js';
+import { db } from '../js/config.js';
 
 // 인증 상태 모니터링
 let isAuthenticated = true; // 임시로 true로 설정
