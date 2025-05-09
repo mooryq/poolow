@@ -396,13 +396,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         timeDiv.className = 'time';
         timeDiv.textContent = session.time;
         
-        const typeDiv = document.createElement('div');
-        typeDiv.className = 'type';
-        typeDiv.textContent = session.type;
-        
         sessionDiv.appendChild(sessionNumDiv);
         sessionDiv.appendChild(timeDiv);
-        sessionDiv.appendChild(typeDiv);
+        
+        // 입장 정보가 있는 경우 시간 옆에 표시
+        if (session.admission) {
+            const admissionDiv = document.createElement('div');
+            admissionDiv.className = 'session-admission ';
+            admissionDiv.textContent = session.admission;
+            sessionDiv.appendChild(admissionDiv);
+        }
+        
         container.appendChild(sessionDiv);
     });
   }
@@ -459,7 +463,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         chargeList.forEach(charge => {
             const chargeDiv = document.createElement('div');
             chargeDiv.className = 'charge';
-            chargeDiv.textContent = charge;
+            // 숫자에 콤마 추가
+            const chargeText = charge.replace(/(\d+)(원)/g, (match, num, unit) => {
+                return Number(num).toLocaleString() + unit;
+            });
+            chargeDiv.textContent = chargeText;
             chargeRow.appendChild(chargeDiv);
         });
         
@@ -485,7 +493,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         memberChargeList.forEach(charge => {
             const chargeDiv = document.createElement('div');
             chargeDiv.className = 'charge';
-            chargeDiv.textContent = charge;
+            // 숫자에 콤마 추가
+            const chargeText = charge.replace(/(\d+)(원)/g, (match, num, unit) => {
+                return Number(num).toLocaleString() + unit;
+            });
+            chargeDiv.textContent = chargeText;
             memberRow.appendChild(chargeDiv);
         });
         
